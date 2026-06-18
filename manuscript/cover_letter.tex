@@ -1,0 +1,54 @@
+\documentclass[11pt]{letter}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\signature{Richar Andre Vilca-Solorzano \\ (on behalf of all authors)}
+\address{Faculty of Statistical and Computer Engineering\\
+Universidad Nacional del Altiplano (UNAP)\\ Puno, Peru\\
+\texttt{75521963@est.unap.edu.pe}}
+\begin{document}
+\begin{letter}{The Editor-in-Chief\\ \textit{Remote Sensing}\\ MDPI}
+\opening{Dear Editor,}
+
+We are pleased to submit our manuscript, \textit{``Harmonized Sentinel-2/Landsat
+Retrieval of Water Transparency in Lake Titicaca Using Machine Learning: A
+Transferable Validation and Retrievability Protocol for High-Altitude Lakes
+(2013--2024)''}, for consideration as a research article in \textit{Remote Sensing}.
+
+The study sits squarely within the journal's scope---machine-learning retrieval of
+water-quality variables from harmonized optical satellite missions. We present, to
+our knowledge, the first multi-mission harmonized retrieval of water transparency
+(Secchi depth) for a high-altitude Andean lake (3{,}810~m a.s.l.), built entirely
+on \textbf{real in-situ measurements} (881 field observations, 1{,}002
+satellite--field match-ups, 2013--2024) sampled at their true coordinates across
+the whole lake. It directly complements recent work on Lake Titicaca published in
+\textit{Remote Sensing} using global products (Maligaya et al., 2024), to which we
+add harmonized multi-mission retrieval, local in-situ validation, and an explicit
+retrievability assessment.
+
+We believe this work makes four distinctive contributions. (1) \textbf{A
+transferable validation hierarchy:} beyond station-wise cross-validation and a
+temporal hold-out, we introduce a leave-one-zone-out test showing that, although
+random and station-wise validation are identical (no spatial-autocorrelation
+leakage), extrapolation to an unseen optical regime collapses $R^2$ toward zero---a
+loss of transferability that random splits conceal. (2) \textbf{Calibrated
+uncertainty:} we attach per-pixel split-conformal prediction intervals (empirical
+coverage 89.8\% at a 90\% nominal level). (3) \textbf{Physical interpretability:}
+SHAP shows the retrieval is driven by green/blue reflectance ratios, consistent
+with water-clarity optics. (4) \textbf{Transparent delimitation of limits:} we
+report explicitly that chlorophyll-$a$, suspended solids and thermal temperature
+are \emph{not} retrievable in this oligotrophic regime---an honest operational
+envelope that cautions against transferring turbid-water algorithms to clear
+high-altitude lakes. A lake-wide transparency map demonstrates operational utility.
+
+All data and code are openly available, and the full pipeline is reproducible from
+public satellite archives and published institutional monitoring records. The
+manuscript is original, not under consideration elsewhere, and all authors approve
+the submission. We have no conflicts of interest to declare.
+
+Thank you for considering our work.
+
+\closing{Sincerely,}
+\end{letter}
+\end{document}

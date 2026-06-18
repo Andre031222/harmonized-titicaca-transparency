@@ -1,0 +1,4 @@
+model,R2,RMSE,MAE,bias_m,n
+Classical blue/green (log-linear),-2.744,5.509,1.936,-0.152,812
+Linear multiband,0.259,2.45,1.792,-0.32,812
+Random Forest (this study),0.596,1.81,1.399,0.015,812

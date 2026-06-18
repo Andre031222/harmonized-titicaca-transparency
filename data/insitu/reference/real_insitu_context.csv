@@ -1,0 +1,22 @@
+source_id,citation_key,date,zone,station_id,lat,lon,chl_a_ug_L,turbidity_NTU,SST_mg_L,secchi_m,pH,DO_mg_L,temp_C,conductivity_uS_cm,trophic_state,notes
+OEFA2016,OEFA2016,2015-11-10,Bahia_Puno,AL-01,-15.82,-69.995,413.0,,16.0,,9.44,9.27,18.9,1788,Hypertrophic,NTU not reported; SST=Total Suspended Solids mg/L; wet season
+OEFA2016,OEFA2016,2015-11-10,Bahia_Puno,AL-02,-15.82,-69.993,333.0,,16.0,,9.45,9.23,18.8,1787,Hypertrophic,NTU not reported; SST=Total Suspended Solids mg/L; wet season
+OEFA2016,OEFA2016,2015-11-10,Bahia_Puno,AL-03,-15.82,-69.990,260.0,,18.0,,9.49,9.73,18.4,1792,Hypertrophic,NTU not reported; SST=Total Suspended Solids mg/L; wet season
+OEFA2016,OEFA2016,2015-11-10,Bahia_Puno,AL-04,-15.83,-69.995,228.0,,19.2,,9.37,7.20,17.5,1791,Hypertrophic,NTU not reported; SST=Total Suspended Solids mg/L; wet season
+OEFA2016,OEFA2016,2015-11-10,Bahia_Puno,AL-05,-15.83,-69.993,202.0,,20.5,,9.38,9.52,17.5,1752,Hypertrophic,NTU not reported; SST=Total Suspended Solids mg/L; wet season
+OEFA2016,OEFA2016,2015-11-10,Bahia_Puno,AL-06,-15.83,-69.991,266.0,,20.5,,9.43,7.38,17.8,1766,Hypertrophic,NTU not reported; SST=Total Suspended Solids mg/L; wet season
+OEFA2016,OEFA2016,2015-11-09,Bahia_Puno,AL-07,-15.82,-69.998,216.0,,13.2,,9.48,9.58,19.0,1787,Hypertrophic,NTU not reported; SST=Total Suspended Solids mg/L; wet season
+OEFA2016,OEFA2016,2015-11-09,Bahia_Puno,AL-08,-15.82,-69.997,292.0,,13.2,,9.43,9.68,18.4,1777,Hypertrophic,NTU not reported; SST=Total Suspended Solids mg/L; wet season
+OEFA2016,OEFA2016,2015-11-09,Bahia_Puno,AL-09,-15.82,-69.996,316.0,,13.6,,9.59,9.96,17.6,1785,Hypertrophic,NTU not reported; SST=Total Suspended Solids mg/L; wet season
+OEFA2016,OEFA2016,2015-11-09,Bahia_Puno,AL-10,-15.82,-70.001,227.0,,13.2,,9.49,9.84,18.7,1784,Hypertrophic,NTU not reported; SST=Total Suspended Solids mg/L; wet season
+OEFA2016,OEFA2016,2015-11-09,Bahia_Puno,AL-11,-15.82,-70.001,213.0,,12.4,,9.47,8.63,17.7,1777,Hypertrophic,NTU not reported; SST=Total Suspended Solids mg/L; wet season
+OEFA2016,OEFA2016,2015-11-09,Bahia_Puno,AL-12,-15.82,-70.001,300.0,,15.0,,9.40,7.62,17.3,1767,Hypertrophic,NTU not reported; SST=Total Suspended Solids mg/L; wet season
+IMARPE_Inf49_2022,Siguayro2022a,2019-07,Bahia_Puno,Zone_mean_Bahia,-15.85,-69.95,1.42,,,7.1,,,,,Oligotrophic-Mesotrophic (dry season),n=8 stations; Secchi disk transparency; dry/winter season Jul 2019
+IMARPE_Inf49_2022,Siguayro2022a,2019-07,Lago_Mayor,Zone_mean_LMayor,-16.10,-69.20,0.95,,,9.7,,,,,Oligotrophic,n=41 stations; Secchi disk transparency; dry/winter season Jul 2019
+IMARPE_Inf49_2022,Siguayro2022a,2019-07,Lago_Menor,Zone_mean_LMenor,-16.35,-68.80,1.52,,,7.6,,,,,Oligotrophic-Mesotrophic,n=20 stations; Secchi disk transparency; dry/winter season Jul 2019
+IMARPE_Bol37_2022,Siguayro2022b,2017-04,Bahia_Puno,Bay_Bahia_Int_Puno,-15.85,-69.95,1.29,,,,,,,,Hypertrophic,Mean from IMARPE Table 11; trophic class from Table 13; April campaign
+IMARPE_Bol37_2022,Siguayro2022b,2017-04,Lago_Mayor,Bay_Desaguadero,-16.56,-68.97,2.14,,,,,,,,Eutrophic,Mean from IMARPE Table 11; April campaign
+Maligaya2024_CGLS,Maligaya2024,2013-2020,Lago_Mayor,Zone_mean_LMayor,-16.10,-69.20,,0.76,,,,,,,,Oligotrophic,Long-term mean CGLS satellite product validated vs ANA/PEBLT in-situ; R2=0.036
+Maligaya2024_CGLS,Maligaya2024,2013-2020,Lago_Menor,Zone_mean_LMenor,-16.35,-68.80,,1.92,,,,,,,,Oligotrophic-Mesotrophic,Long-term mean CGLS satellite product validated vs ANA/PEBLT in-situ; R2=0.036
+Maligaya2024_ESACCI,Maligaya2024,2013-2020,Lago_Mayor,Zone_mean_LMayor,-16.10,-69.20,,0.49,,,,,,,,Oligotrophic,Long-term mean ESA-CCI satellite product validated vs ANA/PEBLT in-situ; R2=0.061
+Maligaya2024_ESACCI,Maligaya2024,2013-2020,Lago_Menor,Zone_mean_LMenor,-16.35,-68.80,,1.49,,,,,,,,Oligotrophic-Mesotrophic,Long-term mean ESA-CCI satellite product validated vs ANA/PEBLT in-situ; R2=0.061

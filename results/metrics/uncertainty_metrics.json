@@ -1,0 +1,10 @@
+{
+  "PI_nominal": 0.9,
+  "n": 812,
+  "R2_oof_calsplit": 0.587,
+  "RMSE": 1.83,
+  "qrf_coverage": 0.793,
+  "qrf_mean_width_m": 4.589,
+  "conformal_coverage": 0.898,
+  "conformal_mean_width_m": 6.147
+}

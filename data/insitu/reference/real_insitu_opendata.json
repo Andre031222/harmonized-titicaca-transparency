@@ -1,0 +1,243 @@
+{
+  "metadata": {
+    "description": "Real in-situ water quality data for Lake Titicaca extracted from open-source government and peer-reviewed publications. Used as validation context for Harmonized Sentinel-2/Landsat ensemble ML model.",
+    "created": "2026-04-30",
+    "authors": "Fred Torres-Cruz, Dina Maribel Yana-Yucra, Richar Andre Vilca-Solorzano",
+    "purpose": "Validation context and trophic reference for Chl-a and turbidity monitoring in Lake Titicaca (Peruvian sector)",
+    "parameters_note": "Turbidity in NTU not directly reported in OEFA/IMARPE field reports (Secchi disk and SST mg/L used instead). Direct NTU in-situ data from ANA/PEBLT campaigns reported in Maligaya et al. 2024 (range 0-7 NTU, mostly <3 NTU for Lago Mayor/Menor).",
+    "coordinate_system_note": "OEFA stations converted from UTM Zone 19S to WGS84 decimal degrees (approximate, +/-0.001 deg)"
+  },
+
+  "sources": [
+    {
+      "id": "OEFA2016",
+      "type": "government_report",
+      "open_access": true,
+      "citation": "OEFA (2016). Informe N° 076-2016-OEFA/DE-SDCA: Evaluacion de la calidad del agua de la Bahia Interior de Puno - Lago Titicaca. Organismo de Evaluacion y Fiscalizacion Ambiental, Lima, Peru.",
+      "bibtex": "@techreport{OEFA2016,\n  author       = {{OEFA}},\n  title        = {{Informe N° 076-2016-OEFA/DE-SDCA: Evaluacion de la calidad del agua de la Bahia Interior de Puno -- Lago Titicaca}},\n  institution  = {Organismo de Evaluacion y Fiscalizacion Ambiental},\n  year         = {2016},\n  address      = {Lima, Peru},\n  url          = {https://www.oefa.gob.pe/}\n}",
+      "monitoring_dates": "2015-11-09 to 2015-11-10",
+      "zone": "Bahia_Puno",
+      "location": "Bahia Interior Puno (near PTAR El Espinar wastewater treatment plant)",
+      "altitude_m": 3828,
+      "utm_zone": "19S",
+      "parameters_measured": ["chlorophyll_a_mg_L", "SST_total_suspended_solids_mg_L", "pH", "conductivity_uS_cm", "DO_mg_L", "temperature_C"],
+      "turbidity_NTU_available": false,
+      "notes": "Chl-a reported in mg/L (equivalent to g/m3). Values 0.202-0.413 mg/L = 202-413 ug/L, consistent with hypertrophic classification (OECD: >25 ug/L = eutrophic; >75 ug/L = hypertrophic). SST = Total Suspended Solids (mg/L), not NTU turbidity.",
+      "n_stations": 12,
+      "measurements": [
+        {"station_id": "AL-01", "date": "2015-11-10", "time": "12:00", "utm_e": 393428, "utm_n": 8247433, "lat_approx": -15.82, "lon_approx": -69.995, "pH": 9.44, "conductivity_uS_cm": 1788, "DO_mg_L": 9.27, "temperature_C": 18.9, "chl_a_mg_L": 0.413, "chl_a_ug_L": 413.0, "SST_mg_L": 16.0},
+        {"station_id": "AL-02", "date": "2015-11-10", "time": "12:00", "utm_e": 393660, "utm_n": 8247511, "lat_approx": -15.82, "lon_approx": -69.993, "pH": 9.45, "conductivity_uS_cm": 1787, "DO_mg_L": 9.23, "temperature_C": 18.8, "chl_a_mg_L": 0.333, "chl_a_ug_L": 333.0, "SST_mg_L": 16.0},
+        {"station_id": "AL-03", "date": "2015-11-10", "time": "12:00", "utm_e": 393897, "utm_n": 8247575, "lat_approx": -15.82, "lon_approx": -69.990, "pH": 9.49, "conductivity_uS_cm": 1792, "DO_mg_L": 9.73, "temperature_C": 18.4, "chl_a_mg_L": 0.260, "chl_a_ug_L": 260.0, "SST_mg_L": 18.0},
+        {"station_id": "AL-04", "date": "2015-11-10", "time": "12:00", "utm_e": 393426, "utm_n": 8247099, "lat_approx": -15.83, "lon_approx": -69.995, "pH": 9.37, "conductivity_uS_cm": 1791, "DO_mg_L": 7.20, "temperature_C": 17.5, "chl_a_mg_L": 0.228, "chl_a_ug_L": 228.0, "SST_mg_L": 19.2},
+        {"station_id": "AL-05", "date": "2015-11-10", "time": "12:00", "utm_e": 393655, "utm_n": 8246944, "lat_approx": -15.83, "lon_approx": -69.993, "pH": 9.38, "conductivity_uS_cm": 1752, "DO_mg_L": 9.52, "temperature_C": 17.5, "chl_a_mg_L": 0.202, "chl_a_ug_L": 202.0, "SST_mg_L": 20.5},
+        {"station_id": "AL-06", "date": "2015-11-10", "time": "12:00", "utm_e": 393831, "utm_n": 8246790, "lat_approx": -15.83, "lon_approx": -69.991, "pH": 9.43, "conductivity_uS_cm": 1766, "DO_mg_L": 7.38, "temperature_C": 17.8, "chl_a_mg_L": 0.266, "chl_a_ug_L": 266.0, "SST_mg_L": 20.5},
+        {"station_id": "AL-07", "date": "2015-11-09", "time": "12:00", "utm_e": 393079, "utm_n": 8247553, "lat_approx": -15.82, "lon_approx": -69.998, "pH": 9.48, "conductivity_uS_cm": 1787, "DO_mg_L": 9.58, "temperature_C": 19.0, "chl_a_mg_L": 0.216, "chl_a_ug_L": 216.0, "SST_mg_L": 13.2},
+        {"station_id": "AL-08", "date": "2015-11-09", "time": "12:00", "utm_e": 393209, "utm_n": 8247732, "lat_approx": -15.82, "lon_approx": -69.997, "pH": 9.43, "conductivity_uS_cm": 1777, "DO_mg_L": 9.68, "temperature_C": 18.4, "chl_a_mg_L": 0.292, "chl_a_ug_L": 292.0, "SST_mg_L": 13.2},
+        {"station_id": "AL-09", "date": "2015-11-09", "time": "12:00", "utm_e": 393317, "utm_n": 8247933, "lat_approx": -15.82, "lon_approx": -69.996, "pH": 9.59, "conductivity_uS_cm": 1785, "DO_mg_L": 9.96, "temperature_C": 17.6, "chl_a_mg_L": 0.316, "chl_a_ug_L": 316.0, "SST_mg_L": 13.6},
+        {"station_id": "AL-10", "date": "2015-11-09", "time": "12:00", "utm_e": 392729, "utm_n": 8247637, "lat_approx": -15.82, "lon_approx": -70.001, "pH": 9.49, "conductivity_uS_cm": 1784, "DO_mg_L": 9.84, "temperature_C": 18.7, "chl_a_mg_L": 0.227, "chl_a_ug_L": 227.0, "SST_mg_L": 13.2},
+        {"station_id": "AL-11", "date": "2015-11-09", "time": "12:00", "utm_e": 392769, "utm_n": 8247850, "lat_approx": -15.82, "lon_approx": -70.001, "pH": 9.47, "conductivity_uS_cm": 1777, "DO_mg_L": 8.63, "temperature_C": 17.7, "chl_a_mg_L": 0.213, "chl_a_ug_L": 213.0, "SST_mg_L": 12.4},
+        {"station_id": "AL-12", "date": "2015-11-09", "time": "12:00", "utm_e": 392767, "utm_n": 8248111, "lat_approx": -15.82, "lon_approx": -70.001, "pH": 9.40, "conductivity_uS_cm": 1767, "DO_mg_L": 7.62, "temperature_C": 17.3, "chl_a_mg_L": 0.300, "chl_a_ug_L": 300.0, "SST_mg_L": 15.0}
+      ],
+      "summary_stats": {
+        "chl_a_ug_L_mean": 272.2,
+        "chl_a_ug_L_min": 202.0,
+        "chl_a_ug_L_max": 413.0,
+        "SST_mg_L_mean": 15.9,
+        "SST_mg_L_range": "12.4 - 20.5",
+        "trophic_classification": "Hypertrophic (OECD: >75 ug/L Chl-a)"
+      }
+    },
+
+    {
+      "id": "IMARPE_Informe49_2022",
+      "type": "peer_reviewed_report",
+      "open_access": true,
+      "citation": "Siguayro, R.A. and Franco, E. (2022). Evaluacion limnologica del Lago Titicaca - Sector Peruano (Julio 2019). Informe Instituto del Mar del Peru, 49(4), 538-551.",
+      "bibtex": "@article{Siguayro2022Limnologica,\n  author  = {Siguayro, Rene Alejandro and Franco, Eliseo},\n  title   = {{Evaluacion limnologica del Lago Titicaca -- Sector Peruano (Julio 2019)}},\n  journal = {Informe Instituto del Mar del Peru},\n  year    = {2022},\n  volume  = {49},\n  number  = {4},\n  pages   = {538--551}\n}",
+      "monitoring_dates": "2019-07-10 to 2019-07-24",
+      "season": "dry_winter",
+      "n_stations": 71,
+      "n_profiles": 8,
+      "parameters_measured": ["chlorophyll_a_mg_m3", "Secchi_depth_m", "temperature_C", "salinity", "pH", "DO_mg_L", "nutrients"],
+      "turbidity_NTU_available": false,
+      "notes": "July = austral winter dry season. Chl-a values substantially lower than wet season due to seasonal dynamics. Transparency measured as Secchi disk depth (m). No NTU turbidity reported.",
+      "surface_zone_means": [
+        {
+          "zone": "Bahia_Puno",
+          "n_stations": 8,
+          "chl_a_mg_m3": 1.42,
+          "chl_a_ug_L": 1.42,
+          "secchi_depth_m": 7.1,
+          "trophic_state": "oligotrophic-mesotrophic (dry season)"
+        },
+        {
+          "zone": "Lago_Mayor",
+          "n_stations": 41,
+          "chl_a_mg_m3": 0.95,
+          "chl_a_ug_L": 0.95,
+          "secchi_depth_m": 9.7,
+          "trophic_state": "oligotrophic"
+        },
+        {
+          "zone": "Lago_Menor",
+          "n_stations": 20,
+          "chl_a_mg_m3": 1.52,
+          "chl_a_ug_L": 1.52,
+          "secchi_depth_m": 7.6,
+          "trophic_state": "oligotrophic-mesotrophic"
+        }
+      ],
+      "vertical_profile_transects": [
+        "Chimu-Parina (Bahia Puno)",
+        "Pusi-Vilquechico",
+        "Tilali-Villa Socca",
+        "Escoma-Cachipucara",
+        "Carabuco-Juli",
+        "Pomata-Copacabana",
+        "Peninsula Copacabana-Achacachi",
+        "Huatajata-Desaguadero"
+      ]
+    },
+
+    {
+      "id": "IMARPE_Boletin37_2022",
+      "type": "peer_reviewed_article",
+      "open_access": true,
+      "citation": "Siguayro, R.A., Pasapera, J., Villanueva, C., Coila, P. and Gamarra, S. (2022). Evaluacion de fuentes contaminantes en el anillo circumlacustre del Lago Titicaca. Boletin Instituto del Mar del Peru, 37(2), 361-386. doi:10.53554/boletin.v37i2.378",
+      "bibtex": "@article{Siguayro2022Contaminantes,\n  author  = {Siguayro, Rene Alejandro and Pasapera, Juan and Villanueva, Carlos and Coila, Pedro and Gamarra, Sergio},\n  title   = {{Evaluacion de fuentes contaminantes en el anillo circumlacustre del Lago Titicaca}},\n  journal = {Boletin Instituto del Mar del Peru},\n  year    = {2022},\n  volume  = {37},\n  number  = {2},\n  pages   = {361--386},\n  doi     = {10.53554/boletin.v37i2.378}\n}",
+      "monitoring_dates": ["2017-04 (wet season)", "2017-09 to 2017-10 (dry season)"],
+      "n_stations": 39,
+      "coverage": "Circumlacustrine ring - rivers, wastewater effluents, bays/river mouths",
+      "parameters_measured": ["chlorophyll_a_mg_m3", "pH", "DO_mg_L", "nutrients", "BOD", "trophic_state_index"],
+      "turbidity_NTU_available": false,
+      "notes": "Trophic classification based on OECD criteria. Chl-a in mg/m3 (= ug/L).",
+      "bay_surface_chl_a": [
+        {"bay": "Bahia_Interior_Puno", "chl_a_mg_m3_mean": 1.29, "trophic_state": "Hypertrophic (classified Table 13)", "note": "Low mean because non-bloom period; hypertrophic confirmed by max values"},
+        {"bay": "Bahia_Desaguadero", "chl_a_mg_m3_mean": 2.14, "trophic_state": "eutrophic"},
+        {"bay": "Bahia_Tilali", "chl_a_mg_m3_range_max": 24.11, "trophic_state": "hypertrophic"},
+        {"bay": "Juli", "trophic_state": "mesotrophic"},
+        {"bay": "Moho", "trophic_state": "mesotrophic"},
+        {"bay": "Pomata", "trophic_state": "mesotrophic"},
+        {"bay": "Ilave", "trophic_state": "oligotrophic"},
+        {"bay": "Ramis", "trophic_state": "oligotrophic"}
+      ],
+      "trophic_classification_table13": {
+        "Hypertrophic": ["Bahia_Interior_Puno", "Yunguyo"],
+        "Eutrophic": ["Bahia_Desaguadero"],
+        "Mesotrophic": ["Juli", "Moho", "Pomata"],
+        "Oligotrophic": ["Ilave", "Ramis"]
+      }
+    },
+
+    {
+      "id": "Maligaya2024",
+      "type": "peer_reviewed_article",
+      "open_access": true,
+      "citation": "Maligaya, V.H.M., Baltodano, A., Agramont, A. and van Griensven, A. (2024). Exploring Trends and Variability of Water Quality over Lake Titicaca Using Global Remote Sensing Products. Remote Sensing, 16, 4785. doi:10.3390/rs16244785",
+      "bibtex": "@article{Maligaya2024,\n  author  = {Maligaya, V.H.M. and Baltodano, A. and Agramont, A. and van Griensven, A.},\n  title   = {{Exploring Trends and Variability of Water Quality over Lake Titicaca Using Global Remote Sensing Products}},\n  journal = {Remote Sensing},\n  year    = {2024},\n  volume  = {16},\n  pages   = {4785},\n  doi     = {10.3390/rs16244785}\n}",
+      "insitu_data_source": "ANA (Autoridad Nacional del Agua, Peru) via PEBLT (Proyecto Especial Binacional Lago Titicaca)",
+      "insitu_data_note": "Dataset available on request from corresponding author (van Griensven)",
+      "campaigns_summary": {
+        "n_campaigns": 9,
+        "years": [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020],
+        "excluded_year": 2014,
+        "n_monitoring_points_per_campaign": "24-29",
+        "sources": ["PEBLT (whole lake)", "IBTEN-ALT-UOB (Bolivia sector)"]
+      },
+      "campaigns_detail": [
+        {"date": "2013-09", "coverage": "Whole lake", "parameters": ["turbidity_NTU", "temperature_C"], "source": "PEBLT", "dates_type": "Assumed"},
+        {"date": "2013-10", "coverage": "Whole lake", "parameters": ["turbidity_NTU", "temperature_C"], "source": "PEBLT", "dates_type": "Assumed"},
+        {"date": "2014-03", "coverage": "Bolivia", "parameters": ["turbidity_NTU", "temperature_C"], "source": "IBTEN-ALT-UOB", "dates_type": "Indicated"},
+        {"date": "2014-10", "coverage": "Bolivia", "parameters": [], "source": "IBTEN-ALT-UOB", "dates_type": "Indicated"},
+        {"date": "2015-09", "coverage": "Whole lake", "parameters": ["temperature_C"], "source": "PEBLT", "dates_type": "Indicated"},
+        {"date": "2015-10", "coverage": "Bolivia", "parameters": ["turbidity_NTU", "temperature_C"], "source": "IBTEN-ALT-UOB", "dates_type": "Indicated"},
+        {"date": "2016-04", "coverage": "Whole lake", "parameters": ["temperature_C"], "source": "PEBLT", "dates_type": "Indicated"},
+        {"date": "2017-06", "coverage": "Whole lake", "parameters": [], "source": "PEBLT", "dates_type": "Assumed"},
+        {"date": "2017-11", "coverage": "Bolivia", "parameters": [], "source": "IBTEN-ALT-UOB", "dates_type": "Assumed"},
+        {"date": "2018-07", "coverage": "Bolivia", "parameters": ["turbidity_NTU", "temperature_C"], "source": "IBTEN-ALT-UOB", "dates_type": "Assumed"},
+        {"date": "2018-11", "coverage": "Whole lake", "parameters": ["turbidity_NTU", "temperature_C"], "source": "PEBLT", "dates_type": "Assumed"},
+        {"date": "2019-08", "coverage": "Whole lake", "parameters": [], "source": "PEBLT", "dates_type": "Assumed"},
+        {"date": "2019-12", "coverage": "Whole lake", "parameters": [], "source": "PEBLT", "dates_type": "Indicated"},
+        {"date": "2020-10", "coverage": "Whole lake", "parameters": [], "source": "PEBLT", "dates_type": "Indicated"}
+      ],
+      "longterm_means_by_zone": {
+        "source": "Table 4 in Maligaya et al. 2024",
+        "Lago_Mayor": {
+          "CGLS_turbidity_NTU": 0.76,
+          "ESA_CCI_turbidity_NTU": 0.49,
+          "chl_a_mg_m3": 3.62
+        },
+        "Lago_Menor": {
+          "CGLS_turbidity_NTU": 1.92,
+          "ESA_CCI_turbidity_NTU": 1.49,
+          "chl_a_mg_m3": 16.36
+        }
+      },
+      "validation_accuracy": {
+        "source": "Table 2 in Maligaya et al. 2024",
+        "CGLS_turbidity_vs_insitu": {"R2": 0.036, "n": 147, "note": "Very low R2 - global product poorly calibrated for high-altitude lakes"},
+        "ESA_CCI_turbidity_vs_insitu": {"R2": 0.061, "n": 135, "note": "Very low R2 - global product poorly calibrated for high-altitude lakes"}
+      },
+      "water_quality_hotspots_appendixC": {
+        "note": "13 WQH locations identified for spatiotemporal variability analysis",
+        "hotspots": [
+          {"id": "WQH-01", "lat": -15.336, "lon": -69.758},
+          {"id": "WQH-02", "lat": -15.389, "lon": -69.547},
+          {"id": "WQH-03", "lat": -15.437, "lon": -69.848},
+          {"id": "WQH-04", "lat": -15.685, "lon": -69.195},
+          {"id": "WQH-05", "lat": -15.850, "lon": -69.947},
+          {"id": "WQH-06", "lat": -15.974, "lon": -68.822},
+          {"id": "WQH-07", "lat": -16.268, "lon": -69.270},
+          {"id": "WQH-08", "lat": -16.274, "lon": -68.622},
+          {"id": "WQH-09", "lat": -16.309, "lon": -68.836},
+          {"id": "WQH-10", "lat": -16.390, "lon": -68.750},
+          {"id": "WQH-11", "lat": -16.422, "lon": -68.992},
+          {"id": "WQH-12", "lat": -16.544, "lon": -69.033},
+          {"id": "WQH-13", "lat": -16.545, "lon": -68.909}
+        ]
+      },
+      "insitu_turbidity_range_from_figures": {
+        "note": "Extracted visually from Figure A2 scatter plots (RS vs in-situ turbidity)",
+        "Lago_Titicaca_whole_lake": {
+          "turbidity_NTU_range": "0 - 7",
+          "turbidity_NTU_typical": "< 3",
+          "majority_of_points": "< 2 NTU"
+        }
+      }
+    }
+  ],
+
+  "trophic_context_summary": {
+    "description": "Trophic state reference values for Lake Titicaca zones, consistent across all sources",
+    "zones": {
+      "Bahia_Puno": {
+        "trophic_state": "Hypertrophic",
+        "chl_a_ug_L_range_wet_season": "202 - 413",
+        "chl_a_ug_L_range_dry_season": "1.3 - 1.4",
+        "note": "Strong seasonal signal; wet season (Nov-Mar) bloom dominates annual mean",
+        "OECD_threshold_hypertrophic": ">75 ug/L Chl-a",
+        "sources": ["OEFA2016 (Nov 2015, wet season)", "IMARPE_Boletin37_2022 (Table 13)"]
+      },
+      "Transitional": {
+        "trophic_state": "Mesotrophic to eutrophic",
+        "sources": ["IMARPE_Boletin37_2022"]
+      },
+      "Lago_Mayor": {
+        "trophic_state": "Oligotrophic",
+        "chl_a_ug_L_mean": 0.95,
+        "turbidity_NTU_mean_CGLS": 0.76,
+        "sources": ["IMARPE_Informe49_2022", "Maligaya2024"]
+      }
+    }
+  },
+
+  "citation_for_manuscript": {
+    "note": "Use these citations when referencing real in-situ data in the manuscript",
+    "latex_refs": [
+      "\\bibitem{OEFA2016} OEFA, ``Informe N° 076-2016-OEFA/DE-SDCA: Evaluacion de la calidad del agua de la Bahia Interior de Puno -- Lago Titicaca,'' Organismo de Evaluacion y Fiscalizacion Ambiental, Lima, Peru, 2016.",
+      "\\bibitem{Siguayro2022a} R.A. Siguayro and E. Franco, ``Evaluacion limnologica del Lago Titicaca -- Sector Peruano (Julio 2019),'' \\textit{Informe Instituto del Mar del Peru}, vol. 49, no. 4, pp. 538--551, 2022.",
+      "\\bibitem{Siguayro2022b} R.A. Siguayro, J. Pasapera, C. Villanueva, P. Coila and S. Gamarra, ``Evaluacion de fuentes contaminantes en el anillo circumlacustre del Lago Titicaca,'' \\textit{Boletin Instituto del Mar del Peru}, vol. 37, no. 2, pp. 361--386, 2022, doi: 10.53554/boletin.v37i2.378.",
+      "\\bibitem{Maligaya2024} V.H.M. Maligaya, A. Baltodano, A. Agramont and A. van Griensven, ``Exploring Trends and Variability of Water Quality over Lake Titicaca Using Global Remote Sensing Products,'' \\textit{Remote Sensing}, vol. 16, p. 4785, 2024, doi: 10.3390/rs16244785."
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+experiment,case,R2,RMSE,MAE,n
+spatial_hierarchy,random_kfold,0.596,1.809,1.383,812
+spatial_hierarchy,groupkfold_station,0.596,1.81,1.399,812
+spatial_hierarchy,leave_out_BAHIA PUNO,0.036,2.112,1.637,88
+spatial_hierarchy,leave_out_LAGO MENOR,0.247,1.898,1.43,133
+spatial_hierarchy,leave_out_LAGO MAYOR,-0.047,2.524,1.966,591
+temporal_holdout,train<=2021_test>=2022,0.507,2.632,2.13,226
+pseudoreplica_collapsed,groupkfold_station,0.606,1.695,1.296,540
+range_restriction,full_range,0.596,1.81,1.399,812
+range_restriction,turbid_secchi_lt_9m,0.284,1.359,1.032,322
+range_restriction,clear_secchi_ge_9m,0.296,1.499,1.168,490
+error_by_zone,BAHIA PUNO,0.181,1.947,1.494,88
+error_by_zone,LAGO MENOR,0.301,1.827,1.371,133
+error_by_zone,LAGO MAYOR,0.477,1.784,1.391,591
