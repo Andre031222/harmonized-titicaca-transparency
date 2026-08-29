@@ -1,0 +1,6 @@
+feature_set,label,accuracy,chance,excess_over_chance
+all_12_features,las 12 features,0.9975,0.6626,0.335
+visible_only,solo visible,0.9791,0.6626,0.3165
+ratios_only,solo ratios (escala-invariantes),0.9951,0.6626,0.3325
+nir_swir_only,solo NIR+SWIR,0.9975,0.6626,0.335
+green_blue_only,solo verde y azul,0.9322,0.6626,0.2697

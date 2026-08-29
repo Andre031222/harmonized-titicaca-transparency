@@ -1,0 +1,7 @@
+band,band_label,intercept,slope,pearson_r,r2,n_paired,verdict
+B2,Blue,0.008375,0.2581,0.262,0.069,270,INUTILIZABLE
+B3,Green,-0.000914,0.6651,0.711,0.505,270,buena
+B4,Red,-0.000509,0.4265,0.524,0.274,270,debil
+B8,NIR,-0.025009,0.6306,0.616,0.379,270,aceptable
+B11,SWIR1,-0.022301,0.7695,0.64,0.409,270,aceptable
+B12,SWIR2,-0.005696,0.6149,0.6,0.36,270,aceptable

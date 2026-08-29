@@ -1,0 +1,174 @@
+{
+  "shap_design": "out-of-fold, GroupKFold(5) by campaign date",
+  "importance": [
+    {
+      "feature": "B3_B2",
+      "label": "Green/Blue",
+      "mean_abs_shap": 1.1500156453916248,
+      "share": 0.3705694233112809,
+      "cumulative_share": 0.3705694233112809,
+      "band_group": "Verde/azul"
+    },
+    {
+      "feature": "B3",
+      "label": "Green",
+      "mean_abs_shap": 0.5547346665902829,
+      "share": 0.17875209464574987,
+      "cumulative_share": 0.5493215179570308,
+      "band_group": "Verde/azul"
+    },
+    {
+      "feature": "B2_B3",
+      "label": "Blue/Green",
+      "mean_abs_shap": 0.48234845296710505,
+      "share": 0.15542709246380687,
+      "cumulative_share": 0.7047486104208376,
+      "band_group": "Verde/azul"
+    },
+    {
+      "feature": "B12",
+      "label": "SWIR2",
+      "mean_abs_shap": 0.20856359546771094,
+      "share": 0.06720542594868578,
+      "cumulative_share": 0.7719540363695234,
+      "band_group": "NIR/SWIR"
+    },
+    {
+      "feature": "B11",
+      "label": "SWIR1",
+      "mean_abs_shap": 0.16179907873314792,
+      "share": 0.0521365005238874,
+      "cumulative_share": 0.8240905368934108,
+      "band_group": "NIR/SWIR"
+    },
+    {
+      "feature": "B2_B4",
+      "label": "Blue/Red",
+      "mean_abs_shap": 0.09496213313320073,
+      "share": 0.030599638407176364,
+      "cumulative_share": 0.8546901753005872,
+      "band_group": "Otras"
+    },
+    {
+      "feature": "NDTI",
+      "label": "NDTI",
+      "mean_abs_shap": 0.08258100793165542,
+      "share": 0.026610069704987967,
+      "cumulative_share": 0.8813002450055751,
+      "band_group": "Otras"
+    },
+    {
+      "feature": "B4_B3",
+      "label": "Red/Green",
+      "mean_abs_shap": 0.08084588373653812,
+      "share": 0.02605096081378753,
+      "cumulative_share": 0.9073512058193627,
+      "band_group": "Otras"
+    },
+    {
+      "feature": "B8",
+      "label": "NIR",
+      "mean_abs_shap": 0.07744797284822741,
+      "share": 0.024956052337202737,
+      "cumulative_share": 0.9323072581565655,
+      "band_group": "NIR/SWIR"
+    },
+    {
+      "feature": "B4",
+      "label": "Red",
+      "mean_abs_shap": 0.07512286933773603,
+      "share": 0.02420683447179847,
+      "cumulative_share": 0.956514092628364,
+      "band_group": "Otras"
+    },
+    {
+      "feature": "NDWI",
+      "label": "NDWI",
+      "mean_abs_shap": 0.07028173808117665,
+      "share": 0.02264687724416744,
+      "cumulative_share": 0.9791609698725314,
+      "band_group": "Otras"
+    },
+    {
+      "feature": "B2",
+      "label": "Blue",
+      "mean_abs_shap": 0.06467131169979276,
+      "share": 0.020839030127468582,
+      "cumulative_share": 1.0,
+      "band_group": "Verde/azul"
+    }
+  ],
+  "share_by_band_group": {
+    "Verde/azul": 0.7256,
+    "NIR/SWIR": 0.1443,
+    "Otras": 0.1301
+  },
+  "retrievability": [
+    {
+      "variable": "secchi",
+      "label": "Transparencia (Secchi)",
+      "unit": "m",
+      "R2": 0.574,
+      "RMSE": 1.858,
+      "MAE": 1.44,
+      "n": 812,
+      "insitu_min": 1.5,
+      "insitu_max": 16.5,
+      "insitu_cv": 0.314,
+      "retrievable": true
+    },
+    {
+      "variable": "chl",
+      "label": "Clorofila-a",
+      "unit": "mg m-3",
+      "R2": 0.012,
+      "RMSE": 0.761,
+      "MAE": 0.585,
+      "n": 1002,
+      "insitu_min": 0.0,
+      "insitu_max": 4.58,
+      "insitu_cv": 0.616,
+      "retrievable": false
+    },
+    {
+      "variable": "tss",
+      "label": "Solidos suspendidos",
+      "unit": "mg L-1",
+      "R2": 0.056,
+      "RMSE": 9.531,
+      "MAE": 7.144,
+      "n": 920,
+      "insitu_min": 0.0,
+      "insitu_max": 47.0,
+      "insitu_cv": 0.988,
+      "retrievable": false
+    },
+    {
+      "variable": "temp_insitu",
+      "label": "Temperatura del agua",
+      "unit": "C",
+      "R2": 0.113,
+      "RMSE": 0.763,
+      "MAE": 0.584,
+      "n": 1002,
+      "insitu_min": 9.9,
+      "insitu_max": 16.4,
+      "insitu_cv": 0.063,
+      "retrievable": false
+    },
+    {
+      "variable": "lst_thermal",
+      "label": "Temperatura (termico ST_B10)",
+      "unit": "C",
+      "R2": 0.02,
+      "RMSE": 1.986,
+      "MAE": NaN,
+      "n": 662,
+      "insitu_min": 9.9,
+      "insitu_max": 16.4,
+      "insitu_cv": NaN,
+      "retrievable": false
+    }
+  ],
+  "caveat": "Green/blue ratios dominate the attribution, which is physically consistent, but blue is the band with the worst cross-sensor agreement (r=0.26). Physics and the harmonization problem point at the same band."
+}

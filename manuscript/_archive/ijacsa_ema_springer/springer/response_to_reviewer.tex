@@ -1,0 +1,130 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\rev}[1]{\par\smallskip\noindent\textit{Reviewer:} #1\par}
+\newcommand{\resp}[1]{\par\noindent\textcolor{blue!60!black}{\textbf{Response:}} #1\par\medskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+
+\begin{document}
+\begin{center}
+{\large\textbf{Response to Reviewer}}\\[0.3em]
+\textit{Environmental Monitoring and Assessment}\\[0.2em]
+Manuscript: ``A Transferable Protocol for Satellite-Based Water Transparency
+Monitoring in High-Altitude Oligotrophic Lakes: Harmonized Sentinel-2/Landsat
+Retrieval with Rigorous Validation and Uncertainty Quantification in Lake Titicaca
+(2013--2024)''
+\end{center}
+
+We thank the Reviewer for a careful, constructive and encouraging assessment. We
+are grateful for the recognition of the validation hierarchy, the conformal
+uncertainty, the use of real in-situ data, and the honest retrievability envelope.
+We have addressed every point; in particular, we have substantially strengthened
+the framing toward \emph{environmental monitoring systems and operational
+assessment}, which was the central request. Below we reproduce each comment and our
+response. All changes are incorporated in the revised manuscript.
+
+\hrulefill
+
+\section*{Major comments}
+
+\textbf{1. Strengthen the ``monitoring system'' and ``operational assessment''
+framing (critical for EMA).}
+\resp{Addressed throughout. (i) We added a dedicated paragraph at the end of the
+Introduction that explicitly positions the work as a \emph{remote-sensing
+monitoring protocol} complementing and optimizing the periodic field campaigns of
+IMARPE, ALT and OEFA, producing synoptic lake-wide transparency maps with quantified
+uncertainty \emph{between} campaigns. (ii) We added a new conceptual diagram
+(Fig.~1) of the full protocol (field campaigns $\to$ match-ups $\to$ validation
+hierarchy $\to$ model + conformal prediction $\to$ map + uncertainty $\to$
+operational use). (iii) We added a new Discussion subsection, ``Operational
+implications for environmental monitoring,'' detailing how regional authorities
+(GORE Puno, ANA, PELT and the binational ALT) can use the maps and uncertainty
+intervals for three concrete functions: targeting field sampling by information
+value, early warning of trophic-state change (focused on Bah\'ia de Puno), and
+transboundary Peru--Bolivia consistency under a single harmonized calibration.}
+
+\textbf{2. Title and Abstract --- make them more impactful and aligned with EMA.}
+\resp{We adopted the Reviewer's suggested title, now leading with ``A Transferable
+Protocol for Satellite-Based Water Transparency Monitoring in High-Altitude
+Oligotrophic Lakes\ldots''. The Abstract was rewritten to lead with the transferable
+\emph{monitoring} protocol, to state that it complements in-situ campaigns, and to
+make the ``operational envelope'' explicit (delimiting that chlorophyll-$a$,
+suspended solids and temperature are not retrievable in this regime), closing on the
+prioritization of field sampling between campaigns and the protocol's
+transferability.}
+
+\textbf{3. Discussion --- expand operational implications and practical
+limitations.}
+\resp{The new ``Operational implications'' subsection adds: the operational window
+(near-weekly combined Sentinel-2/Landsat cadence vs.\ annual field surveys);
+recommended \emph{incremental integration} with existing programmes (each campaign
+both validates the current map and extends the training set); and the practical
+limitations for operational use --- the dry-season sampling bias, signal saturation
+above $\sim$15~m, the positive bias in turbid Bah\'ia de Puno, and an explicit
+recommendation: \textbf{local recalibration with field campaigns is required before
+applying the protocol to another lake or to an unsampled optical sub-basin}.}
+
+\textbf{4. Add a conceptual diagram of the protocol.}
+\resp{Added as Fig.~1 (a new, original schematic). It visualizes the transferable
+protocol end-to-end, reinforcing the central contribution exactly as suggested.}
+
+\textbf{5. Figures and visual quality.}
+\resp{All figures are provided at 600~dpi. The modelled-transparency map (now
+Fig.~8) retains its $Z_{SD}$ colour scale and legend. We additionally signpost the
+validation hierarchy (now Fig.~5 and Table~3) in the text as the methodological
+core of the protocol, so the reader's attention is drawn to it.}
+
+\section*{Minor comments}
+
+\textbf{English language.}
+\resp{We tightened several long sentences (notably the Abstract, the prior-literature
+passage in the Introduction, and the Methods). The manuscript has been re-read for
+clarity and flow.}
+
+\textbf{References.}
+\resp{For the new methodological justification (match-up window) we cite established
+operational $Z_{SD}$ references already in the reference list. We are happy to add
+any specific EMA-scope references on integrated lake monitoring or uncertainty in
+operational products that the Editor may recommend.}
+
+\textbf{Methods --- justify the 30~m buffer and $\pm$10-day window.}
+\resp{Done. We now state that the 30~m buffer matches the coarser Landsat pixel and
+averages residual geolocation error and sensor noise over several pixels while
+remaining in open water, and that the $\pm$10-day window balances scarce cloud-free
+availability at 3810~m against the slow temporal change of transparency in this
+large, deep lake.}
+
+\textbf{Results --- positive bias in Bah\'ia de Puno ($+1.13$~m) as an operational
+limitation.}
+\resp{This is now explicitly framed as an operational limitation in the new
+Discussion subsection: in the most vulnerable (eutrophying) zone the clear-water
+majority pulls predictions upward, so mapped values there must be read together with
+their wider uncertainty interval and confirmed by field sampling.}
+
+\textbf{Conclusions.}
+\resp{Strengthened to close on the transferable protocol and its operational value:
+by delivering maps with calibrated confidence between field campaigns, it turns
+intermittent in-situ sampling into a continuous, decision-ready monitoring indicator,
+directly transferable to other high-altitude oligotrophic lakes when locally
+recalibrated.}
+
+\textbf{Optional --- ``Climate Extremes and Multi-Hazard Events'' call.}
+\resp{We note the suggestion. Transparency can serve as an indicator of drought /
+extreme-event impact on lake clarity; we have kept this as a brief forward-looking
+remark rather than the main focus, to preserve the monitoring-protocol framing,
+and we would be glad to develop it further if the Editor considers it appropriate.}
+
+\hrulefill
+
+We believe these revisions materially strengthen the manuscript's alignment with the
+scope of \textit{Environmental Monitoring and Assessment} while preserving the
+scientific rigour the Reviewer kindly acknowledged. We thank the Reviewer again for
+the constructive guidance.
+
+\end{document}

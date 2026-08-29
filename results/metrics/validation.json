@@ -1,0 +1,225 @@
+{
+  "primary_design": "GroupKFold(5) blocked by campaign date",
+  "primary_metrics": {
+    "R2": 0.574,
+    "RMSE": 1.858,
+    "MAE": 1.44,
+    "bias": -0.016,
+    "n": 812
+  },
+  "null_models": [
+    {
+      "null_model": "zona",
+      "label": "media de la ZONA",
+      "R2": 0.287,
+      "RMSE": 2.404,
+      "MAE": 1.826,
+      "bias": 0.003,
+      "n": 812
+    },
+    {
+      "null_model": "station",
+      "label": "media de la ESTACION",
+      "R2": 0.208,
+      "RMSE": 2.533,
+      "MAE": 1.924,
+      "bias": 0.097,
+      "n": 812
+    },
+    {
+      "null_model": "campaign_date",
+      "label": "media de la CAMPANA",
+      "R2": -0.012,
+      "RMSE": 2.864,
+      "MAE": 2.254,
+      "bias": 0.0,
+      "n": 812
+    }
+  ],
+  "hierarchy": [
+    {
+      "experiment": "blocking",
+      "case": "random_kfold",
+      "label": "K-fold aleatorio (propenso a fuga)",
+      "R2": 0.596,
+      "RMSE": 1.809,
+      "MAE": 1.383,
+      "bias": 0.01,
+      "n": 812,
+      "note": ""
+    },
+    {
+      "experiment": "blocking",
+      "case": "by_station",
+      "label": "Bloqueo por ESTACION",
+      "R2": 0.596,
+      "RMSE": 1.81,
+      "MAE": 1.399,
+      "bias": 0.015,
+      "n": 812,
+      "note": "143 grupos"
+    },
+    {
+      "experiment": "blocking",
+      "case": "by_campaign_date",
+      "label": "Bloqueo por CAMPANA (primario)",
+      "R2": 0.574,
+      "RMSE": 1.858,
+      "MAE": 1.44,
+      "bias": -0.016,
+      "n": 812,
+      "note": "120 grupos"
+    },
+    {
+      "experiment": "blocking",
+      "case": "by_year",
+      "label": "Bloqueo por ANIO",
+      "R2": 0.495,
+      "RMSE": 2.023,
+      "MAE": 1.584,
+      "bias": -0.132,
+      "n": 812,
+      "note": "9 grupos"
+    },
+    {
+      "experiment": "blocking",
+      "case": "one_record_per_event",
+      "label": "Un registro por evento in-situ",
+      "R2": 0.571,
+      "RMSE": 1.769,
+      "MAE": 1.363,
+      "bias": 0.002,
+      "n": 540,
+      "note": "n=540 eventos independientes"
+    },
+    {
+      "experiment": "leave_one_zone_out",
+      "case": "BAHIA PUNO",
+      "label": "Sin Bahia de Puno",
+      "R2": 0.036,
+      "RMSE": 2.112,
+      "MAE": 1.637,
+      "bias": 1.346,
+      "n": 88,
+      "note": ""
+    },
+    {
+      "experiment": "leave_one_zone_out",
+      "case": "LAGO MENOR",
+      "label": "Sin Lago Menor",
+      "R2": 0.247,
+      "RMSE": 1.898,
+      "MAE": 1.43,
+      "bias": 0.015,
+      "n": 133,
+      "note": ""
+    },
+    {
+      "experiment": "leave_one_zone_out",
+      "case": "LAGO MAYOR",
+      "label": "Sin Lago Mayor",
+      "R2": -0.047,
+      "RMSE": 2.524,
+      "MAE": 1.966,
+      "bias": -1.484,
+      "n": 591,
+      "note": ""
+    },
+    {
+      "experiment": "harmonization",
+      "case": "roy_all",
+      "label": "Roy + las 12 features",
+      "R2": 0.574,
+      "RMSE": 1.858,
+      "MAE": 1.44,
+      "bias": -0.016,
+      "n": 812,
+      "note": ""
+    },
+    {
+      "experiment": "harmonization",
+      "case": "visible_only",
+      "label": "Solo visible (sin NIR/SWIR rotos)",
+      "R2": 0.541,
+      "RMSE": 1.928,
+      "MAE": 1.497,
+      "bias": -0.005,
+      "n": 812,
+      "note": ""
+    },
+    {
+      "experiment": "harmonization",
+      "case": "ratios_only",
+      "label": "Solo ratios escala-invariantes",
+      "R2": 0.468,
+      "RMSE": 2.077,
+      "MAE": 1.611,
+      "bias": -0.003,
+      "n": 812,
+      "note": ""
+    },
+    {
+      "experiment": "harmonization",
+      "case": "local_reharm",
+      "label": "Recalibracion local sobre agua",
+      "R2": 0.518,
+      "RMSE": 1.976,
+      "MAE": 1.541,
+      "bias": 0.001,
+      "n": 812,
+      "note": ""
+    },
+    {
+      "experiment": "harmonization",
+      "case": "S2_only",
+      "label": "Solo Sentinel-2 (sin armonizar)",
+      "R2": 0.563,
+      "RMSE": 2.041,
+      "MAE": 1.609,
+      "bias": -0.09,
+      "n": 274,
+      "note": "n=274"
+    },
+    {
+      "experiment": "harmonization",
+      "case": "LS_only",
+      "label": "Solo Landsat 8/9 (sin armonizar)",
+      "R2": 0.549,
+      "RMSE": 1.815,
+      "MAE": 1.383,
+      "bias": 0.013,
+      "n": 538,
+      "note": "n=538"
+    }
+  ],
+  "by_zone": [
+    {
+      "zone": "BAHIA PUNO",
+      "zone_label": "Bahia de Puno",
+      "R2": 0.221,
+      "RMSE": 1.9,
+      "MAE": 1.481,
+      "bias": 1.015,
+      "n": 88
+    },
+    {
+      "zone": "LAGO MENOR",
+      "zone_label": "Lago Menor",
+      "R2": 0.211,
+      "RMSE": 1.942,
+      "MAE": 1.417,
+      "bias": 0.078,
+      "n": 133
+    },
+    {
+      "zone": "LAGO MAYOR",
+      "zone_label": "Lago Mayor",
+      "R2": 0.448,
+      "RMSE": 1.832,
+      "MAE": 1.439,
+      "bias": -0.19,
+      "n": 591
+    }
+  ],
+  "conclusion": "Dependence lives between campaigns, not between stations. Station-blocked folds leave the station-mean null at R2=0.21 and the zone-mean null at R2=0.29; only campaign blocking collapses its own null to ~0."
+}

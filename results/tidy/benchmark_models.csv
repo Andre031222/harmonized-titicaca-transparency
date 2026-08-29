@@ -1,0 +1,5 @@
+model,family,R2,RMSE,MAE,bias,n,max_prediction_m,n_absurd_predictions
+Classical blue/green -- unbounded (as published),artefact,-2.458,5.294,1.912,-0.187,812,143.5,1
+"Classical blue/green ratio (Kloiber 2002, bounded)",classical,0.097,2.705,2.13,-0.459,812,13.3,0
+Multiband linear regression,linear,0.323,2.342,1.797,-0.008,812,18.1,0
+Random Forest (this study),rf,0.574,1.858,1.44,-0.016,812,14.7,0

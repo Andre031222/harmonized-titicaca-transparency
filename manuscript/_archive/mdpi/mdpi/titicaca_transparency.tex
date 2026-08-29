@@ -1,0 +1,488 @@
+%  LaTeX support: latex@mdpi.com
+%=================================================================
+\documentclass[remotesensing,article,submit,pdftex,moreauthors]{Definitions/mdpi}
+
+%=================================================================
+% MDPI internal commands - do not modify
+\firstpage{1}
+\makeatletter
+\setcounter{page}{\@firstpage}
+\makeatother
+\pubvolume{18}
+\issuenum{1}
+\articlenumber{0}
+\pubyear{2026}
+\copyrightyear{2026}
+\datereceived{ }
+\dateaccepted{ }
+\datepublished{ }
+\graphicspath{{../../results/figures/}{../}{./}}
+
+%=================================================================
+% Full title of the paper (Capitalized)
+\Title{Harmonized Sentinel-2/Landsat Retrieval of Water Transparency in Lake
+Titicaca Using Machine Learning: A Transferable Validation and Retrievability
+Protocol for High-Altitude Lakes (2013--2024)}
+
+% Authors, for the paper
+\Author{Milton Vladimir Mamani-Calisaya $^{1}$, Richar Andre Vilca-Solorzano
+$^{1,}$*, Dina Maribel Yana-Yucra $^{1}$ and Fred Torres-Cruz $^{1}$}
+
+% MDPI internal command: Authors, for metadata in PDF
+\AuthorNames{Milton Vladimir Mamani-Calisaya, Richar Andre Vilca-Solorzano, Dina
+Maribel Yana-Yucra and Fred Torres-Cruz}
+
+% Affiliations / Addresses
+\address{%
+$^{1}$ \quad Faculty of Statistical and Computer Engineering, Universidad Nacional
+del Altiplano (UNAP), Puno 21001, Peru}
+
+% Contact information of the corresponding author
+\corres{Correspondence: 75521963@est.unap.edu.pe}
+
+% Abstract (single paragraph, no blank lines)
+\abstract{High-altitude Andean lakes are critical freshwater reserves yet remain
+poorly monitored. We present a multi-mission framework that retrieves water
+transparency (Secchi disk depth, $Z_{SD}$) in Lake Titicaca (3810 m a.s.l.) from
+harmonized Sentinel-2 MSI and Landsat~8/9 OLI surface reflectance and, more
+importantly, a transferable protocol for validating such retrievals and delimiting
+what is physically retrievable in clear oligotrophic water. We assembled 1002 real
+satellite--field match-ups (2013--2024) by pairing cloud-free imagery with in-situ
+measurements from IMARPE limnological campaigns sampled at true station
+coordinates; 812 carry a Secchi reading across 143 stations. A Random Forest
+trained on twelve harmonized spectral features retrieved $Z_{SD}$ with $R^2=0.64$
+(RMSE 1.85~m, Sentinel-2) and $R^2=0.60$ (combined) under station-wise (GroupKFold)
+cross-validation, and $R^2=0.51$ on a 2022--2024 temporal hold-out, outperforming a
+classical blue/green algorithm. We introduce a validation hierarchy: random and
+station-wise validation are identical (no spatial-autocorrelation leakage), but
+leave-one-zone-out extrapolation collapses $R^2$ toward zero. We further provide
+per-pixel uncertainty via split-conformal prediction (89.8\% empirical coverage at a
+90\% nominal level) and a SHAP analysis attributing the retrieval to green/blue
+reflectance ratios. Finally, we delimit what is not
+retrievable---chlorophyll-$a$, suspended solids and temperature---in this regime.
+The protocol is directly transferable to other high-altitude clear-water lakes.}
+
+% Keywords
+\keyword{Secchi depth; water transparency; Sentinel-2; Landsat harmonization; Lake
+Titicaca; Random Forest; spatial cross-validation; conformal prediction; SHAP;
+high-altitude lakes}
+
+\begin{document}
+
+%=================================================================
+\section{Introduction}
+Inland waters are sentinels of environmental change, yet continuous monitoring of
+remote high-altitude lakes is constrained by sparse field infrastructure
+\cite{Williamson2009}. Lake Titicaca, shared by Peru and Bolivia at 3810~m
+a.s.l., is a Ramsar site and the freshwater reserve for millions of Andean people,
+but its water quality is documented only by infrequent field campaigns
+\cite{OEFA2016,Siguayro2022eval}, even as eutrophication advances in its
+near-shore bays \cite{Heredia2022,Lanza2024}.
+
+Satellite remote sensing offers synoptic, repeatable observation
+\cite{Gholizadeh2016,Topp2020}. Water transparency, quantified by the Secchi disk
+depth ($Z_{SD}$) since Tyler \cite{Tyler1968}, is an integrative indicator of water
+clarity strongly linked to the diffuse attenuation of light \cite{Lee2015}, and is
+among the most reliably retrievable optical water-quality variables: it has been
+mapped operationally from Landsat for two decades
+\cite{Kloiber2002,Olmanson2008,Zhang2022}. Sentinel-2 MSI (10--60~m) and
+Landsat~8/9 OLI (30~m) provide complementary revisit; their joint use requires
+cross-sensor harmonization \cite{Roy2016,Claverie2018,Pahlevan2019}, and machine
+learning has become the dominant tool for retrieving water-quality variables from
+such harmonized constellations across many lakes
+\cite{Pahlevan2020,Cao2020,Cao2022,Arias2023,Pahlevan2022,Hafeez2019,Tian2023}.
+This literature, however, is dominated by turbid and productive ``Case-2'' waters,
+where chlorophyll and turbidity carry a strong optical signal
+\cite{Gitelson2009,Mishra2012,Nechad2010,Dogliotti2015}; clear oligotrophic
+high-altitude lakes are comparatively neglected.
+
+For Lake Titicaca specifically, prior remote-sensing work has used MODIS/Landsat
+temperature and chlorophyll \cite{RuizVerdu2016}, basin-scale land-cover drivers
+\cite{Baltodano2022}, automatic Sentinel-2 water products \cite{AyalaIzurieta2023},
+and global remote-sensing water-quality products \cite{Maligaya2024}, but without
+harmonized multi-mission $Z_{SD}$ retrieval, local in-situ validation at the true
+sampling coordinates, or an explicit assessment of which variables are actually
+retrievable in its clear waters. Moreover, accuracy in this field is routinely
+reported under random train/test splits that ignore spatial structure---a practice
+known to inflate apparent skill when samples are spatially autocorrelated
+\cite{Roberts2017,Ploton2020}---and almost never accompanied by per-prediction
+uncertainty.
+
+This study makes four contributions. First, we build, to our knowledge, the first
+multi-mission harmonized $Z_{SD}$ retrieval for a high-altitude Andean lake, using
+only real in-situ measurements sampled at their true coordinates. Second, we
+introduce a transferable validation hierarchy (random vs.\ station-wise vs.\
+temporal vs.\ leave-one-zone-out) that distinguishes genuine generalization from
+spatial-autocorrelation leakage and pinpoints where extrapolation fails. Third, we
+attach calibrated per-pixel uncertainty via split-conformal prediction and
+interpret the model with SHAP. Fourth, we transparently delimit what is not
+retrievable (chlorophyll-$a$, suspended solids, temperature) in this clear-water
+regime, providing an honest operational envelope for Andean lake monitoring.
+
+%=================================================================
+\section{Study Area and Data}
+\subsection{Study Area}
+Lake Titicaca comprises the large, deep, oligotrophic Lago Mayor; the shallower
+Lago Menor (Wi\~naymarca) to the south-east; and the eutrophic Bah\'ia de Puno,
+which receives municipal and agricultural inputs from the city of Puno
+(Figure~\ref{fig:study}). Transparency spans roughly 2~m in nearshore/turbid waters
+to $>$15~m in the open oligotrophic basin.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.62\linewidth]{fig_study_area.png}
+\caption{Study area. In-situ monitoring stations (IMARPE/ALT), coloured by mean
+measured Secchi depth, over the Natural Earth lake boundary. The spatial gradient
+(clear Lago Mayor, more turbid Lago Menor and Bah\'ia de Puno) is evident in the
+field data.\label{fig:study}}
+\end{figure}
+
+\subsection{In-Situ Data}
+We used 881 real field measurements of Secchi transparency (and co-measured
+chlorophyll-$a$, suspended solids, temperature, pH, dissolved oxygen and nutrients)
+from the limnological monitoring campaigns of IMARPE (Instituto del Mar del Per\'u)
+on Lake Titicaca, spanning 2011--2024 across 156 stations distributed over the
+entire lake. Of these, 734 include a valid Secchi reading. The July~2019 campaign
+(71 stations) is published by Siguayro \& Franco \cite{Siguayro2022data}; the
+remaining years derive from the same IMARPE monitoring programme. As a provenance
+check, our 2019 zone-level means reproduce the published values almost exactly
+(e.g.,\ Lago Mayor conductivity 1513.4 vs.\ 1513.5~$\mu$S\,cm$^{-1}$; Lago Menor
+chlorophyll-$a$ 1.52 vs.\ 1.52~mg\,m$^{-3}$). Sampling is concentrated in the
+austral dry season (July--October), a bias we return to in the Discussion. No
+synthetic or spectrally-derived labels were used at any stage.
+
+\subsection{Satellite Data and Harmonization}
+Sentinel-2 MSI (harmonized surface reflectance) and Landsat~8/9 OLI (Collection~2,
+Level-2 \cite{Vermote2016}) were accessed through Google Earth Engine
+\cite{Gorelick2017}. Clouds were masked with the S2 Scene Classification Layer plus
+cloud-probability, and with the Landsat \texttt{QA\_PIXEL} bitmask (dilated cloud,
+cloud and shadow; the cirrus flag was not applied, as it is near-permanently set at
+3810~m). Landsat SR was harmonized to Sentinel-2 equivalent reflectance with the
+per-band linear coefficients of Roy et al.\ \cite{Roy2016}, an approach widely used
+to build the harmonized Landsat/Sentinel-2 virtual constellation
+\cite{Claverie2018,Pahlevan2019}. We retained the six bands common to both sensors
+(B2, B3, B4, B8/NIR, B11, B12).
+
+%=================================================================
+\section{Methods}
+\subsection{Satellite--Field Match-Ups}
+For every in-situ measurement we extracted the cloud-masked median reflectance in a
+30~m buffer at the station coordinate, from imagery within $\pm$10~days
+(Figure~\ref{fig:flow}). This yielded 1002 real match-ups (340 Sentinel-2, 662
+Landsat), of which 812 have a Secchi value across 143 stations. Because Sentinel-2
+and harmonized Landsat can both observe the same field event, 272 match-ups are
+cross-sensor pairs of a single in-situ measurement; collapsing them to one record
+per event (540 independent events) leaves accuracy essentially unchanged
+(Section~\ref{sec:rigor}), confirming the result is not an artefact of
+pseudo-replication.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{fig_data_flow.png}
+\caption{Data flow from in-situ campaigns to satellite--field match-ups. Of 881
+IMARPE measurements, 734 carry a valid Secchi reading; pairing with harmonized
+cloud-free imagery yields 1002 match-ups, 812 of which have a Secchi
+value.\label{fig:flow}}
+\end{figure}
+
+\subsection{Features and Model}
+Twelve sensor-agnostic features were computed from the six harmonized bands: the
+bands themselves plus NDWI, NDTI and the ratios blue/green, green/blue, red/green
+and blue/red. We trained a Random Forest regressor \cite{Breiman2001} (500--600
+trees, maximum depth~12, minimum 3~samples per leaf). Random Forest was preferred
+over gradient boosting because it achieved the highest cross-validated accuracy
+(Table~\ref{tab:perf}) while requiring minimal tuning and remaining robust at this
+sample size; XGBoost \cite{Chen2016} is reported for comparison. Reflectance was
+scaled with a robust (median/IQR) scaler fitted only on the training partition of
+each fold, which prevents information leakage from the test data. All models were
+implemented with scikit-learn \cite{Pedregosa2011}.
+
+\subsection{Validation Hierarchy}
+Rather than a single split, we evaluate a hierarchy of increasingly demanding
+designs \cite{Roberts2017}: (i) random K-fold; (ii) station-wise GroupKFold (5
+folds), in which a station never appears in both training and test; (iii) a
+temporal hold-out (train 2013--2021, test 2022--2024); and (iv) leave-one-zone-out,
+in which an entire trophic zone (Bah\'ia de Puno, Lago Menor, or Lago Mayor) is
+withheld, testing extrapolation to an optical regime absent from training.
+Comparing (i)--(iv) separates genuine generalization from spatial-autocorrelation
+leakage \cite{Ploton2020,Meyer2019}. Performance is reported as out-of-fold $R^2$,
+RMSE and MAE; we benchmark against a classical log-linear blue/green band-ratio
+algorithm and a multiband linear model.
+
+\subsection{Uncertainty and Interpretation}
+We attach a per-prediction uncertainty interval using split-conformal prediction
+\cite{Angelopoulos2023}: within each fold, a calibration subset of the training
+data yields the $(1-\alpha)$ quantile of absolute residuals, which defines a
+symmetric prediction interval with finite-sample coverage guarantees
+\cite{Romano2019}. We report the empirical out-of-fold coverage against the nominal
+level as a calibration check. The model is interpreted with SHAP
+\cite{Lundberg2017,Lundberg2020}.
+
+%=================================================================
+\section{Results}
+\subsection{Retrieval Performance}
+The Random Forest retrieved $Z_{SD}$ with $R^2=0.64$ (Sentinel-2 only, $n=274$) and
+$R^2=0.60$ (combined, $n=812$) under station-wise validation
+(Table~\ref{tab:perf}, Figure~\ref{fig:scatter}), with RMSE $\approx1.8$~m. On the
+temporal hold-out (unseen years 2022--2024, including the 2023--2024 El~Ni\~no), the
+model retained $R^2=0.51$ (RMSE 2.63~m), demonstrating generalization to new years.
+A classical blue/green algorithm and a multiband linear model are clearly inferior
+under the same station-wise design, and the Random Forest is essentially unbiased
+(Table~\ref{tab:benchmark}).
+
+\begin{table}[H]
+\caption{Secchi-depth retrieval performance (station-wise GroupKFold, out-of-fold).
+RMSE and MAE in metres.\label{tab:perf}}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\begin{tabularx}{\textwidth}{Xcccc}
+\toprule
+\textbf{Model / Configuration} & \textbf{$R^2$} & \textbf{RMSE} & \textbf{MAE} & \textbf{$n$} \\
+\midrule
+Random Forest --- Sentinel-2 only        & \textbf{0.64} & 1.85 & 1.46 & 274 \\
+Random Forest --- combined (S2+Landsat)  & 0.60 & 1.81 & 1.40 & 812 \\
+Random Forest --- Landsat only           & 0.58 & 1.75 & 1.33 & 538 \\
+XGBoost --- combined                     & 0.57 & 1.87 & 1.44 & 812 \\
+Classical blue/green ratio (log-linear, S2) & 0.39 & 2.42 & 1.91 & 274 \\
+\midrule
+\multicolumn{5}{l}{\emph{Temporal hold-out (train 2013--2021, test 2022--2024):}}\\
+Random Forest --- combined               & 0.51 & 2.63 & 2.13 & 226 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\caption{Head-to-head benchmark on the combined dataset (station-wise GroupKFold,
+$n=812$). The classical band ratio fails to span the full dynamic range; the Random
+Forest is accurate and nearly unbiased.\label{tab:benchmark}}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\begin{tabularx}{\textwidth}{Xcccc}
+\toprule
+\textbf{Algorithm} & \textbf{$R^2$} & \textbf{RMSE (m)} & \textbf{MAE (m)} & \textbf{Bias (m)} \\
+\midrule
+Classical blue/green (log-linear) & $-2.74$ & 5.51 & 1.94 & $-0.15$ \\
+Multiband linear                  & 0.26 & 2.45 & 1.79 & $-0.32$ \\
+Random Forest (this study)        & \textbf{0.60} & \textbf{1.81} & \textbf{1.40} & $+0.02$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.62\linewidth]{fig_scatter_secchi.png}
+\caption{Out-of-fold predicted vs.\ in-situ Secchi depth (Random Forest, combined,
+station-wise validation; $R^2=0.60$, RMSE 1.81~m, $n=812$). Dashed line is 1:1;
+colours denote trophic zone.\label{fig:scatter}}
+\end{figure}
+
+\subsection{A Validation Hierarchy: Where Transferability Breaks}
+\label{sec:rigor}
+Reported $Z_{SD}$ accuracy is commonly inflated by validation design and by the
+sampled range. We quantify both with our own data (Figure~\ref{fig:hier},
+Table~\ref{tab:rigor}). \emph{(i) No spatial-autocorrelation leakage:} random
+K-fold and station-wise GroupKFold give an identical $R^2=0.60$, so---unlike many
+spatial models \cite{Ploton2020}---our retrieval does not memorize location; it
+generalizes to unseen stations within the sampled regimes. \emph{(ii) Extrapolation
+collapses:} withholding an entire trophic zone drops $R^2$ to 0.25 (Lago Menor),
+0.04 (Bah\'ia de Puno) and $-0.05$ (Lago Mayor). The model interpolates within
+optical regimes it has seen but cannot extrapolate to a water type absent from
+training. \emph{(iii) Range restriction:} restricting to homogeneous clear or
+turbid subsets halves $R^2$ (to $\sim0.29$) even though RMSE improves ($\le1.5$~m).
+Thus a high $R^2$ can reflect a wide sampled range rather than a better model, and
+RMSE is the fair cross-study metric. This hierarchy is the transferable core of our
+protocol: station-wise validation is necessary but not sufficient; only zone-out
+and temporal tests reveal the true operational envelope.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\linewidth]{fig_validation_hierarchy.png}
+\caption{Validation hierarchy. Random and station-wise validation are identical (no
+leakage; blue); the model generalizes across years (temporal hold-out; amber); but
+extrapolation to an unseen trophic zone collapses $R^2$ toward zero (red). High
+accuracy under random splits alone can therefore mask a complete loss of
+transferability to new optical regimes.\label{fig:hier}}
+\end{figure}
+
+\begin{table}[H]
+\caption{Validation-design and range-restriction experiments (Random Forest).
+Random $\equiv$ station-wise (no leakage); zone-out extrapolation collapses; range
+restriction lowers $R^2$ while RMSE improves.\label{tab:rigor}}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\begin{tabularx}{\textwidth}{Xccc}
+\toprule
+\textbf{Setting} & \textbf{$R^2$} & \textbf{RMSE (m)} & \textbf{$n$} \\
+\midrule
+Random K-fold (leakage-prone)         & 0.60 & 1.81 & 812 \\
+Station-wise GroupKFold (honest)      & 0.60 & 1.81 & 812 \\
+One record per event (no pseudo-repl.)& 0.61 & 1.70 & 540 \\
+Leave-out Lago Menor                  & 0.25 & 1.90 & 133 \\
+Leave-out Bah\'ia de Puno             & 0.04 & 2.11 & 88  \\
+Leave-out Lago Mayor                  & $-0.05$ & 2.52 & 591 \\
+Turbid subset ($Z_{SD}<9$~m)          & 0.28 & 1.36 & 322 \\
+Clear subset ($Z_{SD}\ge9$~m)         & 0.30 & 1.50 & 490 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Per-Pixel Uncertainty}
+Split-conformal prediction yields well-calibrated intervals: at a 90\% nominal level
+the empirical out-of-fold coverage is 89.8\%, and coverage tracks the nominal level
+across the 50--95\% range (Figure~\ref{fig:unc}). The mean 90\% interval width is
+$\approx6$~m, widening in the clear basin where the optical signal saturates---an
+honest, spatially explicit statement of confidence that a single $R^2$ cannot
+convey, and a prerequisite for operational use.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{fig_uncertainty.png}
+\caption{Conformal prediction intervals. (\textbf{Left}) out-of-fold predictions
+with 90\% intervals. (\textbf{Right}) empirical vs.\ nominal coverage---the
+conformal intervals are well calibrated (close to the 1:1 line).\label{fig:unc}}
+\end{figure}
+
+\subsection{Interpretability}
+SHAP attributes the retrieval predominantly to green/blue reflectance ratios
+(Figure~\ref{fig:shap}), with secondary contributions from SWIR. This is physically
+consistent: water clarity modulates the blue-to-green reflectance balance through
+scattering and absorption. The retrieval is therefore grounded in optical physics
+rather than location memorization, corroborating the leakage analysis of
+Section~\ref{sec:rigor}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.62\linewidth]{fig_shap_importance.png}
+\caption{SHAP feature importance for transparency retrieval. Green/blue ratios
+dominate, consistent with water-clarity optics.\label{fig:shap}}
+\end{figure}
+
+\subsection{What Is Not Retrievable}
+With real labels, chlorophyll-$a$ (Pearson $r\approx0.03$ with NDCI), suspended
+solids ($r=0.15$) and thermal-band surface temperature ($r=0.14$) are not
+retrievable in Titicaca's oligotrophic regime: their in-situ ranges lie below the
+optical/thermal detection limit. We report this explicitly to delimit the
+operational envelope and to caution against applying chlorophyll algorithms
+\cite{Gitelson2009,Mishra2012} or thermal retrievals \cite{RuizVerdu2016} without
+local validation in clear high-altitude waters.
+
+\subsection{Spatial and Temporal Patterns}
+Applying the model to a 2022 dry-season Sentinel-2 composite yields a lake-wide
+transparency map (Figure~\ref{fig:map}) that reproduces the in-situ gradient: clear
+Lago Mayor ($Z_{SD}\sim12$--15~m) versus more turbid Lago Menor and Bah\'ia de Puno
+($\sim3$--6~m). Out-of-fold error is largest in turbid Bah\'ia de Puno (RMSE
+1.95~m, positive bias $+1.13$~m, the model pulling toward the clear-water majority)
+and smallest in Lago Mayor (RMSE 1.78~m). Mann--Kendall tests on annual median
+in-situ transparency (2011--2024) show no statistically significant trend in any
+zone (Bah\'ia de Puno: Sen slope $+0.16$~m\,yr$^{-1}$, $p=0.24$; Lago Mayor:
+$+0.25$~m\,yr$^{-1}$, $p=0.15$); continued monitoring is required
+(Figure~\ref{fig:trends}).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.62\linewidth]{fig_transparency_map.png}
+\caption{Modelled water transparency from a 2022 dry-season Sentinel-2 composite.
+The spatial pattern matches the in-situ measurements
+(Figure~\ref{fig:study}).\label{fig:map}}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\linewidth]{fig_trends.png}
+\caption{Annual median in-situ transparency by zone (2011--2024) with
+Mann--Kendall/Sen statistics \cite{Tanner2022}. No trend is statistically
+significant.\label{fig:trends}}
+\end{figure}
+
+%=================================================================
+\section{Discussion}
+Our station-wise $R^2=0.64$ (RMSE 1.8~m) sits within the published range for
+$Z_{SD}$ retrieval ($R^2\approx0.6$--0.9 \cite{Zhang2022,Lee2015}), but is obtained
+under (a) a difficult, predominantly clear oligotrophic regime and (b) a stricter,
+station-wise validation than the random splits common in the literature. As our
+hierarchy shows, higher $R^2$ values often reflect wider sampled ranges
+(turbid+clear) rather than better models, and random splits can entirely hide the
+loss of skill under spatial extrapolation \cite{Roberts2017,Ploton2020}; RMSE,
+reported alongside zone-out and temporal tests, is the fair comparator. The
+cross-sensor signature (Figure~\ref{fig:spectral}) confirms consistent visible
+bands but a known positive bias in the harmonized Landsat NIR over dark water---an
+artefact of vegetation-derived Roy coefficients \cite{Roy2016,Pahlevan2019}---which
+has limited impact because the retrieval is driven by visible ratios.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.62\linewidth]{fig_spectral_signature.png}
+\caption{Mean water-leaving reflectance by sensor. Visible bands agree; the
+harmonized Landsat NIR is positively biased over dark water.\label{fig:spectral}}
+\end{figure}
+
+Quantitatively, our RMSE of 1.8~m spans roughly 12\% of the observed $Z_{SD}$ range
+(2--16~m), comparable to---and arguably more robust than---machine-learning $Z_{SD}$
+products reported for global lakes \cite{Zhang2022} and harmonized multi-sensor
+water-quality retrievals more broadly \cite{Cao2022,Arias2023,Pahlevan2022}, given
+that ours is obtained under a harder clear-water regime and a stricter station-wise
+validation, and is accompanied by calibrated per-pixel uncertainty that those
+products generally lack.
+
+The framework is designed to complement, not replace, the costly periodic field
+campaigns of IMARPE, ALT and OEFA. Once trained, it produces lake-wide transparency
+maps---with uncertainty---from freely available imagery at near-weekly cadence,
+allowing regional authorities in the Puno region to track water clarity between
+campaigns and to prioritize field effort where clarity declines or where the
+prediction interval is widest. Because $Z_{SD}$ integrates light attenuation by all
+optically active constituents, it is a practical first-order proxy for trophic
+state in these clear waters.
+
+The honest delimitation of non-retrievable variables is itself a result: it warns
+that chlorophyll/turbidity products transferred from turbid lakes can be physically
+meaningless in clear high-altitude waters. The field data are dry-season biased, so
+wet-season blooms in Bah\'ia de Puno are under-represented and future work should
+add rainy-season campaigns; transparency above $\sim$15~m saturates the signal; the
+harmonized Landsat NIR bias should be locally recalibrated against simultaneous
+Sentinel-2 overpasses; and, as the zone-out experiment shows, applying the model to
+a lake or sub-basin whose optical regime is unrepresented in training requires
+fresh local calibration.
+
+%=================================================================
+\section{Conclusions}
+A harmonized Sentinel-2/Landsat Random Forest retrieves water transparency in
+high-altitude Lake Titicaca with honest accuracy ($R^2=0.64$, RMSE 1.8~m) under
+strict station-wise and temporal validation, driven by physically meaningful
+green/blue optics, and accompanied by calibrated per-pixel uncertainty. Beyond the
+retrieval itself, our central contribution is a transferable protocol: a validation
+hierarchy (random $\to$ station $\to$ temporal $\to$ zone-out) that distinguishes
+generalization from leakage and reveals where extrapolation fails; conformal
+prediction intervals; and an explicit retrievability assessment that delimits which
+variables can and cannot be recovered in clear oligotrophic water. We provide a
+reproducible, openly archived pipeline and a lake-wide transparency map. The
+protocol is directly transferable to other high-altitude oligotrophic lakes
+worldwide, where clear-water optics challenge water-quality algorithms calibrated
+on turbid systems.
+
+%=================================================================
+\vspace{6pt}
+
+\authorcontributions{Conceptualization, R.A.V.-S.\ and F.T.-C.; methodology,
+R.A.V.-S.; software, R.A.V.-S.; validation, M.V.M.-C., D.M.Y.-Y.\ and R.A.V.-S.;
+formal analysis, R.A.V.-S.; investigation, R.A.V.-S.; data curation, M.V.M.-C.\ and
+D.M.Y.-Y.; writing---original draft preparation, R.A.V.-S.; writing---review and
+editing, M.V.M.-C., D.M.Y.-Y.\ and F.T.-C.; visualization, R.A.V.-S.; supervision,
+F.T.-C.; project administration, F.T.-C. All authors have read and agreed to the
+published version of the manuscript.}
+
+\funding{This research received no external funding.}
+
+\dataavailability{All code and the real match-up datasets are openly available at
+\url{https://github.com/Andre031222/harmonized-titicaca-transparency}. Raw imagery
+is freely available via Google Earth Engine; in-situ data derive from published
+IMARPE/ALT and OEFA monitoring records.}
+
+\acknowledgments{We thank IMARPE, ALT and OEFA for the publicly available
+monitoring records that made this study possible.}
+
+\conflictsofinterest{The authors declare no conflicts of interest.}
+
+%=================================================================
+\reftitle{References}
+
+\externalbibliography{yes}
+\bibliography{references}
+
+\end{document}

@@ -1,0 +1,15 @@
+experiment,case,label,R2,RMSE,MAE,bias,n,note
+blocking,random_kfold,K-fold aleatorio (propenso a fuga),0.596,1.809,1.383,0.01,812,
+blocking,by_station,Bloqueo por ESTACION,0.596,1.81,1.399,0.015,812,143 grupos
+blocking,by_campaign_date,Bloqueo por CAMPANA (primario),0.574,1.858,1.44,-0.016,812,120 grupos
+blocking,by_year,Bloqueo por ANIO,0.495,2.023,1.584,-0.132,812,9 grupos
+blocking,one_record_per_event,Un registro por evento in-situ,0.571,1.769,1.363,0.002,540,n=540 eventos independientes
+leave_one_zone_out,BAHIA PUNO,Sin Bahia de Puno,0.036,2.112,1.637,1.346,88,
+leave_one_zone_out,LAGO MENOR,Sin Lago Menor,0.247,1.898,1.43,0.015,133,
+leave_one_zone_out,LAGO MAYOR,Sin Lago Mayor,-0.047,2.524,1.966,-1.484,591,
+harmonization,roy_all,Roy + las 12 features,0.574,1.858,1.44,-0.016,812,
+harmonization,visible_only,Solo visible (sin NIR/SWIR rotos),0.541,1.928,1.497,-0.005,812,
+harmonization,ratios_only,Solo ratios escala-invariantes,0.468,2.077,1.611,-0.003,812,
+harmonization,local_reharm,Recalibracion local sobre agua,0.518,1.976,1.541,0.001,812,
+harmonization,S2_only,Solo Sentinel-2 (sin armonizar),0.563,2.041,1.609,-0.09,274,n=274
+harmonization,LS_only,Solo Landsat 8/9 (sin armonizar),0.549,1.815,1.383,0.013,538,n=538

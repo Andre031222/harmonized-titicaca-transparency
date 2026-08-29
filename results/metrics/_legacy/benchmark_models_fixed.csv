@@ -1,0 +1,5 @@
+model,R2,RMSE,MAE,bias,n,max_prediction_m
+"Classical blue/green -- AS PUBLISHED (buggy, unbounded expm1)",-2.458,5.294,1.912,-0.187,812,143.5
+"Classical blue/green (Kloiber-style, bounded)",0.097,2.705,2.13,-0.459,812,13.3
+Multiband linear,0.323,2.342,1.797,-0.008,812,
+Random Forest (this study),0.574,1.858,1.44,-0.016,812,

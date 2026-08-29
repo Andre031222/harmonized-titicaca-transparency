@@ -1,0 +1,13 @@
+month,n,secchi_median,n_campaigns,month_label,season
+1,0,0.0,0,Ene,Lluvias (Dic-Mar)
+2,0,0.0,0,Feb,Lluvias (Dic-Mar)
+3,0,0.0,0,Mar,Lluvias (Dic-Mar)
+4,0,0.0,0,Abr,Transicion
+5,0,0.0,0,May,Transicion
+6,0,0.0,0,Jun,Transicion
+7,395,9.0,70,Jul,Seca (Jul-Oct)
+8,359,9.8,41,Ago,Seca (Jul-Oct)
+9,14,3.0,2,Sep,Seca (Jul-Oct)
+10,44,6.65,7,Oct,Seca (Jul-Oct)
+11,0,0.0,0,Nov,Transicion
+12,0,0.0,0,Dic,Lluvias (Dic-Mar)

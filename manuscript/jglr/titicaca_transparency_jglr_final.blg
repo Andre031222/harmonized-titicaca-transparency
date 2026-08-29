@@ -1,0 +1,49 @@
+This is BibTeX, Version 0.99e (TeX Live 2026/Arch Linux)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: titicaca_transparency_jglr_final.aux
+The style file: elsarticle-harv.bst
+Database file #1: references.bib
+Reallocated singl_function (elt_size=8) to 100 items from 50.
+Warning--empty pages in LopezPaz2017
+You've used 49 entries,
+            2990 wiz_defined-function locations,
+            1003 strings with 18902 characters,
+and the built_in function-call counts, 41316 in all, are:
+= -- 2967
+> -- 2250
+< -- 17
++ -- 874
+- -- 807
+* -- 4998
+:= -- 6019
+add.period$ -- 186
+call.type$ -- 49
+change.case$ -- 513
+chr.to.int$ -- 49
+cite$ -- 50
+duplicate$ -- 2781
+empty$ -- 2604
+format.name$ -- 954
+if$ -- 7495
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 610
+newline$ -- 299
+num.names$ -- 196
+pop$ -- 942
+preamble$ -- 1
+purify$ -- 464
+quote$ -- 0
+skip$ -- 779
+stack$ -- 0
+substring$ -- 1591
+swap$ -- 2361
+text.length$ -- 5
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 441
+warning$ -- 1
+while$ -- 229
+width$ -- 0
+write$ -- 782
+(There was 1 warning)

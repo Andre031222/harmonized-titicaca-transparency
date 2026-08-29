@@ -1,0 +1,57 @@
+{
+  "n_rows_raw": 1127,
+  "n_matched": 1002,
+  "n_matched_s2": 340,
+  "n_matched_ls": 662,
+  "n_analysis": 812,
+  "n_stations": 143,
+  "n_campaign_dates": 120,
+  "n_independent_events": 540,
+  "n_cross_sensor_pseudoreplicates": 272,
+  "years_present": [
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2022,
+    2024
+  ],
+  "years_missing_in_span": [
+    2020,
+    2021,
+    2023
+  ],
+  "months_present": [
+    7,
+    8,
+    9,
+    10
+  ],
+  "season": "austral dry season only (July-October)",
+  "secchi_min": 1.5,
+  "secchi_max": 16.5,
+  "secchi_mean": 9.072,
+  "secchi_sd": 2.849,
+  "secchi_n_unique_values": 73,
+  "secchi_frac_half_metre_multiples": 0.871,
+  "by_zone": {
+    "BAHIA PUNO": {
+      "n": 88,
+      "secchi_mean": 7.14,
+      "secchi_sd": 2.16
+    },
+    "LAGO MENOR": {
+      "n": 133,
+      "secchi_mean": 6.2,
+      "secchi_sd": 2.19
+    },
+    "LAGO MAYOR": {
+      "n": 591,
+      "secchi_mean": 10.01,
+      "secchi_sd": 2.47
+    }
+  }
+}

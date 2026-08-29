@@ -1,0 +1,54 @@
+{
+  "design": "GroupKFold(5) blocked by campaign date",
+  "models": [
+    {
+      "model": "Classical blue/green -- unbounded (as published)",
+      "family": "artefact",
+      "R2": -2.458,
+      "RMSE": 5.294,
+      "MAE": 1.912,
+      "bias": -0.187,
+      "n": 812,
+      "max_prediction_m": 143.5,
+      "n_absurd_predictions": 1
+    },
+    {
+      "model": "Classical blue/green ratio (Kloiber 2002, bounded)",
+      "family": "classical",
+      "R2": 0.097,
+      "RMSE": 2.705,
+      "MAE": 2.13,
+      "bias": -0.459,
+      "n": 812,
+      "max_prediction_m": 13.3,
+      "n_absurd_predictions": 0
+    },
+    {
+      "model": "Multiband linear regression",
+      "family": "linear",
+      "R2": 0.323,
+      "RMSE": 2.342,
+      "MAE": 1.797,
+      "bias": -0.008,
+      "n": 812,
+      "max_prediction_m": 18.1,
+      "n_absurd_predictions": 0
+    },
+    {
+      "model": "Random Forest (this study)",
+      "family": "rf",
+      "R2": 0.574,
+      "RMSE": 1.858,
+      "MAE": 1.44,
+      "bias": -0.016,
+      "n": 812,
+      "max_prediction_m": 14.7,
+      "n_absurd_predictions": 0
+    }
+  ],
+  "rf_vs_correct_classical": {
+    "rf_R2": 0.574,
+    "classical_R2": 0.097
+  },
+  "note": "The R2=-2.74 previously reported for the classical algorithm was an artefact of unbounded expm1 back-transformation, driven by a single prediction of ~143 m against an observed maximum of 16.5 m."
+}

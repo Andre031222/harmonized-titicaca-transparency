@@ -1,0 +1,252 @@
+{
+  "years_present": [
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2022,
+    2024
+  ],
+  "years_missing": [
+    2020,
+    2021,
+    2023
+  ],
+  "months_present": [
+    7,
+    8,
+    9,
+    10
+  ],
+  "n_wet_season_matchups": 0,
+  "season_coverage": "austral dry season only (July-October)",
+  "temporal_holdouts": [
+    {
+      "cut_year": 2017,
+      "train_years": [
+        2013,
+        2014,
+        2015,
+        2016,
+        2017
+      ],
+      "test_years": [
+        2018,
+        2019,
+        2022,
+        2024
+      ],
+      "R2": 0.425,
+      "RMSE": 2.546,
+      "MAE": 1.998,
+      "bias": -0.938,
+      "n": 379,
+      "n_train": 433,
+      "test_stations": 73,
+      "test_stations_also_in_train": 61,
+      "station_overlap_pct": 83.6
+    },
+    {
+      "cut_year": 2018,
+      "train_years": [
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018
+      ],
+      "test_years": [
+        2019,
+        2022,
+        2024
+      ],
+      "R2": 0.411,
+      "RMSE": 2.638,
+      "MAE": 2.086,
+      "bias": -1.125,
+      "n": 331,
+      "n_train": 481,
+      "test_stations": 73,
+      "test_stations_also_in_train": 61,
+      "station_overlap_pct": 83.6
+    },
+    {
+      "cut_year": 2019,
+      "train_years": [
+        2013,
+        2014,
+        2015,
+        2016,
+        2017,
+        2018,
+        2019
+      ],
+      "test_years": [
+        2022,
+        2024
+      ],
+      "R2": 0.507,
+      "RMSE": 2.632,
+      "MAE": 2.13,
+      "bias": -1.311,
+      "n": 226,
+      "n_train": 586,
+      "test_stations": 69,
+      "test_stations_also_in_train": 57,
+      "station_overlap_pct": 82.6
+    }
+  ],
+  "trends_full_insitu_record": [
+    {
+      "zone": "BAHIA PUNO",
+      "zone_label": "Bahia de Puno",
+      "n_years": 11,
+      "start_year": 2011,
+      "z": 1.171,
+      "p_value": 0.2415,
+      "sen_slope_m_per_yr": 0.1562,
+      "significant_at_005": false
+    },
+    {
+      "zone": "LAGO MENOR",
+      "zone_label": "Lago Menor",
+      "n_years": 9,
+      "start_year": 2012,
+      "z": 0.0,
+      "p_value": 1.0,
+      "sen_slope_m_per_yr": 0.0,
+      "significant_at_005": false
+    },
+    {
+      "zone": "LAGO MAYOR",
+      "zone_label": "Lago Mayor",
+      "n_years": 10,
+      "start_year": 2012,
+      "z": 1.483,
+      "p_value": 0.138,
+      "sen_slope_m_per_yr": 0.25,
+      "significant_at_005": false
+    }
+  ],
+  "trend_start_year_sensitivity": [
+    {
+      "zone": "BAHIA PUNO",
+      "zone_label": "Bahia de Puno",
+      "start_year": 2011,
+      "n_years": 11,
+      "sen_slope_m_per_yr": 0.1562,
+      "p_value": 0.2415,
+      "significant_at_005": false
+    },
+    {
+      "zone": "BAHIA PUNO",
+      "zone_label": "Bahia de Puno",
+      "start_year": 2012,
+      "n_years": 10,
+      "sen_slope_m_per_yr": 0.25,
+      "p_value": 0.0248,
+      "significant_at_005": true
+    },
+    {
+      "zone": "BAHIA PUNO",
+      "zone_label": "Bahia de Puno",
+      "start_year": 2013,
+      "n_years": 9,
+      "sen_slope_m_per_yr": 0.25,
+      "p_value": 0.0165,
+      "significant_at_005": true
+    },
+    {
+      "zone": "BAHIA PUNO",
+      "zone_label": "Bahia de Puno",
+      "start_year": 2014,
+      "n_years": 8,
+      "sen_slope_m_per_yr": 0.25,
+      "p_value": 0.0354,
+      "significant_at_005": true
+    },
+    {
+      "zone": "LAGO MENOR",
+      "zone_label": "Lago Menor",
+      "start_year": 2011,
+      "n_years": 9,
+      "sen_slope_m_per_yr": 0.0,
+      "p_value": 1.0,
+      "significant_at_005": false
+    },
+    {
+      "zone": "LAGO MENOR",
+      "zone_label": "Lago Menor",
+      "start_year": 2012,
+      "n_years": 9,
+      "sen_slope_m_per_yr": 0.0,
+      "p_value": 1.0,
+      "significant_at_005": false
+    },
+    {
+      "zone": "LAGO MENOR",
+      "zone_label": "Lago Menor",
+      "start_year": 2013,
+      "n_years": 8,
+      "sen_slope_m_per_yr": 0.0625,
+      "p_value": 1.0,
+      "significant_at_005": false
+    },
+    {
+      "zone": "LAGO MENOR",
+      "zone_label": "Lago Menor",
+      "start_year": 2014,
+      "n_years": 7,
+      "sen_slope_m_per_yr": -0.1,
+      "p_value": 1.0,
+      "significant_at_005": false
+    },
+    {
+      "zone": "LAGO MAYOR",
+      "zone_label": "Lago Mayor",
+      "start_year": 2011,
+      "n_years": 10,
+      "sen_slope_m_per_yr": 0.25,
+      "p_value": 0.138,
+      "significant_at_005": false
+    },
+    {
+      "zone": "LAGO MAYOR",
+      "zone_label": "Lago Mayor",
+      "start_year": 2012,
+      "n_years": 10,
+      "sen_slope_m_per_yr": 0.25,
+      "p_value": 0.138,
+      "significant_at_005": false
+    },
+    {
+      "zone": "LAGO MAYOR",
+      "zone_label": "Lago Mayor",
+      "start_year": 2013,
+      "n_years": 9,
+      "sen_slope_m_per_yr": 0.4219,
+      "p_value": 0.0118,
+      "significant_at_005": true
+    },
+    {
+      "zone": "LAGO MAYOR",
+      "zone_label": "Lago Mayor",
+      "start_year": 2014,
+      "n_years": 8,
+      "sen_slope_m_per_yr": 0.2188,
+      "p_value": 0.0463,
+      "significant_at_005": true
+    }
+  ],
+  "corrections": [
+    "There are no campaigns in 2020, 2021 or 2023.",
+    "'train <=2021' is identical to 'train <=2019'.",
+    "The claim that the test set includes the 2023-2024 El Nino is false: no 2023 data exist.",
+    "All match-ups fall between July and October; no wet-season claim is supportable.",
+    "Trends must be computed on the full in-situ record (2011-2024), not on the match-up subset. Starting the series in 2013 -- the lowest-median year on record -- turns two zones significantly positive (Lago Mayor Sen +0.42 m/yr, p=0.012). On the full record no zone shows a significant trend. The verdict is set by the start year, not by the lake."
+  ]
+}

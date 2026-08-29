@@ -41,3 +41,6 @@ memory/
 *.DS_Store
 Thumbs.db
 logs/
+
+# Archived manuscript PDFs (superseded; .tex kept, PDFs rebuildable)
+manuscript/_archive/**/*.pdf

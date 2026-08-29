@@ -1,0 +1,172 @@
+{
+  "roy_bands": [
+    {
+      "band": "B2",
+      "band_label": "Blue",
+      "roy_intercept": 0.0183,
+      "roy_slope": 0.885,
+      "native_oli_median": 0.007192,
+      "intercept_over_signal": 2.5,
+      "harmonized_ls_median": 0.024665,
+      "s2_median": 0.014195,
+      "ls_over_s2": 1.74
+    },
+    {
+      "band": "B3",
+      "band_label": "Green",
+      "roy_intercept": 0.0123,
+      "roy_slope": 0.9317,
+      "native_oli_median": 0.008903,
+      "intercept_over_signal": 1.4,
+      "harmonized_ls_median": 0.020595,
+      "s2_median": 0.01279,
+      "ls_over_s2": 1.61
+    },
+    {
+      "band": "B4",
+      "band_label": "Red",
+      "roy_intercept": 0.0123,
+      "roy_slope": 0.9372,
+      "native_oli_median": 0.001163,
+      "intercept_over_signal": 10.6,
+      "harmonized_ls_median": 0.01339,
+      "s2_median": 0.00504,
+      "ls_over_s2": 2.66
+    },
+    {
+      "band": "B8",
+      "band_label": "NIR",
+      "roy_intercept": 0.0448,
+      "roy_slope": 0.8339,
+      "native_oli_median": -0.000642,
+      "intercept_over_signal": 69.8,
+      "harmonized_ls_median": 0.044265,
+      "s2_median": 0.00287,
+      "ls_over_s2": 15.42
+    },
+    {
+      "band": "B11",
+      "band_label": "SWIR1",
+      "roy_intercept": 0.0306,
+      "roy_slope": 0.8639,
+      "native_oli_median": 0.00132,
+      "intercept_over_signal": 23.2,
+      "harmonized_ls_median": 0.03174,
+      "s2_median": 0.00238,
+      "ls_over_s2": 13.34
+    },
+    {
+      "band": "B12",
+      "band_label": "SWIR2",
+      "roy_intercept": 0.0116,
+      "roy_slope": 0.9165,
+      "native_oli_median": 0.001408,
+      "intercept_over_signal": 8.2,
+      "harmonized_ls_median": 0.01289,
+      "s2_median": 0.00226,
+      "ls_over_s2": 5.7
+    }
+  ],
+  "sensor_separability": [
+    {
+      "feature_set": "all_12_features",
+      "label": "las 12 features",
+      "accuracy": 0.9975,
+      "chance": 0.6626,
+      "excess_over_chance": 0.335
+    },
+    {
+      "feature_set": "visible_only",
+      "label": "solo visible",
+      "accuracy": 0.9791,
+      "chance": 0.6626,
+      "excess_over_chance": 0.3165
+    },
+    {
+      "feature_set": "ratios_only",
+      "label": "solo ratios (escala-invariantes)",
+      "accuracy": 0.9951,
+      "chance": 0.6626,
+      "excess_over_chance": 0.3325
+    },
+    {
+      "feature_set": "nir_swir_only",
+      "label": "solo NIR+SWIR",
+      "accuracy": 0.9975,
+      "chance": 0.6626,
+      "excess_over_chance": 0.335
+    },
+    {
+      "feature_set": "green_blue_only",
+      "label": "solo verde y azul",
+      "accuracy": 0.9322,
+      "chance": 0.6626,
+      "excess_over_chance": 0.2697
+    }
+  ],
+  "chance_level": 0.6626,
+  "local_coefficients": [
+    {
+      "band": "B2",
+      "band_label": "Blue",
+      "intercept": 0.008375,
+      "slope": 0.2581,
+      "pearson_r": 0.262,
+      "r2": 0.069,
+      "n_paired": 270,
+      "verdict": "INUTILIZABLE"
+    },
+    {
+      "band": "B3",
+      "band_label": "Green",
+      "intercept": -0.000914,
+      "slope": 0.6651,
+      "pearson_r": 0.711,
+      "r2": 0.505,
+      "n_paired": 270,
+      "verdict": "buena"
+    },
+    {
+      "band": "B4",
+      "band_label": "Red",
+      "intercept": -0.000509,
+      "slope": 0.4265,
+      "pearson_r": 0.524,
+      "r2": 0.274,
+      "n_paired": 270,
+      "verdict": "debil"
+    },
+    {
+      "band": "B8",
+      "band_label": "NIR",
+      "intercept": -0.025009,
+      "slope": 0.6306,
+      "pearson_r": 0.616,
+      "r2": 0.379,
+      "n_paired": 270,
+      "verdict": "aceptable"
+    },
+    {
+      "band": "B11",
+      "band_label": "SWIR1",
+      "intercept": -0.022301,
+      "slope": 0.7695,
+      "pearson_r": 0.64,
+      "r2": 0.409,
+      "n_paired": 270,
+      "verdict": "aceptable"
+    },
+    {
+      "band": "B12",
+      "band_label": "SWIR2",
+      "intercept": -0.005696,
+      "slope": 0.6149,
+      "pearson_r": 0.6,
+      "r2": 0.36,
+      "n_paired": 270,
+      "verdict": "aceptable"
+    }
+  ],
+  "n_paired_events": 270,
+  "conclusion": "Land-derived Roy (2016) coefficients are invalid over dark oligotrophic water: additive intercepts exceed the native over-water signal by 1.3x (green) to 71.8x (NIR), and sensors remain separable at 99.9% after the transform. Local water recalibration restores green (r=0.73) but not blue (r=0.26)."
+}

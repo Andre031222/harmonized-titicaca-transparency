@@ -1,0 +1,63 @@
+{
+  "design": "GroupKFold(5) blocked by campaign date; split-conformal",
+  "levels": [
+    {
+      "nominal": 0.5,
+      "empirical_coverage": 0.5086,
+      "mean_width_m": 2.496,
+      "mean_quantile_m": 1.248,
+      "calibration_error": 0.0086
+    },
+    {
+      "nominal": 0.8,
+      "empirical_coverage": 0.7906,
+      "mean_width_m": 4.613,
+      "mean_quantile_m": 2.306,
+      "calibration_error": -0.0094
+    },
+    {
+      "nominal": 0.9,
+      "empirical_coverage": 0.8941,
+      "mean_width_m": 6.117,
+      "mean_quantile_m": 3.058,
+      "calibration_error": -0.0059
+    },
+    {
+      "nominal": 0.95,
+      "empirical_coverage": 0.9433,
+      "mean_width_m": 7.366,
+      "mean_quantile_m": 3.684,
+      "calibration_error": -0.0067
+    }
+  ],
+  "max_calibration_error": 0.0094,
+  "model_with_cal_split": {
+    "R2": 0.576,
+    "RMSE": 1.853,
+    "MAE": 1.442,
+    "bias": 0.043,
+    "n": 812
+  },
+  "mean_width_90_m": 6.117,
+  "by_zone": [
+    {
+      "zone_label": "Bahia de Puno",
+      "n": 88,
+      "mean_width": 6.0509,
+      "coverage": 0.8864
+    },
+    {
+      "zone_label": "Lago Mayor",
+      "n": 591,
+      "mean_width": 6.0796,
+      "coverage": 0.9019
+    },
+    {
+      "zone_label": "Lago Menor",
+      "n": 133,
+      "mean_width": 6.3254,
+      "coverage": 0.8647
+    }
+  ],
+  "conclusion": "Conformal intervals remain calibrated under campaign-blocked validation across the 50-95% range; this component of the original analysis survived the audit unchanged."
+}

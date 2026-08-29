@@ -1,0 +1,4 @@
+null_model,label,R2,RMSE,MAE,bias,n
+zona,media de la ZONA,0.287,2.404,1.826,0.003,812
+station,media de la ESTACION,0.208,2.533,1.924,0.097,812
+campaign_date,media de la CAMPANA,-0.012,2.864,2.254,0.0,812

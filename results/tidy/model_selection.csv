@@ -1,0 +1,14 @@
+label,family,features,tuned,log_target,R2,RMSE,MAE,bias,n
+Ensemble (RF+ET+XGB+LGBM optimizados),ensemble,all12,True,False,0.583,1.839,1.431,-0.006,812
+LGBM optimizado (anidado),lgbm,all12,True,False,0.581,1.842,1.445,-0.007,812
+XGB optimizado (anidado),xgb,all12,True,False,0.577,1.851,1.441,0.015,812
+RF optimizado (anidado),rf,all12,True,False,0.576,1.853,1.437,-0.02,812
+RF por defecto,rf,all12,False,False,0.574,1.858,1.44,-0.016,812
+ET por defecto,et,all12,False,False,0.573,1.861,1.446,0.001,812
+ET optimizado (anidado),et,all12,True,False,0.564,1.879,1.462,-0.013,812
+XGB optimizado + log(Zsd),xgb,all12,True,True,0.561,1.887,1.469,-0.199,812
+RF optimizado + log(Zsd),rf,all12,True,True,0.558,1.893,1.465,-0.244,812
+XGB por defecto,xgb,all12,False,False,0.551,1.907,1.487,0.036,812
+LGBM optimizado -- visible_only,lgbm,visible_only,True,False,0.544,1.923,1.499,0.015,812
+LGBM por defecto,lgbm,all12,False,False,0.531,1.95,1.518,0.014,812
+LGBM optimizado -- ratios_only,lgbm,ratios_only,True,False,0.488,2.037,1.59,-0.011,812

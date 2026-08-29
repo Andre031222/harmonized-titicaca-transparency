@@ -1,0 +1,25 @@
+harmonization,band,band_label,sensor,mean,median,q25,q75,n
+Roy (land-derived),B2,Blue,Sentinel-2,0.01502,0.014195,0.012065,0.017925,274
+Roy (land-derived),B2,Blue,Landsat 8/9,0.025621,0.024665,0.023285,0.02668,538
+Roy (land-derived),B3,Green,Sentinel-2,0.014763,0.01279,0.010222,0.016297,274
+Roy (land-derived),B3,Green,Landsat 8/9,0.023749,0.020595,0.018815,0.024805,538
+Roy (land-derived),B4,Red,Sentinel-2,0.005912,0.00504,0.00361,0.007282,274
+Roy (land-derived),B4,Red,Landsat 8/9,0.01569,0.01339,0.01265,0.01486,538
+Roy (land-derived),B8,NIR,Sentinel-2,0.003746,0.00287,0.001692,0.00443,274
+Roy (land-derived),B8,NIR,Landsat 8/9,0.046712,0.044265,0.04388,0.04487,538
+Roy (land-derived),B11,SWIR1,Sentinel-2,0.003621,0.00238,0.001652,0.003525,274
+Roy (land-derived),B11,SWIR1,Landsat 8/9,0.035018,0.03174,0.03127,0.033,538
+Roy (land-derived),B12,SWIR2,Sentinel-2,0.003262,0.00226,0.00161,0.0032,274
+Roy (land-derived),B12,SWIR2,Landsat 8/9,0.016072,0.01289,0.01235,0.014208,538
+Local water recalibration,B2,Blue,Sentinel-2,0.01502,0.014195,0.012065,0.017925,274
+Local water recalibration,B2,Blue,Landsat 8/9,0.014987,0.01474,0.014384,0.01526,538
+Local water recalibration,B3,Green,Sentinel-2,0.014763,0.01279,0.010222,0.016297,274
+Local water recalibration,B3,Green,Landsat 8/9,0.014881,0.012783,0.011599,0.015583,538
+Local water recalibration,B4,Red,Sentinel-2,0.005912,0.00504,0.00361,0.007282,274
+Local water recalibration,B4,Red,Landsat 8/9,0.006183,0.005202,0.004886,0.005829,538
+Local water recalibration,B8,NIR,Sentinel-2,0.003746,0.00287,0.001692,0.00443,274
+Local water recalibration,B8,NIR,Landsat 8/9,0.004447,0.002904,0.002661,0.003286,538
+Local water recalibration,B11,SWIR1,Sentinel-2,0.003621,0.00238,0.001652,0.003525,274
+Local water recalibration,B11,SWIR1,Landsat 8/9,0.004645,0.002123,0.001761,0.003092,538
+Local water recalibration,B12,SWIR2,Sentinel-2,0.003262,0.00226,0.00161,0.0032,274
+Local water recalibration,B12,SWIR2,Landsat 8/9,0.004187,0.00223,0.001898,0.00304,538
