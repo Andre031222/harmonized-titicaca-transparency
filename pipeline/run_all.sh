@@ -58,6 +58,9 @@ step "p08  SHAP fuera de fold y retrievabilidad"
 step "p09  exportacion de numeros al manuscrito"
 "$PY" p09_export_manuscript_numbers.py
 
+step "p10  verificacion: el manuscrito coincide con los datos"
+"$PY" p10_verify_manuscript.py
+
 step "figuras (R / ggplot2)"
 cd "$ROOT/figures/R"
 for f in fig0*.R; do
@@ -81,3 +84,6 @@ echo "  metricas : results/metrics/"
 echo "  tablas   : results/tidy/"
 echo "  figuras  : results/figures_r/"
 echo "  articulo : manuscript/jglr/titicaca_transparency_jglr.pdf"
+echo
+echo "  Las cifras del texto salen de numbers.tex (p09) y las de las tablas"
+echo "  quedan verificadas contra results/tidy/ por p10."
