@@ -12,8 +12,8 @@ surface reflectance, validated against twelve years of IMARPE limnological
 monitoring.
 
 > **Companion code for the manuscript:**
-> *Sentinel-2 and Landsat 8/9 retrieval of water transparency in Lake Titicaca:
-> harmonization limits, validation design and calibrated uncertainty.*
+> *Harmonization and validation limits of satellite Secchi retrieval in
+> Lake Titicaca.*
 > Being prepared for submission to the *Journal of Great Lakes Research*
 > (Elsevier / IAGLR). **Not yet under review.**
 
