@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.3)  9 SEP 2026 00:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.3)  9 SEP 2026 00:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -316,30 +316,30 @@ File: figures/fig02_study_area.png Graphic file (type png)
 <use figures/fig02_study_area.png>
 Package pdftex.def Info: figures/fig02_study_area.png  used on input line 104.
 (pdftex.def)             Requested size: 319.80286pt x 422.7483pt.
- [5] [6 <./figures/fig02_study_area.png>] [7] [8] [9] [10]
-<figures/fig01_harmonization_failure.png, id=57, 540.5796pt x 668.4975pt>
+ [5] [6 <./figures/fig02_study_area.png>] [7] [8] [9] [10] [11]
+<figures/fig01_harmonization_failure.png, id=60, 540.5796pt x 668.4975pt>
 File: figures/fig01_harmonization_failure.png Graphic file (type png)
 <use figures/fig01_harmonization_failure.png>
 Package pdftex.def Info: figures/fig01_harmonization_failure.png  used on input
- line 298.
+ line 302.
 (pdftex.def)             Requested size: 390.0pt x 482.29707pt.
 
 
-LaTeX Warning: Float too large for page by 54.29646pt on input line 307.
+LaTeX Warning: Float too large for page by 54.29646pt on input line 311.
 
-[11] [12 <./figures/fig01_harmonization_failure.png>] [13] [14]
+[12] [13 <./figures/fig01_harmonization_failure.png>] [14]
 <figures/fig04_retrieval_and_benchmark.png, id=75, 540.5796pt x 526.3665pt>
 File: figures/fig04_retrieval_and_benchmark.png Graphic file (type png)
 <use figures/fig04_retrieval_and_benchmark.png>
 Package pdftex.def Info: figures/fig04_retrieval_and_benchmark.png  used on inp
-ut line 382.
+ut line 386.
 (pdftex.def)             Requested size: 390.0pt x 379.75464pt.
  [15] [16 <./figures/fig04_retrieval_and_benchmark.png>] [17] [18]
 <figures/fig08_shap_and_retrievability.png, id=89, 540.5796pt x 477.9456pt>
 File: figures/fig08_shap_and_retrievability.png Graphic file (type png)
 <use figures/fig08_shap_and_retrievability.png>
 Package pdftex.def Info: figures/fig08_shap_and_retrievability.png  used on inp
-ut line 502.
+ut line 506.
 (pdftex.def)             Requested size: 390.0pt x 344.82068pt.
  [19] [20 <./figures/fig08_shap_and_retrievability.png>] [21] [22] [23] [24] [2
 5]
@@ -347,25 +347,25 @@ ut line 502.
 File: figures/fig05_data_inventory.png Graphic file (type png)
 <use figures/fig05_data_inventory.png>
 Package pdftex.def Info: figures/fig05_data_inventory.png  used on input line 6
-90.
+94.
 (pdftex.def)             Requested size: 390.0pt x 359.07234pt.
 <figures/fig03_validation_design.png, id=113, 540.5796pt x 477.9456pt>
 File: figures/fig03_validation_design.png Graphic file (type png)
 <use figures/fig03_validation_design.png>
 Package pdftex.def Info: figures/fig03_validation_design.png  used on input lin
-e 743.
+e 747.
 (pdftex.def)             Requested size: 331.50238pt x 293.09976pt.
 <figures/fig07_conformal_uncertainty.png, id=114, 540.5796pt x 469.2732pt>
 File: figures/fig07_conformal_uncertainty.png Graphic file (type png)
 <use figures/fig07_conformal_uncertainty.png>
 Package pdftex.def Info: figures/fig07_conformal_uncertainty.png  used on input
- line 815.
+ line 819.
 (pdftex.def)             Requested size: 390.0pt x 338.56386pt.
 <figures/fig06_trends_and_start_year.png, id=115, 540.5796pt x 426.6339pt>
 File: figures/fig06_trends_and_start_year.png Graphic file (type png)
 <use figures/fig06_trends_and_start_year.png>
 Package pdftex.def Info: figures/fig06_trends_and_start_year.png  used on input
- line 828.
+ line 832.
 (pdftex.def)             Requested size: 390.0pt x 307.80112pt.
  [26] [27 <./figures/fig05_data_inventory.png>] [28] [29 <./figures/fig03_valid
 ation_design.png>] [30 <./figures/fig07_conformal_uncertainty.png>] [31 <./figu
@@ -373,7 +373,7 @@ res/fig06_trends_and_start_year.png>]
 <figures/qr_repo.png, id=137, 823.075pt x 823.075pt>
 File: figures/qr_repo.png Graphic file (type png)
 <use figures/qr_repo.png>
-Package pdftex.def Info: figures/qr_repo.png  used on input line 872.
+Package pdftex.def Info: figures/qr_repo.png  used on input line 876.
 (pdftex.def)             Requested size: 66.29945pt x 66.29947pt.
  [32] [33] (./titicaca_transparency_jglr.bbl
 Underfull \hbox (badness 3049) in paragraph at lines 36--47
@@ -391,7 +391,7 @@ L3 programming layer <2026-01-19>
 Here is how much of TeX's memory you used:
  5249 strings out of 469453
  78254 string characters out of 5469038
- 488467 words of memory out of 5000000
+ 489467 words of memory out of 5000000
  33833 multiletter control sequences out of 15000+600000
  646627 words of font info for 89 fonts, out of 8000000 for 9000
  40 hyphenation exceptions out of 8191
@@ -417,7 +417,7 @@ pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1200.pfb></usr/share
 /texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/share/texmf-dist/fon
 ts/type1/public/cm-super/sftt1095.pfb></usr/share/texmf-dist/fonts/type1/public
 /cm-super/sftt1200.pfb>
-Output written on titicaca_transparency_jglr.pdf (42 pages, 3237003 bytes).
+Output written on titicaca_transparency_jglr.pdf (42 pages, 3237367 bytes).
 PDF statistics:
  280 PDF objects out of 1000 (max. 8388607)
  174 compressed objects within 2 object streams

@@ -1,33 +1,29 @@
 # ============================================================
-# Harmonized Sentinel-2/Landsat Retrieval of Water Transparency
-# in Lake Titicaca — reproducibility requirements
+# Water transparency retrieval in Lake Titicaca
+# Python dependencies for pipeline/ (p00-p09)
+#
+#   python3.11 -m venv .venv
+#   .venv/bin/pip install -r requirements.txt
+#   bash pipeline/run_all.sh
+#
+# Versions are those the reported results were produced with.
+# Figures are built in R, not Python: see the R package list in
+# the README.
 # ============================================================
 
-# ---- Google Earth Engine (imagery access) -----------------
-earthengine-api>=0.1.390
-
-# ---- Geospatial -------------------------------------------
-rasterio>=1.3.10
-geopandas>=0.14.0
-pyproj>=3.6.0
-shapely>=2.0.0
-
 # ---- Data processing --------------------------------------
-numpy>=1.26.0
-pandas>=2.2.0
-scipy>=1.13.0
+numpy==2.5.3
+pandas==3.0.5
+scipy==1.18.1
 
-# ---- Machine learning -------------------------------------
-scikit-learn>=1.4.0
-xgboost>=2.0.3          # reported only for comparison
-shap>=0.45.0            # TreeExplainer interpretability
+# ---- Models -----------------------------------------------
+scikit-learn==1.9.0     # Random Forest, ExtraTrees, GroupKFold, linear
+xgboost==3.4.1          # p06, model-family comparison only
+lightgbm==4.7.0         # p06, model-family comparison only
+optuna==5.0.0           # p06, hyperparameter search
 
-# ---- Statistics -------------------------------------------
-pymannkendall>=1.4.3    # Mann-Kendall trend tests
-
-# ---- Visualization ----------------------------------------
-matplotlib>=3.8.0
+# ---- Interpretability -------------------------------------
+shap==0.52.0            # p08, out-of-fold TreeExplainer
 
 # ---- Utilities --------------------------------------------
-joblib>=1.4.0           # model persistence
-requests>=2.31.0        # GEE raster download
+joblib==1.6.0           # model persistence
