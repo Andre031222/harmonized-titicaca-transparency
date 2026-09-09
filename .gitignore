@@ -44,3 +44,7 @@ logs/
 
 # Archived manuscript PDFs (superseded; .tex kept, PDFs rebuildable)
 manuscript/_archive/**/*.pdf
+
+# subproductos de LaTeX de la cover letter
+manuscript/jglr/cover_letter.aux
+manuscript/jglr/cover_letter.log
