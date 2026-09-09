@@ -128,8 +128,11 @@ def main():
     print("  NO util para resolver diferencias submetricas.")
 
     cov_df.to_csv(TIDY / "conformal_coverage.csv", index=False)
-    iv.to_csv(TIDY / "conformal_intervals.csv", index=False)
-    by_bin.to_csv(TIDY / "interval_width_by_secchi.csv", index=False)
+    # ver la nota sobre float_format en p04
+    iv.to_csv(TIDY / "conformal_intervals.csv", index=False,
+              float_format="%.6f")
+    by_bin.to_csv(TIDY / "interval_width_by_secchi.csv", index=False,
+                  float_format="%.6f")
     json.dump({"design": "GroupKFold(5) blocked by campaign date; split-conformal",
                "levels": rows, "max_calibration_error": round(max_err, 4),
                "model_with_cal_split": m,

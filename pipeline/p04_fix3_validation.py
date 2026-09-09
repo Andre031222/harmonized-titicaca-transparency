@@ -192,7 +192,11 @@ def main():
     out["zone_label"] = out.zona.map(ZONE_LABELS)
     out["predicted"] = oof_primary
     out["residual"] = oof_primary - y_true
-    out.to_csv(TIDY / "oof_predictions.csv", index=False)
+    # Redondeado al escribir: sin esto el CSV guarda los 17 digitos del float y
+    # dos ejecuciones identicas difieren en el ultimo bit, lo que ensucia el
+    # diff y hace imposible comprobar de un vistazo que el analisis reproduce.
+    out.to_csv(TIDY / "oof_predictions.csv", index=False,
+               float_format="%.6f")
 
     primary = metrics(y_true, oof_primary)
     json.dump({"primary_design": "GroupKFold(5) blocked by campaign date",
