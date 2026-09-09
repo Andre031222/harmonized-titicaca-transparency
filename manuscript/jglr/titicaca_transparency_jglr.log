@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.3)  9 SEP 2026 00:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.3)  9 SEP 2026 00:26
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -417,7 +417,7 @@ pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1200.pfb></usr/share
 /texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/share/texmf-dist/fon
 ts/type1/public/cm-super/sftt1095.pfb></usr/share/texmf-dist/fonts/type1/public
 /cm-super/sftt1200.pfb>
-Output written on titicaca_transparency_jglr.pdf (42 pages, 3237367 bytes).
+Output written on titicaca_transparency_jglr.pdf (42 pages, 3237347 bytes).
 PDF statistics:
  280 PDF objects out of 1000 (max. 8388607)
  174 compressed objects within 2 object streams
