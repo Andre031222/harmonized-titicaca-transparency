@@ -36,6 +36,104 @@
       "n": 812
     }
   ],
+  "null_models_grid": [
+    {
+      "blocked_by": "station",
+      "null_model": "zona",
+      "label": "media de la ZONA",
+      "R2": 0.276,
+      "RMSE": 2.422,
+      "MAE": 1.844,
+      "bias": -0.009,
+      "n": 812
+    },
+    {
+      "blocked_by": "station",
+      "null_model": "station",
+      "label": "media de la ESTACION",
+      "R2": -0.008,
+      "RMSE": 2.858,
+      "MAE": 2.246,
+      "bias": 0.0,
+      "n": 812
+    },
+    {
+      "blocked_by": "station",
+      "null_model": "campaign_date",
+      "label": "media de la CAMPANA",
+      "R2": 0.305,
+      "RMSE": 2.374,
+      "MAE": 1.731,
+      "bias": -0.023,
+      "n": 812
+    },
+    {
+      "blocked_by": "campaign_date",
+      "null_model": "zona",
+      "label": "media de la ZONA",
+      "R2": 0.287,
+      "RMSE": 2.404,
+      "MAE": 1.826,
+      "bias": 0.003,
+      "n": 812
+    },
+    {
+      "blocked_by": "campaign_date",
+      "null_model": "station",
+      "label": "media de la ESTACION",
+      "R2": 0.208,
+      "RMSE": 2.533,
+      "MAE": 1.924,
+      "bias": 0.097,
+      "n": 812
+    },
+    {
+      "blocked_by": "campaign_date",
+      "null_model": "campaign_date",
+      "label": "media de la CAMPANA",
+      "R2": -0.012,
+      "RMSE": 2.864,
+      "MAE": 2.254,
+      "bias": 0.0,
+      "n": 812
+    },
+    {
+      "blocked_by": "year",
+      "null_model": "zona",
+      "label": "media de la ZONA",
+      "R2": 0.234,
+      "RMSE": 2.491,
+      "MAE": 1.895,
+      "bias": -0.027,
+      "n": 812
+    },
+    {
+      "blocked_by": "year",
+      "null_model": "station",
+      "label": "media de la ESTACION",
+      "R2": 0.222,
+      "RMSE": 2.511,
+      "MAE": 1.913,
+      "bias": 0.073,
+      "n": 812
+    },
+    {
+      "blocked_by": "year",
+      "null_model": "campaign_date",
+      "label": "media de la CAMPANA",
+      "R2": -0.032,
+      "RMSE": 2.892,
+      "MAE": 2.28,
+      "bias": -0.029,
+      "n": 812
+    }
+  ],
+  "campaign_stats": {
+    "field_campaigns_n": 9,
+    "campaign_span_min_days": 7,
+    "campaign_span_max_days": 27,
+    "campaign_dates_median": 13.0
+  },
   "hierarchy": [
     {
       "experiment": "blocking",

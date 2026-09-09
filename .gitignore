@@ -57,3 +57,14 @@ manuscript/_archive/
 
 # Skills de asistencia a la escritura: herramienta de trabajo, no del estudio.
 .agents/
+
+# subproductos de pdflatex/bibtex del manuscrito (el .bbl se conserva: Elsevier lo pide)
+manuscript/jglr/*.aux
+manuscript/jglr/*.log
+manuscript/jglr/*.blg
+manuscript/jglr/*.spl
+manuscript/jglr/*.out
+# documentacion y plantillas de elsarticle: solo hacen falta el .cls y el .bst
+manuscript/jglr/template/
+# tooling
+skills-lock.json

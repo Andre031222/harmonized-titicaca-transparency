@@ -1,0 +1,10 @@
+blocked_by,null_model,label,R2,RMSE,MAE,bias,n
+station,zona,media de la ZONA,0.276,2.422,1.844,-0.009,812
+station,station,media de la ESTACION,-0.008,2.858,2.246,0.0,812
+station,campaign_date,media de la CAMPANA,0.305,2.374,1.731,-0.023,812
+campaign_date,zona,media de la ZONA,0.287,2.404,1.826,0.003,812
+campaign_date,station,media de la ESTACION,0.208,2.533,1.924,0.097,812
+campaign_date,campaign_date,media de la CAMPANA,-0.012,2.864,2.254,0.0,812
+year,zona,media de la ZONA,0.234,2.491,1.895,-0.027,812
+year,station,media de la ESTACION,0.222,2.511,1.913,0.073,812
+year,campaign_date,media de la CAMPANA,-0.032,2.892,2.28,-0.029,812

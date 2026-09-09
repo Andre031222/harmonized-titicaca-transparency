@@ -146,6 +146,18 @@ def main():
     nm = load_tidy("null_models.csv")
     for _, r in nm.iterrows():
         N[f"null_{r.null_model}_r2"] = float(r.R2)
+    # rejilla: nulo X bajo folds bloqueados por Y -> \numNullgrid<Y><X>RTwo
+    ng = load_tidy("null_models_grid.csv")
+    for _, r in ng.iterrows():
+        N[f"nullgrid_{r.blocked_by}_{r.null_model}_r2"] = float(r.R2)
+    vj = load_json("validation.json")
+    for k, v in vj.get("campaign_stats", {}).items():
+        N[k] = v
+    # cuanto R2 separa el bloqueo por fecha (primario) del bloqueo por anio
+    # (= campana entera): acota la dependencia intra-campana residual
+    vh0 = load_tidy("validation_hierarchy.csv").set_index("case")
+    N["date_vs_year_gap_r2"] = float(vh0.loc["by_campaign_date", "R2"]
+                                     - vh0.loc["by_year", "R2"])
 
     vh = load_tidy("validation_hierarchy.csv")
     for case, key in [("random_kfold", "random"), ("by_station", "station"),

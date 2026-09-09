@@ -65,26 +65,38 @@ tell the sensors apart after harmonization, the harmonization has not worked.
 ### 2. The campaign, not the station, is the blocking unit
 
 Blocking cross-validation by monitoring station is the usual remedy for spatial
-autocorrelation. In a campaign-based programme it retains almost nothing.
-Under campaign-blocked folds, null models that predict **only a group mean**
-still score:
+autocorrelation. In a campaign-based programme it leaves the dominant
+dependence untouched. Three null models — each predicting **only the
+training-set mean of one grouping** — evaluated under each blocking design:
 
-| Null model | R² |
-|---|:--:|
-| Zone mean | 0.287 |
-| Station mean | 0.208 |
-| Campaign mean | **−0.012** |
+| Null model ↓ / folds blocked by → | Station | Campaign date | Year (= whole campaign) |
+|---|:--:|:--:|:--:|
+| Zone mean | 0.276 | 0.287 | 0.234 |
+| Station mean | −0.008 | 0.208 | 0.222 |
+| Campaign-date mean | **0.305** | −0.012 | −0.032 |
 
-Only the campaign null collapses to zero — the defining property of a valid
-blocking unit. Consistently, station blocking changes the result not at all:
+Each unit collapses its own null by construction (the diagonal). What matters
+is what survives off it: under **station-blocked** folds a null that knows only
+the campaign date still explains **R² = 0.305** — the temporal structure passes
+through station blocking untouched. The zone mean explains 0.23–0.29 under
+*every* design: that is the trophic gradient, a property of the lake a model
+should learn, not leakage. Consistently, station blocking changes the result
+not at all:
 
 | Validation design | R² | RMSE (m) | n |
 |---|:--:|:--:|:--:|
 | Random K-fold | 0.596 | 1.81 | 812 |
 | Station-blocked | 0.596 | 1.81 | 812 |
-| **Campaign-blocked (primary)** | **0.574** | **1.86** | 812 |
-| Year-blocked | 0.495 | 2.02 | 812 |
+| **Campaign-date-blocked (primary)** | **0.574** | **1.86** | 812 |
+| Year-blocked (= whole campaign) | 0.495 | 2.02 | 812 |
 | One record per in-situ event | 0.571 | 1.77 | 540 |
+
+The 9 field campaigns span 7–27 days each (median 13 sampling dates), so
+date-blocking can still put two days of one campaign on opposite sides of the
+split. Year-blocking isolates whole campaigns (one per year) and gives 0.495;
+the 0.079 gap bounds the residual within-campaign dependence. Date-blocking
+stays primary because nine year-groups leave too few folds for stable
+cross-validation and conformal calibration; both figures are reported.
 
 ### 3. Retrieval, benchmarks and where it stops working
 

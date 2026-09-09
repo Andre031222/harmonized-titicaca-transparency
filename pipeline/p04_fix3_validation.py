@@ -106,6 +106,46 @@ def main():
     print("  => Los nulos de ZONA y ESTACION NO colapsan: esa estructura sigue")
     print("     presente, y bloquear por estacion no la habria retenido.")
 
+    # --- (1b) los tres nulos bajo CADA unidad de bloqueo --------------------
+    # La version (1) evalua los nulos solo bajo folds por campana. Eso deja el
+    # argumento cojo: que el nulo de campana colapse bajo bloqueo por campana
+    # es por construccion. La prueba que importa es la simetrica -- cuanto
+    # explica la media de la fecha de campana cuando los folds se bloquean
+    # por ESTACION. Si sigue alto, el bloqueo por estacion no toca la
+    # estructura temporal, que es exactamente lo que afirma el articulo.
+    banner("(1b) LOS TRES NULOS BAJO CADA UNIDAD DE BLOQUEO", "-")
+    grid = []
+    for blk_key, blk_groups, blk_label in [("station", g_stat, "ESTACION"),
+                                           ("campaign_date", g_camp, "FECHA DE CAMPANA"),
+                                           ("year", g_year, "ANIO (= campana entera)")]:
+        for key, label in [("zona", "media de la ZONA"),
+                           ("station", "media de la ESTACION"),
+                           ("campaign_date", "media de la CAMPANA")]:
+            yt, yp = null_oof(d, key, blk_groups, gkf)
+            m = metrics(yt, yp)
+            grid.append({"blocked_by": blk_key, "null_model": key,
+                         "label": label, **m})
+            print(f"    folds por {blk_label:24s} nulo {label:22s} "
+                  f"R2={m['R2']:+.3f}")
+    print("\n  => Cada unidad colapsa su propio nulo por construccion (diagonal).")
+    print("     Lo que importa es lo que sobrevive fuera de la diagonal.")
+
+    # Duracion real de las campanas: fechas consecutivas separadas <= 20 dias
+    # pertenecen a la misma campana de campo. Bloquear por fecha deja dias de
+    # una misma campana a ambos lados del corte; bloquear por anio aisla
+    # campanas enteras porque el programa hizo una por anio.
+    dates = pd.to_datetime(pd.Series(sorted(d.campaign_date.unique())))
+    camp_id = (dates.diff().dt.days.fillna(999) > 20).cumsum()
+    span = (dates.groupby(camp_id).agg(["min", "max", "nunique"])
+                 .assign(days=lambda t: (t["max"] - t["min"]).dt.days + 1))
+    campaign_stats = {"field_campaigns_n": int(len(span)),
+                      "campaign_span_min_days": int(span.days.min()),
+                      "campaign_span_max_days": int(span.days.max()),
+                      "campaign_dates_median": float(span["nunique"].median())}
+    print(f"\n  Campanas de campo en el registro de match-ups: {len(span)}, "
+          f"de {span.days.min()} a {span.days.max()} dias "
+          f"(mediana {span['nunique'].median():.0f} fechas de muestreo cada una).")
+
     # --- (2) jerarquia de unidades de bloqueo -----------------------------
     banner("(2) JERARQUIA DE VALIDACION", "-")
     rows = []
@@ -185,6 +225,7 @@ def main():
 
     # --- salidas -----------------------------------------------------------
     pd.DataFrame(nulls).to_csv(TIDY / "null_models.csv", index=False)
+    pd.DataFrame(grid).to_csv(TIDY / "null_models_grid.csv", index=False)
     pd.DataFrame(rows).to_csv(TIDY / "validation_hierarchy.csv", index=False)
     pd.DataFrame(zrows).to_csv(TIDY / "error_by_zone.csv", index=False)
     out = d[["station", "zona", "campaign_date", "year", "sensor", "lat", "lon",
@@ -201,7 +242,9 @@ def main():
     primary = metrics(y_true, oof_primary)
     json.dump({"primary_design": "GroupKFold(5) blocked by campaign date",
                "primary_metrics": primary,
-               "null_models": nulls, "hierarchy": rows, "by_zone": zrows,
+               "null_models": nulls, "null_models_grid": grid,
+               "campaign_stats": campaign_stats,
+               "hierarchy": rows, "by_zone": zrows,
                "conclusion": ("Dependence lives between campaigns, not between "
                               "stations. Station-blocked folds leave the "
                               "station-mean null at R2=0.21 and the zone-mean "

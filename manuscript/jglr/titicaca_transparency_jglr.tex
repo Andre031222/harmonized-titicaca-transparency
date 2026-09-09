@@ -49,7 +49,7 @@ Engineering, Universidad Nacional del Altiplano (UNAP)},
   country={Peru}}
 
 \begin{abstract}
-Monitoring water transparency in high-altitude oligotrophic lakes is critical for freshwater management, yet it remains constrained by the sparsity of field data. While multi-mission satellite archives (e.g., harmonized Sentinel-2 and Landsat 8/9) and machine learning offer a synoptic solution, current practices often import assumptions from turbid-water literature that fail in clear-water, campaign-based settings. We assemble \numMatchupsTotal{} satellite--field match-ups against twelve years of limnological monitoring in Lake Titicaca to address these failures and define a defensible retrieval protocol. First, we demonstrate that standard land-derived harmonization coefficients (e.g., \citealp{Roy2016}) are invalid over dark water, as their intercepts exceed the native Landsat signal by factors of \numRoyRatioGreen{} to \numRoyRatioNir{}, leaving sensors \numSensorAccAll\% separable; we propose a classifier two-sample test to catch this failure. Second, we show that standard station-blocked cross-validation fails to prevent spatial leakage in campaign-based sampling: under campaign-blocked folds, a station-mean null model still explains $R^2=\numNullStationRTwo$ of the variance. We introduce a null-model diagnostic to identify the correct blocking unit (the campaign). Finally, under this strict design, we train a Random Forest regressor to retrieve Secchi disk depth ($R^2=\numHeadlineRTwo$, RMSE \numHeadlineRmse~m) and attach split-conformal prediction intervals. We reveal that while marginally calibrated (\numConformalCovNineZero\% coverage at 90\% nominal), conformal intervals structurally under-cover in the clearest water (\numConformalCovClearest\%). Our findings provide a rigorous blueprint for evaluating machine-learning water quality products in large, oligotrophic lakes.
+Monitoring water transparency in high-altitude oligotrophic lakes is critical for freshwater management, yet it remains constrained by the sparsity of field data. While multi-mission satellite archives (e.g., harmonized Sentinel-2 and Landsat 8/9) and machine learning offer a synoptic solution, current practices often import assumptions from turbid-water literature that fail in clear-water, campaign-based settings. We assemble \numMatchupsTotal{} satellite--field match-ups against twelve years of limnological monitoring in Lake Titicaca to address these failures and define a defensible retrieval protocol. First, we demonstrate that standard land-derived harmonization coefficients (e.g., \citealp{Roy2016}) are invalid over dark water, as their intercepts exceed the native Landsat signal by factors of \numRoyRatioGreen{} to \numRoyRatioNir{}, leaving sensors \numSensorAccAll\% separable; we propose a classifier two-sample test to catch this failure. Second, we show that station-blocked cross-validation, the standard remedy for spatial autocorrelation, leaves the dominant dependence in campaign-based sampling untouched: under station-blocked folds a null model that knows only the campaign date still explains $R^2=\numNullgridStationCampaignDateRTwo$ of the variance. We introduce a null-model diagnostic that identifies the blocking unit --- here the campaign --- rather than assuming it. Finally, under this strict design, we train a Random Forest regressor to retrieve Secchi disk depth ($R^2=\numHeadlineRTwo$, RMSE \numHeadlineRmse~m) and attach split-conformal prediction intervals. We reveal that while marginally calibrated (\numConformalCovNineZero\% coverage at 90\% nominal), conformal intervals structurally under-cover in the clearest water (\numConformalCovClearest\%). Our findings provide a rigorous blueprint for evaluating machine-learning water quality products in large, oligotrophic lakes.
 \end{abstract}
 
 \begin{highlights}
@@ -83,7 +83,7 @@ In this paper, we propose a rigorous validation and retrieval pipeline to overco
 In contrast to previous water-quality mapping efforts \citep{AyalaIzurieta2023,Maligaya2024}, our study makes three explicit contributions:
 \begin{enumerate}
 \item \textbf{Quantification of Harmonization Limits:} We show that land-derived harmonization intercepts exceed the native Landsat signal by up to \numRoyRatioNir{}-fold over clear water. Consequently, a classifier can identify the source sensor with \numSensorAccAll\% accuracy from harmonized bands, proving that the model learns a sensor label rather than unified optics.
-\item \textbf{Null-Model Validation Design:} We demonstrate that under campaign-blocked folds, a station-mean null model still achieves $R^2=\numNullStationRTwo$, proving that station-blocking fails to prevent leakage. We establish the campaign as the required blocking unit for this class of data. 
+\item \textbf{Null-Model Validation Design:} We demonstrate that under station-blocked folds a null model predicting only the campaign-date mean still achieves $R^2=\numNullgridStationCampaignDateRTwo$, so station blocking leaves the dominant, temporal dependence intact. Evaluating null models under each candidate blocking unit identifies the campaign as the unit that carries the dependence in this class of data.
 \item \textbf{Defensible Retrieval with Conformal Uncertainty:} Under this strict design, our model achieves an honest $R^2$ of \numHeadlineRTwo{} (RMSE \numHeadlineRmse~m). We further reveal that while split-conformal intervals are marginally calibrated (\numConformalCovNineZero\% coverage), they structurally under-cover extreme values in the clearest water, highlighting a critical limitation for operational monitoring.
 \end{enumerate}
 
@@ -120,8 +120,8 @@ identifiers distributed over the whole lake. Six of those identifiers are a
 records describe 154 distinct stations; we retain the identifiers as issued,
 which makes station-blocked validation marginally more permissive and
 therefore does not favour the argument of Section~\ref{sec:valdesign}. Of the
-881 measurements, 734 include a valid Secchi reading. The July 2019 campaign (71 stations) is published by
-\citet{Siguayro2022data}; the remaining years derive from the same IMARPE
+881 measurements, 734 include a valid Secchi reading. The July 2019 campaign
+(71 stations) is published by \citet{Siguayro2022data}; the remaining years derive from the same IMARPE
 programme. As a provenance check, our 2019 zone-level means reproduce the
 published values almost exactly (Lago Mayor conductivity 1513.4 vs.\
 1513.5~$\mu$S~cm$^{-1}$; Lago Menor chlorophyll-$a$ 1.52 vs.\
@@ -313,37 +313,73 @@ Landsat/Sentinel-2 ratio.}\label{fig:harm}
 unit}\label{sec:blocking}
 
 Table~\ref{tab:blocking} reports the retrieval under each validation design
-alongside the null models (Fig.~\ref{fig:val}). Blocking by station changes
-nothing relative to a random split (both $R^2=\numRandomRTwo$), which under
-the usual reading would be taken as evidence of no spatial leakage. The null
-models show why that reading is wrong: under campaign-blocked folds the
-station-mean null still attains $R^2=\numNullStationRTwo$ and the zone-mean
-null $R^2=\numNullZonaRTwo$, whereas the campaign-date-mean null collapses to
-$\numNullCampaignDateRTwo$. Dependence in this dataset lives between
-campaigns, not between stations, because a single campaign samples the whole
-lake within a few days under one set of atmospheric and limnological
-conditions. Station-blocked folds leave that structure intact.
-
-Under campaign-blocked validation --- our primary design --- the Random
-Forest attains $R^2=\numHeadlineRTwo$ and RMSE \numHeadlineRmse~m over
-\numHeadlineN{} match-ups, essentially unbiased (\numHeadlineBias~m).
-Blocking by year is stricter still ($R^2=\numYearRTwo$). Collapsing
-cross-sensor pseudo-replicates to \numOneEventN{} independent events leaves
-accuracy unchanged ($R^2=\numOneEventRTwo$).
+(Fig.~\ref{fig:val}), and Table~\ref{tab:nullgrid} the three null models
+under each blocking design. Blocking by station changes nothing relative to a
+random split (both $R^2=\numRandomRTwo$), which under the usual reading would
+be taken as evidence of no spatial leakage. The null models show why that
+reading is wrong. Each blocking unit collapses its own null by construction;
+what matters is what survives. Under station-blocked folds a null that
+predicts only the training-set mean of the campaign date still attains
+$R^2=\numNullgridStationCampaignDateRTwo$: the temporal structure passes
+through station blocking untouched. The converse does not hold in the same
+way. Under campaign-date-blocked folds the station-mean null retains
+$R^2=\numNullgridCampaignDateStationRTwo$, but the zone-mean null retains
+\numNullgridCampaignDateZonaRTwo{} under that design and between
+\numNullgridYearZonaRTwo{} and \numNullgridStationZonaRTwo{} under every
+other, so what station identity carries is essentially the trophic gradient
+--- a property of the lake that a retrieval should learn, not leakage.
+Dependence in this dataset lives between campaigns, not between stations,
+because a single campaign samples the whole lake within a few days under one
+set of atmospheric and limnological conditions.
 
 \begin{table}[htbp]
-\caption{Validation design, null models and blocking units (Random Forest,
-$n=812$ unless noted). A blocking unit is effective only if the corresponding
-null model collapses under it.}\label{tab:blocking}
+\caption{Null models under each blocking design (out-of-fold $R^2$,
+$n=812$). Each null predicts only the training-set mean of one grouping, and
+each blocking unit collapses its own null by construction (diagonal). What
+survives off the diagonal is the dependence that design leaves
+intact.}\label{tab:nullgrid}
+\tabfit
+\centering
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+ & \multicolumn{3}{c}{Folds blocked by} \\
+\cmidrule(l){2-4}
+Null model & Station & Campaign date & Year$^{a}$ \\
+\midrule
+Zone-mean          & $\numNullgridStationZonaRTwo$ & $\numNullgridCampaignDateZonaRTwo$ & $\numNullgridYearZonaRTwo$ \\
+Station-mean       & $\numNullgridStationStationRTwo$ & $\numNullgridCampaignDateStationRTwo$ & $\numNullgridYearStationRTwo$ \\
+Campaign-date-mean & $\mathbf{\numNullgridStationCampaignDateRTwo}$ & $\numNullgridCampaignDateCampaignDateRTwo$ & $\numNullgridYearCampaignDateRTwo$ \\
+\bottomrule
+\multicolumn{4}{@{}l}{\footnotesize $^{a}$ The programme ran one field campaign per year, so year blocking isolates whole campaigns.}\\
+\end{tabular}
+\end{table}
+
+Under campaign-date-blocked validation --- our primary design --- the Random
+Forest attains $R^2=\numHeadlineRTwo$ and RMSE \numHeadlineRmse~m over
+\numHeadlineN{} match-ups, essentially unbiased (bias \numHeadlineBias~m).
+The campaign date is the finest unit at which the campaign structure can be
+expressed, but not the coarsest: the \numFieldCampaignsN{} field campaigns in
+the match-up record each span \numCampaignSpanMinDays--\numCampaignSpanMaxDays{}
+days (median \numCampaignDatesMedian{} sampling dates), so date-blocked folds
+can still place two days of one campaign on opposite sides of the split.
+Blocking by year isolates whole campaigns, since the programme ran one per
+year, and gives $R^2=\numYearRTwo$; the difference of \numDateVsYearGapRTwo{}
+in $R^2$ bounds the residual within-campaign dependence. We retain date
+blocking as the primary design because nine year-groups would leave five-fold
+GroupKFold with fewer than two campaigns per fold and too few calibration
+residuals for the conformal analysis, and we report the year-blocked figure
+alongside it as the stricter bound. Collapsing cross-sensor pseudo-replicates
+to \numOneEventN{} independent events leaves accuracy unchanged
+($R^2=\numOneEventRTwo$).
+
+\begin{table}[htbp]
+\caption{Retrieval under each validation design (Random Forest, $n=812$
+unless noted). Null models are in Table~\ref{tab:nullgrid}.}\label{tab:blocking}
 \tabfit
 \centering
 \resizebox{\linewidth}{!}{\begin{tabular}{@{}llrr@{}}
 \toprule
 & Setting & $R^2$ & RMSE (m) \\
-\midrule
-\multirow{3}{*}{Null models} & Zone-mean            & 0.287  & 2.40 \\
-                             & Station-mean         & 0.208  & 2.53 \\
-                             & Campaign-date-mean   & $-0.012$ & 2.86 \\
 \midrule
 \multirow{5}{*}{Blocking unit} & Random $K$-fold        & 0.596 & 1.81 \\
                                & By station             & 0.596 & 1.81 \\
@@ -573,13 +609,15 @@ here --- reporting single-sensor retrievals alongside any pooled product.
 Blocking by station is the standard remedy for spatial autocorrelation in
 this literature, and in our data it changes nothing: random and
 station-blocked folds give identical accuracy. Read conventionally, that
-would be reassuring. The null models show it is not. Under campaign-blocked
-folds the station-mean null still explains 21\% of variance and the zone-mean
-null 29\%, while the campaign-date-mean null explains none. In a
-campaign-based monitoring programme the whole lake is sampled within a few
-days under shared atmospheric and limnological conditions, so observations
-cluster by campaign far more strongly than by location; station-blocked folds
-leave that structure entirely intact.
+would be reassuring. The null models show it is not. Under station-blocked
+folds a null that knows only the campaign date still reaches
+$R^2=\numNullgridStationCampaignDateRTwo$ --- as much as the zone-mean null
+reaches under any design --- so the temporal structure passes through station
+blocking untouched. In a campaign-based monitoring programme the whole lake is
+sampled within a few days under shared atmospheric and limnological
+conditions, so observations cluster by campaign at least as strongly as by
+location, and only a design that blocks on the campaign removes that
+clustering.
 
 The general point is that the blocking unit should be diagnosed, not assumed.
 Reporting null models under each candidate design costs little and identifies
@@ -597,11 +635,11 @@ than an unqualified $R^2$.
 
 \subsection{Operational envelope for Lake Titicaca}\label{sec:envelope}
 
-Our RMSE of \numHeadlineRmse~m spans roughly 12\% of the observed $Z_{SD}$
-range and sits below the published range for $Z_{SD}$ retrieval
-($R^2\approx0.6$--0.9; \citealp{Zhang2022,Lee2015}), obtained here under a
-predominantly clear oligotrophic regime and a stricter validation design. It
-is also approaching the granularity of the reference measurement itself:
+Our $R^2$ of \numHeadlineRTwo{} sits below the range typically published for
+$Z_{SD}$ retrieval ($R^2\approx0.6$--0.9; \citealp{Zhang2022,Lee2015}),
+obtained here under a predominantly clear oligotrophic regime and a stricter
+validation design, and our RMSE of \numHeadlineRmse~m spans roughly 12\% of
+the observed $Z_{SD}$ range. It is also approaching the granularity of the reference measurement itself:
 disk readings are recorded to the nearest half metre, giving only
 \numSecchiUniqueValues{} distinct values across \numMatchupsSecchi{}
 match-ups.
@@ -620,7 +658,10 @@ the field programme has produced a single wet-season campaign in fourteen
 years, and that campaign predates both satellites. Wet-season blooms in
 Bah\'ia de Puno --- the phenomenon a transparency product would most usefully
 warn about --- are therefore entirely unrepresented, and the model should not
-be applied between December and March.
+be applied between December and March. Finally, because conformal coverage
+degrades at both extremes of the transparency range, the nominal 90\%
+interval should be treated as optimistic in the clearest and most turbid
+water.
 
 This converts the limitation into a specific, actionable recommendation for
 the monitoring authorities. Extending the protocol to the wet season does not
@@ -630,9 +671,7 @@ window and covering the three trophic zones, would within a few years supply
 enough independent campaign-blocks to calibrate and validate a wet-season
 retrieval under the same design used here. Because the binding constraint is
 sampling rather than sensing, this is among the cheapest available
-improvements to Lake Titicaca's water-quality monitoring capability. And because conformal coverage degrades at both
-extremes of the transparency range, the nominal 90\% interval should be
-treated as optimistic in the clearest and most turbid water.
+improvements to Lake Titicaca's water-quality monitoring capability.
 
 Within those bounds the product is useful to the regional monitoring
 authorities (IMARPE, ALT, OEFA, and the binational management framework). A
@@ -745,8 +784,8 @@ SWIR2  & $-0.0057$ & 0.615 & 0.60 & acceptable \\
 \centering
 \includegraphics[width=0.85\textwidth]{fig03_validation_design.png}
 \caption{Diagnosing the blocking unit. (a) Null models evaluated under
-campaign-blocked folds: only the campaign-mean null collapses, so only
-campaign blocking is doing work. (b) Out-of-fold $R^2$ under each validation
+campaign-date-blocked folds; the same three nulls under every blocking design
+are in Table~\ref{tab:nullgrid}. (b) Out-of-fold $R^2$ under each validation
 design and under extrapolation to an unseen trophic zone. That station
 blocking matches the random split is not evidence of no leakage; it is
 evidence that station blocking retains nothing.}\label{fig:val}
@@ -763,7 +802,7 @@ Algorithm & $R^2$ & RMSE & MAE & Bias \\
 \midrule
 Classical blue/green, unbounded$^{a}$      & $-2.458$ & 5.29 & 1.91 & $-0.19$ \\
 Classical blue/green, bounded$^{b}$        & 0.097 & 2.71 & 2.13 & $-0.46$ \\
-Multiband linear                           & 0.323 & 2.34 & 1.78 & $-0.01$ \\
+Multiband linear                           & 0.323 & 2.34 & 1.80 & $-0.01$ \\
 Random Forest (this study)                 & \textbf{0.574} & \textbf{1.86} & \textbf{1.44} & $-0.02$ \\
 \bottomrule
 \multicolumn{5}{@{}l}{\footnotesize RMSE, MAE and bias in metres.}\\

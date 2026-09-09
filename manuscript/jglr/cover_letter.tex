@@ -41,13 +41,14 @@ propose a classifier two-sample test as a one-line check for this failure.
 
 \textbf{(2) The blocking unit for cross-validation must be diagnosed, not
 assumed.} Blocking by monitoring station is the standard remedy for spatial
-autocorrelation, but in a campaign-based programme it retains almost nothing:
-under campaign-blocked folds a station-mean null model still reaches
-$R^2=0.208$ and a zone-mean null $0.287$, while the campaign-mean null
-collapses to $-0.012$. Station blocking leaves the reported accuracy
+autocorrelation, but in a campaign-based programme it leaves the dominant
+dependence untouched: under station-blocked folds a null model that knows
+only the campaign date still reaches $R^2=0.305$, as much as a zone-mean null
+reaches under any design. Station blocking leaves the reported accuracy
 unchanged from a random split ($R^2=0.596$ in both cases), which is evidence
 that it retains nothing rather than that no leakage exists. We give the
-null-model procedure that identifies the correct unit.
+null-model procedure --- three nulls under each candidate blocking unit ---
+that identifies the unit carrying the dependence.
 
 \textbf{(3) An honest retrieval with calibrated uncertainty.} Under
 campaign-blocked validation a Random Forest retrieves $Z_{SD}$ with
