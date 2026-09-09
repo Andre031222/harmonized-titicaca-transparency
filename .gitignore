@@ -48,3 +48,12 @@ manuscript/_archive/**/*.pdf
 # subproductos de LaTeX de la cover letter
 manuscript/jglr/cover_letter.aux
 manuscript/jglr/cover_letter.log
+
+# Envios anteriores (IJACSA, EMA/Springer, Remote Sensing/MDPI), sus cartas de
+# presentacion, respuestas a revisores y las figuras previas a la auditoria.
+# Se conservan en disco como historial interno; no forman parte del repo
+# publico que acompana al articulo.
+manuscript/_archive/
+
+# Skills de asistencia a la escritura: herramienta de trabajo, no del estudio.
+.agents/
