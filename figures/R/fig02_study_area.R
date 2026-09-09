@@ -15,9 +15,9 @@ suppressPackageStartupMessages({library(sf); library(viridis)})
 dist <- read_tidy("insitu_distribution.csv")
 lake <- st_read(file.path(ROOT, "data/lake_boundary/titicaca.gpkg"), quiet = TRUE)
 
-ZMAP <- c("BAHIA PUNO" = "Bahía de Puno", "LAGO MENOR" = "Lago Menor",
-          "LAGO MAYOR" = "Lago Mayor")
-PAL2 <- setNames(unname(PAL_ZONE), c("Bahía de Puno", "Lago Menor", "Lago Mayor"))
+ZMAP <- c("BAHIA PUNO" = "Puno Bay", "LAGO MENOR" = "Minor Lake",
+          "LAGO MAYOR" = "Major Lake")
+PAL2 <- setNames(unname(PAL_ZONE), c("Puno Bay", "Minor Lake", "Major Lake"))
 
 st_summary <- dist |>
   group_by(station, zona, lat, lon) |>
@@ -40,18 +40,18 @@ pa <- ggplot() +
                         breaks = c(2, 6, 12)) +
   coord_sf(xlim = c(bb["xmin"], bb["xmax"]),
            ylim = c(bb["ymin"], bb["ymax"]), expand = FALSE) +
-  annotate("text", x = -69.95, y = -15.83, label = "Bahía\nde Puno",
+  annotate("text", x = -69.95, y = -15.83, label = "Puno\nBay",
            size = 2.4, colour = INK, fontface = "bold", lineheight = 1,
            hjust = 0.5) +
-  annotate("text", x = -69.35, y = -15.85, label = "Lago Mayor",
+  annotate("text", x = -69.35, y = -15.85, label = "Major Lake",
            size = 2.4, colour = INK, fontface = "bold") +
-  annotate("text", x = -68.95, y = -16.30, label = "Lago Menor\n(Wiñaymarca)",
+  annotate("text", x = -68.95, y = -16.30, label = "Minor Lake\n(Wiñaymarca)",
            size = 2.4, colour = INK, fontface = "bold", lineheight = 1) +
-  labs(title = "(a)  Red de monitoreo y gradiente de transparencia",
-       subtitle = paste("Estaciones IMARPE/ALT con match-up satélite–campo",
+  labs(title = "(a)  Limnological monitoring network (IMARPE)",
+       subtitle = paste("IMARPE/ALT stations with satellite-field match-ups",
                         "(2013–2024), coloreadas por la\ntransparencia media",
-                        "medida. El gradiente trófico es visible en el propio",
-                        "dato de campo"),
+                        "measured. The trophic gradient is visible in the",
+                        "field data itself"),
        x = NULL, y = NULL) +
   theme(legend.position = "right", legend.box = "vertical",
         panel.grid.major = element_line(colour = GRID, linewidth = 0.2),
@@ -64,11 +64,11 @@ pb <- ggplot(st_summary, aes(n_campaigns, secchi_mean, colour = zone_label)) +
   scale_size_continuous(range = c(0.9, 3.6), guide = "none") +
   scale_x_continuous(breaks = scales::pretty_breaks(5)) +
   labs(title = "(b)  El esfuerzo de muestreo es muy desigual",
-       subtitle = paste("Cada punto es una estación.", nrow(st_summary),
-                        "estaciones, pero la mayoría se visitó\nen muy pocas",
-                        "campañas, lo que limita el poder de cualquier análisis",
-                        "por estación"),
-       x = "Campañas en que se visitó la estación",
+       subtitle = paste("Each point is a station.", nrow(st_summary),
+                        "stations, but most were visited\nin very few",
+                        "campaigns, limiting the power of any",
+                        "station-based analysis"),
+       x = "Campaigns where the station was visited",
        y = "Secchi medio medido (m)") +
   theme(legend.position = "bottom", legend.margin = margin(t = -4))
 

@@ -39,7 +39,6 @@ design, and calibrated uncertainty in Lake Titicaca}
 \author[unap]{Richar Andre Vilca-Solorzano\corref{cor1}}
 \ead{75521963@est.unap.edu.pe}
 \author[unap]{Fred Torres-Cruz}
-\author[unap]{Vladimiro Iba\~nez}
 \cortext[cor1]{Corresponding author.}
 \affiliation[unap]{organization={Faculty of Statistical and Computer
 Engineering, Universidad Nacional del Altiplano (UNAP)},
@@ -49,40 +48,7 @@ Engineering, Universidad Nacional del Altiplano (UNAP)},
   country={Peru}}
 
 \begin{abstract}
-Lake Titicaca (8372~km$^2$, 3810~m a.s.l.) is the largest lake in South
-America and a transboundary freshwater reserve for millions of people, yet
-its water quality is documented only by infrequent field campaigns. We
-assembled \numMatchupsTotal{} satellite--field match-ups (\numMatchupsSTwo{}
-Sentinel-2, \numMatchupsLs{} Landsat 8/9) against twelve years of IMARPE
-limnological monitoring and used them to ask what a defensible multi-mission
-Secchi disk depth ($Z_{SD}$) product looks like in clear oligotrophic
-high-altitude water. Two widely used practices fail here. First, the
-cross-sensor harmonization coefficients of \citet{Roy2016}, fitted over
-terrestrial targets and routinely reused to build harmonized
-Landsat/Sentinel-2 archives, are invalid over dark water: their additive
-intercepts (\numRoyInterceptMin--\numRoyInterceptMax{} in reflectance) exceed
-the native over-water Landsat signal by factors of \numRoyRatioGreen{} to
-\numRoyRatioNir{}, and a classifier still identifies the source sensor with
-\numSensorAccAll\% accuracy after the transform (chance
-\numSensorAccChance\%). Refitting locally on \numPairedEvents{} same-day
-paired observations restores agreement in green ($r=\numLocalRGreen$) but not
-in blue ($r=\numLocalRBlue$) --- the band the retrieval most depends on.
-Second, blocking cross-validation by monitoring station, the usual remedy for
-spatial autocorrelation, retains nothing in a campaign-based programme: under
-campaign-blocked folds a station-mean null still reaches
-$R^2=\numNullStationRTwo$ and a zone-mean null $R^2=\numNullZonaRTwo$, while
-the campaign-mean null collapses to $\numNullCampaignDateRTwo$. Under
-campaign-blocked validation a Random Forest retrieves $Z_{SD}$ with
-$R^2=\numHeadlineRTwo$ and RMSE \numHeadlineRmse~m ($n=\numHeadlineN$),
-against \numClassicalBoundedRTwo{} for a correctly bounded classical
-blue/green band ratio. Split-conformal intervals are well calibrated
-marginally (\numConformalCovNineZero\% empirical coverage at 90\% nominal)
-but not conditionally, under-covering in the clearest water
-(\numConformalCovClearest\%). Skill collapses under leave-one-zone-out
-extrapolation, and chlorophyll-$a$, suspended solids and thermal temperature
-are not retrievable. We propose two inexpensive diagnostics --- a sensor
-classifier and null models under each candidate blocking unit --- that
-separate genuine optical retrieval from sensor labelling and sampling design.
+Monitoring water transparency in high-altitude oligotrophic lakes is critical for freshwater management, yet it remains constrained by the sparsity of field data. While multi-mission satellite archives (e.g., harmonized Sentinel-2 and Landsat 8/9) and machine learning offer a synoptic solution, current practices often import assumptions from turbid-water literature that fail in clear-water, campaign-based settings. We assemble \numMatchupsTotal{} satellite--field match-ups against twelve years of limnological monitoring in Lake Titicaca to address these failures and define a defensible retrieval protocol. First, we demonstrate that standard land-derived harmonization coefficients (e.g., \citealp{Roy2016}) are invalid over dark water, as their intercepts exceed the native Landsat signal by factors of \numRoyRatioGreen{} to \numRoyRatioNir{}, leaving sensors \numSensorAccAll\% separable; we propose a classifier two-sample test to catch this failure. Second, we show that standard station-blocked cross-validation fails to prevent spatial leakage in campaign-based sampling: under campaign-blocked folds, a station-mean null model still explains $R^2=\numNullStationRTwo$ of the variance. We introduce a null-model diagnostic to identify the correct blocking unit (the campaign). Finally, under this strict design, we train a Random Forest regressor to retrieve Secchi disk depth ($R^2=\numHeadlineRTwo$, RMSE \numHeadlineRmse~m) and attach split-conformal prediction intervals. We reveal that while marginally calibrated (\numConformalCovNineZero\% coverage at 90\% nominal), conformal intervals structurally under-cover in the clearest water (\numConformalCovClearest\%). Our findings provide a rigorous blueprint for evaluating machine-learning water quality products in large, oligotrophic lakes.
 \end{abstract}
 
 \begin{highlights}
@@ -107,82 +73,18 @@ cross-sensor harmonization \sep conformal prediction \sep large lakes
 
 \section{Introduction}\label{sec:intro}
 
-Large lakes are sentinels of environmental change, but continuous monitoring
-of remote, high-altitude systems is constrained by sparse field
-infrastructure \citep{Williamson2009}. Lake Titicaca, shared by Peru and
-Bolivia at 3810~m a.s.l., is the largest lake in South America and, by
-volume, the largest tropical lake in the world. It is a Ramsar site and the
-freshwater reserve for millions of Andean people, yet its water quality is
-documented only by infrequent field campaigns
-\citep{OEFA2016,Siguayro2022eval}, even as eutrophication advances in its
-near-shore bays \citep{Heredia2022,Lanza2024}.
+Large lakes are sentinels of environmental change, but continuous monitoring of remote, high-altitude systems is constrained by sparse field infrastructure \citep{Williamson2009}. Lake Titicaca (3,810~m a.s.l.), the largest tropical lake in the world by volume, is a critical transboundary freshwater reserve whose water quality is documented only by infrequent field campaigns \citep{OEFA2016,Siguayro2022eval}, even as eutrophication advances in its near-shore bays \citep{Heredia2022,Lanza2024}. Satellite remote sensing offers a synoptic solution \citep{Gholizadeh2016,Topp2020}. Specifically, water transparency---quantified by the Secchi disk depth ($Z_{SD}$)---is an integrative indicator of water clarity strongly linked to light attenuation \citep{Lee2015}. Because Sentinel-2 MSI and Landsat 8/9 OLI provide complementary revisit times, their joint use as a virtual constellation coupled with machine learning is now the standard practice for mapping water quality \citep{Pahlevan2020, Cao2022}.
 
-Satellite remote sensing offers synoptic, repeatable observation of large
-lakes \citep{Gholizadeh2016,Topp2020}. Water transparency, quantified by the
-Secchi disk depth ($Z_{SD}$) since \citet{Tyler1968}, is an integrative
-indicator of water clarity strongly linked to the diffuse attenuation of
-light \citep{Lee2015}, and is among the most reliably retrievable optical
-water-quality variables; it has been mapped operationally from Landsat for
-two decades \citep{Kloiber2002,Olmanson2008,Zhang2022}. Sentinel-2 MSI
-(10--60~m) and Landsat 8/9 OLI (30~m) provide complementary revisit, and
-their joint use as a virtual constellation is now standard practice
-\citep{Claverie2018,Pahlevan2019}. That joint use rests on cross-sensor
-harmonization, for which the per-band linear coefficients of \citet{Roy2016}
-are the most widely reused transform. Machine learning applied to such
-harmonized archives dominates water-quality retrieval across many lakes
-\citep{Pahlevan2020,Cao2020,Cao2022,Arias2023,Pahlevan2022,Hafeez2019,Tian2023}.
+Although these virtual constellations work well in turbid, productive ``Case-2'' waters, they fail to transfer reliably to clear, oligotrophic high-altitude lakes due to two unresolved methodological assumptions. First, the cross-sensor harmonization coefficients required to merge Landsat and Sentinel-2 (e.g., \citealp{Roy2016}) were fitted on terrestrial targets. Because terrestrial surfaces are orders of magnitude brighter than clear water, their additive intercepts overwhelm the over-water signal. While near-infrared bias over water has been noted \citep{Pahlevan2019}, the magnitude of this mismatch and its effect on machine-learning retrievals remain unquantified. Second, to prevent spatial autocorrelation from inflating apparent accuracy, previous methods routinely block cross-validation by monitoring station \citep{Roberts2017}. However, they assume rather than test that station identity is the primary source of data leakage. In campaign-based monitoring programmes, where an entire lake is sampled within a few days under identical conditions, station-blocking may retain severe leakage and falsely inflate performance metrics. 
 
-This literature is overwhelmingly built on turbid, productive ``Case-2''
-waters, where chlorophyll and mineral turbidity carry a strong optical signal
-\citep{Gitelson2009,Mishra2012,Nechad2010,Dogliotti2015}. Clear oligotrophic
-high-altitude lakes are comparatively neglected, and two assumptions imported
-from that literature have not been tested in them.
+In this paper, we propose a rigorous validation and retrieval pipeline to overcome these challenges, using Lake Titicaca as our testing ground. Our innovation is replacing assumed methodological defaults with data-driven diagnostics. Specifically, we assemble \numMatchupsTotal{} real satellite--field match-ups and apply a classifier two-sample test (adversarial validation) \citep{LopezPaz2017} to diagnose harmonization failure. Furthermore, we introduce a null-model diagnostic to identify the true blocking unit for cross-validation. Finally, we train a Random Forest regressor under the corrected design and attach split-conformal prediction intervals \citep{Angelopoulos2023} to quantify per-prediction uncertainty. 
 
-The first is that harmonization coefficients derived over land transfer to
-water. The \citet{Roy2016} transforms were fitted on terrestrial targets ---
-vegetation, soil and built surfaces --- whose reflectance is one to two
-orders of magnitude brighter than clear water. Their additive intercepts are
-therefore of the same order as, or larger than, the entire over-water signal.
-That the transform degrades over water is not a new suspicion: a positive
-near-infrared bias over dark targets has been noted \citep{Pahlevan2019}, and
-the HLS product documentation itself cautions that its atmospheric correction
-is not optimized for water and that water reflectance is unreliable
-\citep{HLSguide,Claverie2018}. What is missing is quantification. To our
-knowledge no study has measured how large the mismatch is for a clear
-oligotrophic lake, shown what it does to a machine-learning retrieval trained
-on the pooled archive, or reported a routine check that would catch it.
-
-The second is that cross-validation blocked by monitoring station is
-sufficient to demonstrate generalization. Accuracy in this field is routinely
-reported under random train/test splits that ignore spatial structure, a
-practice known to inflate apparent skill when samples are spatially
-autocorrelated \citep{Roberts2017,Ploton2020,Meyer2019}. Blocking by station
-is the usual remedy. It is the right remedy only if station identity is where
-the dependence lives --- an assumption that is rarely tested and that, we
-show, fails in a campaign-based monitoring programme.
-
-For Lake Titicaca specifically, prior remote-sensing work has used
-MODIS/Landsat temperature and chlorophyll \citep{RuizVerdu2016}, basin-scale
-land-cover drivers \citep{Baltodano2022}, automatic Sentinel-2 water products
-\citep{AyalaIzurieta2023}, and global remote-sensing water-quality products
-\citep{Maligaya2024}. None provides a harmonized multi-mission $Z_{SD}$
-retrieval validated against in-situ measurements at their true sampling
-coordinates, and none assesses which variables are actually retrievable in
-its clear water.
-
-We address these gaps with \numMatchupsTotal{} real satellite--field
-match-ups. Our contributions are threefold. First, we quantify the failure of
-land-derived cross-sensor harmonization over clear oligotrophic water, derive
-water-specific replacement coefficients from same-day paired observations,
-and adapt an established statistical test --- the classifier two-sample test
-\citep{Friedman2004,LopezPaz2017}, known in applied machine learning as
-adversarial validation --- into a one-line harmonization check that any study
-can run. Second, we show that the
-blocking unit for validation must be diagnosed rather than assumed, and give
-the null-model procedure for doing so. Third, we report retrieval accuracy,
-calibrated per-prediction uncertainty and an explicit retrievability envelope
-under the resulting design. Our aim is not to claim a high-accuracy product
-but to establish what a defensible one looks like for this class of lake.
+In contrast to previous water-quality mapping efforts \citep{AyalaIzurieta2023,Maligaya2024}, our study makes three explicit contributions:
+\begin{enumerate}
+\item \textbf{Quantification of Harmonization Limits:} We show that land-derived harmonization intercepts exceed the native Landsat signal by up to \numRoyRatioNir{}-fold over clear water. Consequently, a classifier can identify the source sensor with \numSensorAccAll\% accuracy from harmonized bands, proving that the model learns a sensor label rather than unified optics.
+\item \textbf{Null-Model Validation Design:} We demonstrate that under campaign-blocked folds, a station-mean null model still achieves $R^2=\numNullStationRTwo$, proving that station-blocking fails to prevent leakage. We establish the campaign as the required blocking unit for this class of data. 
+\item \textbf{Defensible Retrieval with Conformal Uncertainty:} Under this strict design, our model achieves an honest $R^2$ of \numHeadlineRTwo{} (RMSE \numHeadlineRmse~m). We further reveal that while split-conformal intervals are marginally calibrated (\numConformalCovNineZero\% coverage), they structurally under-cover extreme values in the clearest water, highlighting a critical limitation for operational monitoring.
+\end{enumerate}
 
 \section{Materials and methods}\label{sec:methods}
 
@@ -916,8 +818,6 @@ Investigation, Data curation, Writing -- original draft.
 analysis, Validation, Visualization, Writing -- original draft, Writing --
 review \& editing.
 \textbf{Fred Torres-Cruz:} Supervision, Resources, Writing -- review \&
-editing.
-\textbf{Vladimiro Iba\~nez:} Supervision, Validation, Writing -- review \&
 editing.
 
 \section*{Declaration of competing interest}

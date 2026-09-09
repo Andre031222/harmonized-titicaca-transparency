@@ -1,5 +1,5 @@
 # ============================================================================
-# fig04_retrieval.R -- El retrieval en si, bajo el diseno honesto
+# fig04_retrieval.R -- El retrieval en si,  el diseno honesto
 #
 # (a) Predicho vs observado fuera de fold, por zona trofica, con 1:1
 # (b) Residuos por zona: el sesgo positivo en Bahia de Puno, la zona mas
@@ -19,8 +19,8 @@ art   <- read_tidy("baseline_artefact.csv")
 
 # El pipeline exporta las zonas sin tildes; se acentuan aqui, en la capa de
 # presentacion, para no tocar las claves de los datos.
-ZLAB <- c("Bahia de Puno" = "Bahía de Puno", "Lago Menor" = "Lago Menor",
-          "Lago Mayor" = "Lago Mayor")
+ZLAB <- c("Bahia de Puno" = "Puno Bay", "Minor Lake" = "Minor Lake",
+          "Major Lake" = "Major Lake")
 ZORD <- unname(ZLAB)
 PAL2 <- setNames(unname(PAL_ZONE), ZORD)
 oof  <- oof  |> mutate(zone_label = factor(ZLAB[zone_label], levels = ZORD))
@@ -41,14 +41,14 @@ pa <- ggplot(oof, aes(secchi, predicted, colour = zone_label)) +
   scale_colour_manual(values = PAL2, name = NULL) +
   coord_equal(xlim = lims, ylim = lims) +
   labs(title = "(a)  Predicho frente a medido",
-       subtitle = paste("Random Forest, validación bloqueada\npor campaña.",
-                        "La discontinua es 1:1"),
-       x = "Secchi medido in situ (m)", y = "Secchi predicho (m)") +
+       subtitle = paste("Random Forest, campaign-blocked\nvalidation.",
+                        "Dashed line is 1:1"),
+       x = "Measured in-situ Secchi (m)", y = "Predicted Secchi (m)") +
   theme(legend.position = "bottom", legend.margin = margin(t = -4))
 
 # ---------------------------------------------------------------- panel (b) --
 zlab <- zone |>
-  mutate(txt = sprintf("sesgo %+.2f m\nRMSE %.2f m\nn = %d", bias, RMSE, n))
+  mutate(txt = sprintf("bias %+.2f m\nRMSE %.2f m\nn = %d", bias, RMSE, n))
 
 pb <- ggplot(oof, aes(zone_label, residual, fill = zone_label)) +
   geom_hline(yintercept = 0, colour = INK, linewidth = 0.45, linetype = "22") +
@@ -63,18 +63,18 @@ pb <- ggplot(oof, aes(zone_label, residual, fill = zone_label)) +
   scale_fill_manual(values = PAL2, guide = "none") +
   scale_x_discrete(labels = function(x) sub(" de ", "\nde ", sub("Lago ", "Lago\n", x))) +
   scale_y_continuous(limits = c(-8, 7.8), breaks = seq(-6, 6, 3)) +
-  labs(title = "(b)  Sobreestima donde más importa",
-       subtitle = paste("Residuos (predicho − medido) por zona.\nEl rombo es la",
-                        "media. Bahía de Puno, la\nzona más eutrófica, +1.0 m"),
-       x = NULL, y = "Residuo (m)")
+  labs(title = "(b)  Overestimates where it matters most",
+       subtitle = paste("Residuals (predicted - measured) by zone.\nDiamond is the",
+                        "mean. Puno Bay, the\nmost eutrophic zone, +1.0 m"),
+       x = NULL, y = "Residual (m)")
 
 # ---------------------------------------------------------------- panel (c) --
 pc_df <- bench |>
   mutate(name = case_when(
-    family == "artefact"  ~ "Ratio azul/verde\nSIN acotar (como se publicó)",
-    family == "classical" ~ "Ratio azul/verde\nacotado (Kloiber 2002)",
-    family == "linear"    ~ "Lineal multibanda",
-    TRUE                  ~ "Random Forest\n(este estudio)"),
+    family == "artefact"  ~ "Blue/green ratio\nUNBOUNDED (as published)",
+    family == "classical" ~ "Blue/green ratio\nBOUNDED (Kloiber 2002)",
+    family == "linear"    ~ "Multiband linear",
+    TRUE                  ~ "Random Forest\n(this study)"),
     kind = ifelse(family == "artefact", "artefacto", "correcto"),
     name = fct_reorder(name, R2))
 
@@ -89,34 +89,34 @@ pc <- ggplot(pc_df, aes(R2, name, fill = kind)) +
   scale_x_continuous(limits = c(-3.3, 1.25), breaks = seq(-3, 1, 1),
                      expand = expansion(mult = c(0.01, 0))) +
   labs(title = "(c)  El baseline estaba mal implementado",
-       subtitle = paste("Mismo diseño de validación para todos.\nEl baseline",
-                        "«publicado» deshacía el log sin\nacotar; una única",
-                        "predicción de 143 m hundía su R²"),
-       x = "R² fuera de fold", y = NULL)
+       subtitle = paste("Same validation design for all.\nThe published baseline",
+                        "undid the log without\nbounds; a single",
+                        "143 m prediction ruined its R²"),
+       x = "Out-of-fold R²", y = NULL)
 
 # ---------------------------------------------------------------- panel (d) --
 pd <- art |>
   select(observed, predicted_unbounded, predicted_bounded) |>
   pivot_longer(-observed, names_to = "version", values_to = "pred") |>
   mutate(version = recode(version,
-                          predicted_unbounded = "Sin acotar",
-                          predicted_bounded   = "Acotado")) |>
+                          predicted_unbounded = "Unbounded",
+                          predicted_bounded   = "Bounded")) |>
   ggplot(aes(observed, pred, colour = version)) +
   geom_abline(slope = 1, intercept = 0, colour = INK, linetype = "22",
               linewidth = 0.4) +
   geom_hline(yintercept = max(art$observed), colour = ACCENT,
              linetype = "12", linewidth = 0.4) +
   annotate("text", x = 1.6, y = max(art$observed), vjust = -0.6, hjust = 0,
-           label = sprintf("máximo real = %.1f m", max(art$observed)),
+           label = sprintf("real maximum = %.1f m", max(art$observed)),
            size = 2.25, colour = ACCENT, fontface = "italic") +
   geom_point(size = 0.85, alpha = 0.45) +
-  scale_colour_manual(values = c("Sin acotar" = NEUTRAL,
-                                 "Acotado" = "#2E6E8E"), name = NULL) +
+  scale_colour_manual(values = c("Unbounded" = NEUTRAL,
+                                 "Bounded" = "#2E6E8E"), name = NULL) +
   scale_y_log10(breaks = c(1, 3, 10, 30, 100), labels = c(1, 3, 10, 30, 100)) +
-  labs(title = "(d)  Una predicción imposible basta",
-       subtitle = paste("Ratio clásico en escala logarítmica.\nEl punto de 143 m",
-                        "es el que producía\nel R² = −2.46"),
-       x = "Secchi medido in situ (m)", y = "Secchi predicho (m, log)") +
+  labs(title = "(d)  One impossible prediction is enough",
+       subtitle = paste("Classical ratio on log scale.\nThe 143 m point",
+                        "is the one that produced\nthe R² = -2.46"),
+       x = "Measured in-situ Secchi (m)", y = "Predicted Secchi (m, log)") +
   theme(legend.position = "bottom", legend.margin = margin(t = -4))
 
 fig <- (pa | pb) / (pc | pd) + plot_layout(heights = c(1.12, 1))

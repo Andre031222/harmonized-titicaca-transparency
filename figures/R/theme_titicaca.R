@@ -44,8 +44,8 @@ W1  <- 90;  W15 <- 140; W2 <- 190
 # Zonas troficas: de turbio (calido) a claro (frio), ordenadas por
 # transparencia media, de modo que el color codifique la variable real.
 PAL_ZONE <- c("Bahia de Puno" = "#C2582C",
-              "Lago Menor"    = "#D9A441",
-              "Lago Mayor"    = "#2E6E8E")
+              "Minor Lake"    = "#D9A441",
+              "Major Lake"    = "#2E6E8E")
 
 PAL_SENSOR <- c("Sentinel-2"  = "#2E6E8E",
                 "Landsat 8/9" = "#C2582C")

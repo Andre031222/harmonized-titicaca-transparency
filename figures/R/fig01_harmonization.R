@@ -35,28 +35,28 @@ pa <- ggplot(pa_df, aes(band_label, intercept_over_signal, fill = severity)) +
   geom_col(width = 0.62) +
   geom_text(aes(label = sprintf("%.1f×", intercept_over_signal)),
             vjust = -0.45, size = 2.55, colour = INK, fontface = "bold") +
-  annotate("text", x = 0.62, y = 1, label = "intercepto = señal", hjust = 0,
+  annotate("text", x = 0.62, y = 1, label = "intercept = signal", hjust = 0,
            vjust = -0.55, size = 2.3, colour = INK_2, fontface = "italic") +
   scale_fill_manual(values = PAL_VERDICT, guide = "none") +
   scale_y_log10(breaks = c(1, 3, 10, 30, 100),
                 labels = c("1×", "3×", "10×", "30×", "100×"),
                 expand = expansion(mult = c(0.02, 0.16))) +
-  labs(title = "(a)  El intercepto terrestre supera a la señal",
-       subtitle = paste("Coeficientes de Roy et al. (2016), ajustados sobre",
-                        "vegetación\ny suelo, frente a la reflectancia nativa",
-                        "de Landsat\nsobre el agua del lago"),
-       x = NULL, y = "Intercepto / señal nativa")
+  labs(title = "(a)  Land intercept exceeds the signal",
+       subtitle = paste("Roy et al. (2016) coefficients, fitted over vegetation",
+                        "and\nsoil, vs native Landsat reflectance over",
+                        "the lake water"),
+       x = NULL, y = "Intercept / native signal")
 
 # ---------------------------------------------------------------- panel (b) --
-# Si la armonizacion funcionara, un clasificador no deberia superar el azar.
+# Si la armonizacion funcionara, un clasificador no deberia superar el chance.
 chance <- sep$chance[1]
 pb_df <- sep |>
   mutate(label = recode(feature_set,
-                        all_12_features = "Las 12 features",
-                        visible_only    = "Solo visible",
-                        ratios_only     = "Solo ratios",
-                        nir_swir_only   = "Solo NIR + SWIR",
-                        green_blue_only = "Solo verde y azul"),
+                        all_12_features = "All 12 features",
+                        visible_only    = "Visible only",
+                        ratios_only     = "Ratios only",
+                        nir_swir_only   = "NIR + SWIR only",
+                        green_blue_only = "Green and blue only"),
          label = fct_reorder(label, accuracy))
 
 pb <- ggplot(pb_df, aes(accuracy, label)) +
@@ -70,17 +70,17 @@ pb <- ggplot(pb_df, aes(accuracy, label)) +
   geom_text(aes(label = sprintf("%.1f%%", 100 * accuracy)),
             hjust = -0.30, size = 2.5, colour = INK, fontface = "bold") +
   annotate("text", x = chance - 0.012, y = 0.62,
-           label = sprintf("azar = %.1f%%", 100 * chance),
+           label = sprintf("chance = %.1f%%", 100 * chance),
            hjust = 1, size = 2.3, colour = INK_2, fontface = "italic") +
   scale_x_continuous(labels = percent_format(accuracy = 1),
                      limits = c(0.5, 1.12),
                      breaks = seq(0.5, 1, 0.1),
                      expand = expansion(mult = c(0, 0))) +
-  labs(title = "(b)  Los sensores siguen distinguiéndose",
-       subtitle = paste("Exactitud de un Random Forest que predice el sensor",
-                        "de\norigen a partir de la reflectancia ya armonizada.",
-                        "Si la\narmonización funcionara, estaría en el azar"),
-       x = "Exactitud del clasificador", y = NULL)
+  labs(title = "(b)  Sensors remain distinguishable",
+       subtitle = paste("Accuracy of a Random Forest predicting the source",
+                        "sensor\nfrom the already harmonized reflectance.",
+                        "If harmonization\nworked, it would be at chance"),
+       x = "Classifier accuracy", y = NULL)
 
 # ---------------------------------------------------------------- panel (c) --
 # Acuerdo banda a banda en los 270 eventos vistos por ambos sensores.
@@ -109,12 +109,12 @@ pc <- pair |>
                                  setNames(rep(INK_2, 6), BAND_ORDER))) +
   scale_x_continuous(n.breaks = 3, labels = label_number(accuracy = 0.01)) +
   scale_y_continuous(n.breaks = 3, labels = label_number(accuracy = 0.01)) +
-  labs(title = "(c)  El azul es la banda que peor concuerda entre sensores",
-       subtitle = paste0("Reflectancia de Sentinel-2 frente a Landsat armonizado",
-                         " en los ", coefs$n_paired[1], " eventos observados\n",
-                         "por ambos sensores en la misma estación y fecha.",
-                         " La línea discontinua es 1:1"),
-       x = "Landsat 8/9 armonizado con Roy (2016)", y = "Sentinel-2") +
+  labs(title = "(c)  Blue is the band that agrees least between sensors",
+       subtitle = paste0("Sentinel-2 reflectance vs Roy-harmonized Landsat",
+                         " in the ", coefs$n_paired[1], " events observed\n",
+                         "by both sensors at the same station and date.",
+                         " The dashed line is 1:1"),
+       x = "Landsat 8/9 harmonized with Roy (2016)", y = "Sentinel-2") +
   theme(panel.grid.minor = element_blank())
 
 # ---------------------------------------------------------------- panel (d) --
@@ -124,8 +124,8 @@ pd_df <- sig |>
          harmonization = factor(
            harmonization,
            levels = c("Roy (land-derived)", "Local water recalibration"),
-           labels = c("Roy (2016), derivado sobre tierra",
-                      "Recalibración local sobre agua")))
+           labels = c("Roy (2016), land-derived",
+                      "Local water recalibration")))
 
 ratio_df <- pd_df |>
   select(harmonization, band_label, sensor, median) |>
@@ -144,11 +144,11 @@ pd <- ggplot(pd_df, aes(band_label, median, colour = sensor, group = sensor)) +
   scale_colour_manual(values = PAL_SENSOR, name = NULL) +
   scale_y_continuous(labels = label_number(accuracy = 0.01),
                      expand = expansion(mult = c(0.06, 0.20))) +
-  labs(title = "(d)  La recalibración local sobre agua sí armoniza las bandas",
-       subtitle = paste("Reflectancia mediana sobre el agua por sensor.",
-                        "Las etiquetas son el cociente Landsat / Sentinel-2:\n",
-                        "pasa de 15.4× en el NIR a ~1.0× en todas las bandas"),
-       x = NULL, y = "Reflectancia mediana") +
+  labs(title = "(d)  Local recalibration over water does harmonize bands",
+       subtitle = paste("Median reflectance over water by sensor.",
+                        "Labels are the Landsat / Sentinel-2 ratio:\n",
+                        "goes from 15.4x in NIR to ~1.0x in all bands"),
+       x = NULL, y = "Median reflectance") +
   theme(legend.position = "bottom",
         legend.margin = margin(t = -4))
 

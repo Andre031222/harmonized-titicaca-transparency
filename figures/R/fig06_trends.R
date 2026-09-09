@@ -1,11 +1,11 @@
 # ============================================================================
-# fig06_trends.R -- Tendencias, y por que hay que reportarlas con cuidado
+# fig06_trends.R -- Trends, y por que hay que reportarlas con cuidado
 #
 # (a) Medianas anuales de transparencia in-situ por zona, 2011-2024, con la
 #     pendiente de Sen sobre el registro COMPLETO
 # (b) El quinto error, que no llegamos a cometer: si la serie se empieza en
-#     2013 en vez de 2011, dos zonas pasan a "tendencia significativa". El
-#     veredicto lo fija el anio inicial, no el lago.
+#     2013 en vez de 2011, dos zonas pasan a "trend significant". El
+#     veredicto lo fija el anio inicial, not the lake.
 # ============================================================================
 
 source(file.path(local({a <- grep("^--file=", commandArgs(FALSE), value = TRUE)
@@ -15,8 +15,8 @@ source(file.path(local({a <- grep("^--file=", commandArgs(FALSE), value = TRUE)
 tr   <- read_tidy("annual_trends.csv")
 sens <- read_tidy("trend_start_year_sensitivity.csv")
 
-ZMAP <- c("Bahia de Puno" = "Bahía de Puno", "Lago Menor" = "Lago Menor",
-          "Lago Mayor" = "Lago Mayor")
+ZMAP <- c("Bahia de Puno" = "Puno Bay", "Minor Lake" = "Minor Lake",
+          "Major Lake" = "Major Lake")
 PAL2 <- setNames(unname(PAL_ZONE), unname(ZMAP))
 
 tr   <- tr   |> mutate(zl = factor(ZMAP[zone_label], levels = unname(ZMAP)))
@@ -24,7 +24,7 @@ sens <- sens |> mutate(zl = factor(ZMAP[zone_label], levels = unname(ZMAP)))
 
 # ---------------------------------------------------------------- panel (a) --
 lab <- tr |> distinct(zl, sen_slope_m_per_yr, p_value, n_years) |>
-  mutate(txt = sprintf("Sen %+.2f m/año   p = %.2f   (n = %d años)",
+  mutate(txt = sprintf("Sen %+.2f m/year   p = %.2f   (n = %d years)",
                        sen_slope_m_per_yr, p_value, n_years))
 
 gaps <- data.frame(year = c(2020, 2021, 2023))
@@ -42,11 +42,11 @@ pa <- ggplot(tr, aes(year, secchi_median, colour = zl)) +
   scale_colour_manual(values = PAL2, guide = "none") +
   scale_x_continuous(breaks = seq(2011, 2024, 3)) +
   scale_y_continuous(expand = expansion(mult = c(0.10, 0.28))) +
-  labs(title = "(a)  Ninguna zona muestra tendencia significativa en el registro completo",
-       subtitle = paste("Mediana anual de transparencia in situ (2011–2024,",
-                        "734 lecturas). Las líneas punteadas verticales\nmarcan",
-                        "los años sin campaña: 2020, 2021 y 2023"),
-       x = NULL, y = "Secchi mediano (m)")
+  labs(title = "(a)  No zone shows significant trend in the full record",
+       subtitle = paste("Annual median transparency in-situ (2011–2024,",
+                        "734 readings). The vertical dotted lines\nmark",
+                        "los years no campaign: 2020, 2021 y 2023"),
+       x = NULL, y = "Median Secchi (m)")
 
 # ---------------------------------------------------------------- panel (b) --
 pb <- ggplot(sens, aes(factor(start_year), sen_slope_m_per_yr)) +
@@ -59,19 +59,19 @@ pb <- ggplot(sens, aes(factor(start_year), sen_slope_m_per_yr)) +
             size = 2.15, colour = INK_2) +
   facet_wrap(~zl, nrow = 1) +
   scale_colour_manual(values = c(`TRUE` = ACCENT, `FALSE` = NEUTRAL),
-                      labels = c(`TRUE` = "p < 0.05", `FALSE` = "no significativa"),
+                      labels = c(`TRUE` = "p < 0.05", `FALSE` = "Not significant"),
                       name = NULL) +
   scale_shape_manual(values = c(`TRUE` = 17, `FALSE` = 16),
-                     labels = c(`TRUE` = "p < 0.05", `FALSE` = "no significativa"),
+                     labels = c(`TRUE` = "p < 0.05", `FALSE` = "Not significant"),
                      name = NULL) +
   scale_y_continuous(limits = c(-0.18, 0.62),
                      expand = expansion(mult = c(0.04, 0.14))) +
-  labs(title = "(b)  El veredicto lo fija el año en que empieza la serie, no el lago",
-       subtitle = paste("Mismo test de Mann–Kendall, mismos datos, distinto año",
-                        "de inicio. Arrancar en 2013 —el año con las\nmedianas",
-                        "más bajas del registro— convierte dos zonas en",
-                        "«significativamente más transparentes»"),
-       x = "Año en que empieza la serie", y = "Pendiente de Sen (m/año)") +
+  labs(title = "(b)  The verdict is set by the start year, not the lake",
+       subtitle = paste("Same Mann-Kendall test, same data, different start",
+                        "year. Starting in 2013 -the year with the lowest\nmedians-",
+                        "in the record- turns two zones into",
+                        "\"significantly more transparent\""),
+       x = "Start year of the series", y = "Sen's slope (m/year)") +
   theme(legend.position = "bottom", legend.margin = margin(t = -4))
 
 fig <- pa / pb + plot_layout(heights = c(1, 1.05))

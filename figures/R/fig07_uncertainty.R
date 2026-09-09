@@ -19,9 +19,9 @@ cov <- read_tidy("conformal_coverage.csv")
 iv  <- read_tidy("conformal_intervals.csv")
 wb  <- read_tidy("interval_width_by_secchi.csv")
 
-ZORD <- c("Bahia de Puno", "Lago Menor", "Lago Mayor")
-ZLAB <- c("Bahia de Puno" = "Bahía de Puno", "Lago Menor" = "Lago Menor",
-          "Lago Mayor" = "Lago Mayor")
+ZORD <- c("Bahia de Puno", "Minor Lake", "Major Lake")
+ZLAB <- c("Bahia de Puno" = "Puno Bay", "Minor Lake" = "Minor Lake",
+          "Major Lake" = "Major Lake")
 PAL2 <- setNames(unname(PAL_ZONE), unname(ZLAB))
 iv <- iv |> mutate(zl = factor(ZLAB[zone_label], levels = unname(ZLAB)))
 
@@ -41,9 +41,9 @@ pa <- ggplot(cov, aes(nominal, empirical_coverage)) +
                      limits = c(0.44, 1.01)) +
   coord_equal() +
   labs(title = "(a)  Calibrados… en promedio",
-       subtitle = paste("Cobertura empírica fuera de fold frente\na la nominal.",
-                        "La banda gris es ±3 puntos"),
-       x = "Nivel nominal", y = "Cobertura empírica")
+       subtitle = paste("Out-of-fold empirical coverage vs\nnominal.",
+                        "Gray band is ±3 points"),
+       x = "Nominal level", y = "Empirical coverage")
 
 # ---------------------------------------------------------------- panel (b) --
 iv_ord <- iv |> arrange(secchi) |> mutate(idx = row_number())
@@ -54,14 +54,14 @@ pb <- ggplot(iv_ord, aes(idx)) +
   geom_point(aes(y = secchi, colour = covered), size = 0.5, alpha = 0.75) +
   geom_line(aes(y = predicted), colour = "#1F4D66", linewidth = 0.4) +
   scale_colour_manual(values = c(`TRUE` = INK_2, `FALSE` = ACCENT),
-                      labels = c(`TRUE` = "dentro del intervalo",
-                                 `FALSE` = "fuera"), name = NULL) +
+                      labels = c(`TRUE` = "inside interval",
+                                 `FALSE` = "outside"), name = NULL) +
   labs(title = "(b)  El intervalo al 90% frente a la medida real",
-       subtitle = sprintf(paste("Match-ups ordenados por transparencia medida.",
-                                "La línea es la predicción,\nla banda el",
-                                "intervalo conformal al 90%%. %d de %d puntos",
-                                "quedan fuera"), n_out, nrow(iv_ord)),
-       x = "Match-up (ordenado por Secchi medido)", y = "Secchi (m)") +
+       subtitle = sprintf(paste("Match-ups ordered by measured transparency.",
+                                "The line is the prediction,\nthe band is the",
+                                "90%% conformal interval. %d out of %d points",
+                                "fall outside"), n_out, nrow(iv_ord)),
+       x = "Match-up (ordered by measured Secchi)", y = "Secchi (m)") +
   theme(legend.position = "bottom", legend.margin = margin(t = -4))
 
 # ---------------------------------------------------------------- panel (c) --
@@ -75,7 +75,7 @@ pc <- ggplot(wb2, aes(bin)) +
   geom_col(aes(y = 100 * coverage, fill = coverage < 0.85), width = 0.62) +
   geom_text(aes(y = 100 * coverage, label = sprintf("%.0f%%", 100 * coverage)),
             vjust = -0.5, size = 2.6, colour = INK, fontface = "bold") +
-  geom_text(aes(y = 8, label = sprintf("ancho\n%.1f m\nn = %d",
+  geom_text(aes(y = 8, label = sprintf("width\n%.1f m\nn = %d",
                                        mean_width, n)),
             vjust = 0, size = 2.1, colour = "white", lineheight = 1.05) +
   annotate("text", x = 0.6, y = 90, label = "nominal 90%", hjust = 0,
@@ -85,10 +85,10 @@ pc <- ggplot(wb2, aes(bin)) +
   scale_y_continuous(limits = c(0, 104),
                      expand = expansion(mult = c(0, 0.02))) +
   labs(title = "(c)  Pero no en los extremos del rango",
-       subtitle = paste("El conformal split usa un único cuantil global, así\nque",
-                        "la anchura es constante (~6.1 m) y el intervalo\nno puede",
-                        "adaptarse: infracubre en el agua más clara"),
-       x = "Secchi medido (m)", y = "Cobertura empírica (%)")
+       subtitle = paste("Split-conformal uses a single global quantile, so\n",
+                        "the width is constant (~6.1 m) and the interval\ncannot",
+                        "adapt: it undercovers in the clearest water"),
+       x = "Secchi medido (m)", y = "Empirical coverage (%)")
 
 fig <- (pa | pc) / pb + plot_layout(heights = c(1, 0.92))
 save_fig(fig, "fig07_conformal_uncertainty", W2, 165)

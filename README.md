@@ -88,7 +88,7 @@ per-pixel confidence band that a single R² cannot convey.
 
 ```
 .
-├── scripts/
+├── pipeline/
 │   ├── 10_build_matchups.py         Sentinel-2 satellite–field match-ups (GEE, real in-situ)
 │   ├── 12_build_matchups_landsat.py Landsat 8/9 harmonized match-ups (Roy et al. 2016) + thermal band
 │   ├── 11_train_secchi.py           Secchi model (GroupKFold, no leakage)
@@ -164,31 +164,31 @@ model and regenerate every figure without Earth Engine**:
 
 ```bash
 # Train the transparency model + figures + temporal trends
-python scripts/18_results_and_figures.py
+python pipeline/18_results_and_figures.py
 
 # Multi-mission model + SHAP + temperature validation
-python scripts/13_train_multimission.py
+python pipeline/13_train_multimission.py
 
 # Study-area map and cross-sensor spectral signature
-python scripts/19_map_and_harmonization.py
+python pipeline/19_map_and_harmonization.py
 
 # --- Q1 validation suite (regenerates the manuscript's core results) ---
 # Validation hierarchy (random/station/temporal/zone-out) + range restriction
-python scripts/21_validation_q1.py
+python pipeline/21_validation_q1.py
 # Conformal prediction intervals + head-to-head benchmark
-python scripts/22_uncertainty_benchmark.py
+python pipeline/22_uncertainty_benchmark.py
 # Validation-hierarchy and uncertainty-calibration figures
-python scripts/23_figures_q1.py
+python pipeline/23_figures_q1.py
 # Data-flow diagram + graphical abstract
-python scripts/24_dataflow_graphical_abstract.py
+python pipeline/24_dataflow_graphical_abstract.py
 ```
 
 To **rebuild the match-ups from scratch** (requires Earth Engine authentication):
 
 ```bash
-python scripts/10_build_matchups.py            # Sentinel-2 match-ups
-python scripts/12_build_matchups_landsat.py    # Landsat match-ups (harmonized)
-python scripts/20_transparency_map.py          # lake-wide transparency map
+python pipeline/10_build_matchups.py            # Sentinel-2 match-ups
+python pipeline/12_build_matchups_landsat.py    # Landsat match-ups (harmonized)
+python pipeline/20_transparency_map.py          # lake-wide transparency map
 ```
 
 ---
@@ -254,8 +254,8 @@ If you use this code or data, please cite the manuscript:
 
 ```bibtex
 @article{vilcasolorzano2026titicaca,
-  author  = {Mamani-Calisaya, Milton Vladimir and Vilca-Solorzano, Richar Andre
-             and Yana-Yucra, Dina Maribel and Torres-Cruz, Fred},
+  author  = {Yana-Yucra, Dina Maribel and Vilca-Solorzano, Richar Andre
+             and Torres-Cruz, Fred},
   title   = {Transferable Satellite-Based Monitoring Protocol for Water
              Transparency in High-Altitude Oligotrophic Lakes: Harmonized
              {Sentinel-2}/{Landsat} Retrieval, Rigorous Validation and
