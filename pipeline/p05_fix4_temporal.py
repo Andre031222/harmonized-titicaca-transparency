@@ -43,23 +43,50 @@ def load():
     return d
 
 
-def load_full_insitu():
-    """Registro in-situ COMPLETO (2011-2024), no solo el que tuvo imagen limpia.
+def annual_medians():
+    """Medianas anuales de Secchi por zona sobre el registro in-situ COMPLETO
+    (2011-2024), no solo sobre las fechas que tuvieron imagen limpia.
 
     Las tendencias son una afirmacion sobre el lago, no sobre la disponibilidad
-    de imagenes sin nubes, asi que deben calcularse sobre este registro.
+    de imagenes sin nubes, asi que deben calcularse sobre el registro completo.
+
+    Ese registro crudo es de IMARPE y no se redistribuye en el repositorio. Lo
+    unico que necesitan Mann-Kendall y el analisis de sensibilidad al anio
+    inicial es la mediana anual por zona, asi que ese agregado si se versiona
+    en data/processed/: sin el, quien clonara el repositorio no podria pasar de
+    aqui. Cuando el crudo esta disponible se recalcula y se reescribe.
     """
     from p00_config import DATA
-    j = pd.read_csv(DATA / "external_validation/jairo_titicaca_wq.csv")
-    j.columns = [c.replace("\xf1", "n").replace("�", "n") for c in j.columns]
-    j["mon"] = j["Mes"].astype(str).str.upper().str[:3].map(MONTH_MAP)
-    j["date"] = pd.to_datetime(dict(year=j["Ano"], month=j["mon"], day=j["Dia"]),
-                               errors="coerce")
-    j = j.rename(columns={"Transparencia_m": "secchi", "Zona": "zona",
-                          "Estacion": "station"})
-    j = j.dropna(subset=["date"])
-    j["year"] = j["date"].dt.year
-    return j[j.secchi.notna()].reset_index(drop=True)
+    raw = DATA / "external_validation/jairo_titicaca_wq.csv"
+    agg = PROC / "insitu_annual_medians.csv"
+
+    if raw.exists():
+        j = pd.read_csv(raw)
+        j.columns = [c.replace("\xf1", "n").replace("�", "n") for c in j.columns]
+        j["mon"] = j["Mes"].astype(str).str.upper().str[:3].map(MONTH_MAP)
+        j["date"] = pd.to_datetime(dict(year=j["Ano"], month=j["mon"], day=j["Dia"]),
+                                   errors="coerce")
+        j = j.rename(columns={"Transparencia_m": "secchi", "Zona": "zona",
+                              "Estacion": "station"})
+        j = j.dropna(subset=["date"])
+        j["year"] = j["date"].dt.year
+        j = j[j.secchi.notna()]
+        med = (j.groupby(["zona", "year"], as_index=False)
+                 .agg(secchi_median=("secchi", "median"), n=("secchi", "size"))
+                 .sort_values(["zona", "year"]))
+        med.to_csv(agg, index=False, float_format="%.4f")
+        print(f"  registro in-situ crudo: {len(j)} lecturas de Secchi -> "
+              f"agregado a data/processed/{agg.name}")
+        return med
+
+    if agg.exists():
+        print(f"  registro crudo no disponible (no se redistribuye); se usan "
+              f"las\n  medianas anuales versionadas en data/processed/{agg.name}")
+        return pd.read_csv(agg)
+
+    raise FileNotFoundError(
+        "Falta el registro in-situ y su agregado anual: no se pueden calcular "
+        "las tendencias.")
 
 
 def mann_kendall(x):
@@ -145,12 +172,13 @@ def main():
     # 812 match-ups. La diferencia NO es cosmetica: ver el analisis de
     # sensibilidad al anio inicial mas abajo.
     banner("(4) TENDENCIAS ANUALES (Mann-Kendall / Sen) -- registro in-situ completo", "-")
-    insitu = load_full_insitu()
-    print(f"  registro in-situ completo: n={len(insitu)} lecturas de Secchi, "
-          f"anios {sorted(insitu.year.unique())}\n")
+    med = annual_medians()
+    print(f"  registro in-situ completo: n={int(med.n.sum())} lecturas de Secchi, "
+          f"anios {sorted(int(y) for y in med.year.unique())}\n")
     trows, series = [], []
     for z in ZONES:
-        sub = insitu[insitu.zona == z].groupby("year").secchi.median()
+        sub = (med[med.zona == z].set_index("year")
+               .secchi_median.sort_index())
         if len(sub) < 4:
             continue
         z_stat, p, slope = mann_kendall(sub.values)
@@ -178,8 +206,8 @@ def main():
     print(f"  {'Zona':15s} {'inicio':>7s} {'n':>3s} {'Sen(m/anio)':>12s} {'p':>8s}  veredicto")
     for z in ZONES:
         for start in [2011, 2012, 2013, 2014]:
-            sub = (insitu[(insitu.zona == z) & (insitu.year >= start)]
-                   .groupby("year").secchi.median())
+            sub = (med[(med.zona == z) & (med.year >= start)]
+                   .set_index("year").secchi_median.sort_index())
             if len(sub) < 4:
                 continue
             _, p, slope = mann_kendall(sub.values)

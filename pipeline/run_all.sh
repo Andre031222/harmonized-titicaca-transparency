@@ -13,7 +13,9 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PY="$ROOT/.venv/bin/python"
+# .venv es lo que documenta el README, pero no se impone: si no esta, se usa
+# el python3 del entorno activo.
+if [ -x "$ROOT/.venv/bin/python" ]; then PY="$ROOT/.venv/bin/python"; else PY="python3"; fi
 cd "$ROOT/pipeline"
 
 FAST=0; NO_TEX=0
@@ -68,7 +70,9 @@ for f in fig0*.R; do
   Rscript "$f" 2>&1 | grep -E "guardado|Error" || true
 done
 
-if [ "$NO_TEX" -eq 0 ] && command -v pdflatex >/dev/null 2>&1; then
+# El manuscrito no forma parte del repositorio publico; si no esta, se omite.
+if [ "$NO_TEX" -eq 0 ] && command -v pdflatex >/dev/null 2>&1 \
+   && [ -f "$ROOT/manuscript/jglr/titicaca_transparency_jglr.tex" ]; then
   step "manuscrito (LaTeX)"
   cd "$ROOT/manuscript/jglr"
   cp "$ROOT"/results/figures_r/*.png figures/ 2>/dev/null || true

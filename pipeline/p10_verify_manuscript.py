@@ -200,6 +200,11 @@ def main():
     print("=" * 78)
     print("p10 -- VERIFICACION DEL MANUSCRITO")
     print("=" * 78)
+    if not TEX.exists():
+        print("\n  El manuscrito no esta en este arbol (manuscript/ no forma "
+              "parte\n  del repositorio publico). No hay nada que verificar.")
+        print("=" * 78)
+        return 0
     tex = TEX.read_text(encoding="utf-8")
     numbers = NUMBERS.read_text(encoding="utf-8")
 
