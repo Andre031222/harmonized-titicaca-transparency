@@ -18,9 +18,14 @@ dist <- read_tidy("insitu_distribution.csv")
 seas <- read_tidy("seasonality.csv")
 
 MES <- c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
-ZORD <- c("Bahia de Puno", "Minor Lake", "Major Lake")
-ZMAP <- c("BAHIA PUNO" = "Bahia de Puno", "LAGO MENOR" = "Minor Lake",
-          "LAGO MAYOR" = "Major Lake")
+# El pipeline exporta month_label y season en espanol. El panel (a) indexa MES
+# por numero de mes y siempre estuvo bien; el (b) casaba por nombre.
+MES_ES    <- setNames(MES, c("Ene","Feb","Mar","Abr","May","Jun",
+                             "Jul","Ago","Sep","Oct","Nov","Dic"))
+SEASON_ES <- c("Lluvias (Dic-Mar)" = "Wet season (Dec-Mar)",
+               "Transicion"        = "Transition",
+               "Seca (Jul-Oct)"    = "Dry season (Jul-Oct)")
+
 
 # ---------------------------------------------------------------- panel (a) --
 grid_full <- expand.grid(year = seq(min(dist$year), max(dist$year)),
@@ -63,14 +68,14 @@ pa <- ggplot(cov, aes(mes, factor(year))) +
 
 # ---------------------------------------------------------------- panel (b) --
 seas2 <- seas |>
-  mutate(mes = factor(month_label, levels = MES),
-         season = factor(season, levels = c("Wet season (Dec-Mar)", "Transition",
-                                            "Dry season (Jul-Oct)"),
-                         labels = c("Wet season (Dec-Mar)", "Transition",
-                                    "Dry season (Jul-Oct)")))
+  mutate(mes    = factor(map_strict(month_label, MES_ES, "mes"), levels = MES),
+         season = factor(map_strict(season, SEASON_ES, "temporada"),
+                         levels = unname(SEASON_ES)))
 
 pb <- ggplot(seas2, aes(mes, n, fill = season)) +
   geom_col(width = 0.7) +
+  # doce meses no caben en una fila a media pagina: salian pegados
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
   geom_text(data = filter(seas2, n > 0), aes(label = n), vjust = -0.4,
             size = 2.35, colour = INK, fontface = "bold") +
   annotate("text", x = 3.1, y = 235, label = "0 match-ups in the\nentire wet season",
@@ -81,13 +86,13 @@ pb <- ggplot(seas2, aes(mes, n, fill = season)) +
                                "Dry season (Jul-Oct)" = "#2E6E8E"), name = NULL) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.14))) +
   labs(title = "(b)  Only dry season data exists",
-       subtitle = paste("Puno Bay blooms occur\nduring the",
-                        "wet season, which the dataset does\nnot cover at all"),
+       subtitle = paste("Bahía de Puno blooms occur during\nthe wet season,",
+                        "which the dataset\ndoes not cover at all"),
        x = NULL, y = "Match-ups") +
   theme(legend.position = "bottom", legend.margin = margin(t = -4))
 
 # ---------------------------------------------------------------- panel (c) --
-pc_df <- dist |> mutate(zone_label = factor(ZMAP[zona], levels = ZORD))
+pc_df <- dist |> mutate(zone_label = zone_factor(zona))
 stats <- pc_df |> group_by(zone_label) |>
   summarise(n = n(), med = median(secchi), mn = mean(secchi),
             sd = sd(secchi), .groups = "drop") |>
@@ -102,11 +107,12 @@ pc <- ggplot(pc_df, aes(secchi, zone_label, fill = zone_label)) +
             colour = INK_2, lineheight = 1.05) +
   scale_fill_manual(values = PAL_ZONE, guide = "none") +
   scale_x_continuous(breaks = seq(0, 16, 4), limits = c(0, 18)) +
+  scale_y_discrete(expand = expansion(add = c(0.6, 0.95))) +
   labs(title = "(c)  The trophic gradient dominates Secchi",
-       subtitle = paste("Only 73 distinct values in 812 match-ups:\n",
-                        "readings are rounded to half a meter, so\nthe RMSE of",
-                        "1.86 m borders the granularity of the",
-                        "reference measurement itself"),
+       subtitle = paste("Only 73 distinct values in 812 match-ups:",
+                        "\nreadings are rounded to half a metre, so the",
+                        "\nRMSE of 1.86 m borders the granularity of",
+                        "\nthe reference measurement itself"),
        x = "Secchi disk depth (m)", y = NULL)
 
 fig <- pa / (pb | pc) + plot_layout(heights = c(1.25, 1))

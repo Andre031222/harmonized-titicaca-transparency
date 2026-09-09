@@ -16,15 +16,19 @@ imp  <- read_tidy("shap_importance.csv")
 dep  <- read_tidy("shap_dependence.csv")
 retr <- read_tidy("retrievability.csv")
 
-ZLAB <- c("BAHIA PUNO" = "Puno Bay", "LAGO MENOR" = "Minor Lake",
-          "LAGO MAYOR" = "Major Lake")
-PAL2 <- setNames(unname(PAL_ZONE), unname(ZLAB))
-
 # ---------------------------------------------------------------- panel (a) --
+BAND_GROUP <- c("Verde/azul" = "Green/blue", "NIR/SWIR" = "NIR/SWIR",
+                "Otras" = "Other")
+band_group_factor <- function(x) {
+  out <- unname(BAND_GROUP[as.character(x)])
+  bad <- unique(as.character(x)[is.na(out)])
+  if (length(bad)) stop("band_group no reconocido: ", paste(bad, collapse = ", "))
+  factor(out, levels = unname(BAND_GROUP))
+}
+
 pa_df <- imp |>
   mutate(label = fct_reorder(label, mean_abs_shap),
-         grupo = factor(band_group,
-                        levels = c("Green/blue", "NIR/SWIR", "Other")))
+         grupo = band_group_factor(band_group))
 
 pa <- ggplot(pa_df, aes(mean_abs_shap, label, fill = grupo)) +
   geom_col(width = 0.62) +
@@ -35,10 +39,9 @@ pa <- ggplot(pa_df, aes(mean_abs_shap, label, fill = grupo)) +
                                "Other"      = NEUTRAL), name = NULL) +
   scale_x_continuous(expand = expansion(mult = c(0, 0.16))) +
   labs(title = "(a)  Green and blue dominate attribution",
-       subtitle = paste("Mean |SHAP| computed OUT-OF-FOLD: each observation",
-                        "is explained by the
-model that didn't see it. Labels",
-                        "are the share of the total"),
+       subtitle = paste("Mean |SHAP| computed OUT-OF-FOLD: each",
+                        "\nobservation is explained by the model that",
+                        "\ndid not see it. Labels are the share of the total"),
        x = "Mean |SHAP| (m)", y = NULL) +
   theme(legend.position = "bottom", legend.margin = margin(t = -4))
 
@@ -52,21 +55,21 @@ qlim <- quantile(pb_all$value, c(0.01, 0.99), na.rm = TRUE)
 n_drop <- sum(pb_all$value < qlim[1] | pb_all$value > qlim[2])
 pb_df <- pb_all |>
   filter(value >= qlim[1], value <= qlim[2]) |>
-  mutate(zl = factor(ZLAB[zona], levels = unname(ZLAB)))
+  mutate(zl = zone_factor(zona))
 
 pb <- ggplot(pb_df, aes(value, shap)) +
   geom_hline(yintercept = 0, colour = INK, linewidth = 0.35, linetype = "22") +
   geom_point(aes(colour = zl), size = 0.7, alpha = 0.45) +
   geom_smooth(method = "loess", formula = y ~ x, se = TRUE, span = 0.9,
               linewidth = 0.6, colour = INK, fill = NEUTRAL, alpha = 0.20) +
-  scale_colour_manual(values = PAL2, name = NULL) +
-  labs(title = sprintf("(b)  How %s acts on the prediction", imp$label[1]),
-       subtitle = sprintf(paste("SHAP value vs. feature value.",
-                                "Greener water relative to blue pushes
-the",
-                                "prediction toward less transparent water.",
-                                "Trimmed to 1-99th percentile
-(%d extreme",
+  scale_colour_manual(values = PAL_ZONE, name = NULL) +
+  guides(colour = guide_legend(nrow = 2,
+                               override.aes = list(size = 1.6, alpha = 1))) +
+  labs(title = sprintf("(b)  How %s acts", imp$label[1]),
+       subtitle = sprintf(paste("SHAP value vs. feature value. Greener",
+                                "\nwater relative to blue pushes the",
+                                "prediction\ntoward less transparent water.",
+                                "Trimmed to\nthe 1-99th percentile (%d extreme",
                                 "points out)"), n_drop),
        x = imp$label[1], y = "SHAP Contribution (m)") +
   theme(legend.position = "bottom", legend.margin = margin(t = -4))

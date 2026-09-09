@@ -35,16 +35,16 @@ pa <- ggplot(pa_df, aes(band_label, intercept_over_signal, fill = severity)) +
   geom_col(width = 0.62) +
   geom_text(aes(label = sprintf("%.1f×", intercept_over_signal)),
             vjust = -0.45, size = 2.55, colour = INK, fontface = "bold") +
-  annotate("text", x = 0.62, y = 1, label = "intercept = signal", hjust = 0,
-           vjust = -0.55, size = 2.3, colour = INK_2, fontface = "italic") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
   scale_fill_manual(values = PAL_VERDICT, guide = "none") +
   scale_y_log10(breaks = c(1, 3, 10, 30, 100),
                 labels = c("1×", "3×", "10×", "30×", "100×"),
                 expand = expansion(mult = c(0.02, 0.16))) +
   labs(title = "(a)  Land intercept exceeds the signal",
-       subtitle = paste("Roy et al. (2016) coefficients, fitted over vegetation",
-                        "and\nsoil, vs native Landsat reflectance over",
-                        "the lake water"),
+       subtitle = paste("Roy et al. (2016) coefficients, fitted over",
+                        "\nvegetation and soil, vs native Landsat",
+                        "\nreflectance over the lake water. The dashed",
+                        "\nline marks intercept = signal"),
        x = NULL, y = "Intercept / native signal")
 
 # ---------------------------------------------------------------- panel (b) --
@@ -69,17 +69,18 @@ pb <- ggplot(pb_df, aes(accuracy, label)) +
   geom_point(size = 2.4, colour = ACCENT) +
   geom_text(aes(label = sprintf("%.1f%%", 100 * accuracy)),
             hjust = -0.30, size = 2.5, colour = INK, fontface = "bold") +
-  annotate("text", x = chance - 0.012, y = 0.62,
+  annotate("text", x = chance + 0.014, y = 0.62,
            label = sprintf("chance = %.1f%%", 100 * chance),
-           hjust = 1, size = 2.3, colour = INK_2, fontface = "italic") +
+           hjust = 0, size = 2.3, colour = INK_2, fontface = "italic") +
   scale_x_continuous(labels = percent_format(accuracy = 1),
                      limits = c(0.5, 1.12),
                      breaks = seq(0.5, 1, 0.1),
                      expand = expansion(mult = c(0, 0))) +
   labs(title = "(b)  Sensors remain distinguishable",
-       subtitle = paste("Accuracy of a Random Forest predicting the source",
-                        "sensor\nfrom the already harmonized reflectance.",
-                        "If harmonization\nworked, it would be at chance"),
+       subtitle = paste("Accuracy of a Random Forest predicting the",
+                        "\nsource sensor from already harmonized",
+                        "\nreflectance. If harmonization worked,",
+                        "\nit would be at chance"),
        x = "Classifier accuracy", y = NULL)
 
 # ---------------------------------------------------------------- panel (c) --
@@ -145,9 +146,9 @@ pd <- ggplot(pd_df, aes(band_label, median, colour = sensor, group = sensor)) +
   scale_y_continuous(labels = label_number(accuracy = 0.01),
                      expand = expansion(mult = c(0.06, 0.20))) +
   labs(title = "(d)  Local recalibration over water does harmonize bands",
-       subtitle = paste("Median reflectance over water by sensor.",
-                        "Labels are the Landsat / Sentinel-2 ratio:\n",
-                        "goes from 15.4x in NIR to ~1.0x in all bands"),
+       subtitle = paste("Median reflectance over water by sensor. Labels are",
+                        "the Landsat / Sentinel-2 ratio:\nit goes from 15.4x in",
+                        "NIR to ~1.0x in every band"),
        x = NULL, y = "Median reflectance") +
   theme(legend.position = "bottom",
         legend.margin = margin(t = -4))

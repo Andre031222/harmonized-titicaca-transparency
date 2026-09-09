@@ -19,11 +19,7 @@ cov <- read_tidy("conformal_coverage.csv")
 iv  <- read_tidy("conformal_intervals.csv")
 wb  <- read_tidy("interval_width_by_secchi.csv")
 
-ZORD <- c("Bahia de Puno", "Minor Lake", "Major Lake")
-ZLAB <- c("Bahia de Puno" = "Puno Bay", "Minor Lake" = "Minor Lake",
-          "Major Lake" = "Major Lake")
-PAL2 <- setNames(unname(PAL_ZONE), unname(ZLAB))
-iv <- iv |> mutate(zl = factor(ZLAB[zone_label], levels = unname(ZLAB)))
+iv <- iv |> mutate(zl = zone_factor(zone_label))
 
 # ---------------------------------------------------------------- panel (a) --
 pa <- ggplot(cov, aes(nominal, empirical_coverage)) +
@@ -35,12 +31,14 @@ pa <- ggplot(cov, aes(nominal, empirical_coverage)) +
   geom_point(size = 2.6, colour = "#2E6E8E") +
   geom_text(aes(label = sprintf("%.1f%%", 100 * empirical_coverage)),
             hjust = -0.22, vjust = 1.3, size = 2.4, colour = INK) +
+  # hasta 1.13, no 1.01: la etiqueta "94.3%" va a la derecha de su punto y
+  # quedaba cortada por el borde del panel
   scale_x_continuous(labels = percent_format(accuracy = 1),
-                     limits = c(0.44, 1.01)) +
+                     breaks = c(0.6, 0.8, 1.0), limits = c(0.44, 1.13)) +
   scale_y_continuous(labels = percent_format(accuracy = 1),
                      limits = c(0.44, 1.01)) +
   coord_equal() +
-  labs(title = "(a)  Calibrados… en promedio",
+  labs(title = "(a)  Calibrated, on average",
        subtitle = paste("Out-of-fold empirical coverage vs\nnominal.",
                         "Gray band is ±3 points"),
        x = "Nominal level", y = "Empirical coverage")
@@ -56,7 +54,7 @@ pb <- ggplot(iv_ord, aes(idx)) +
   scale_colour_manual(values = c(`TRUE` = INK_2, `FALSE` = ACCENT),
                       labels = c(`TRUE` = "inside interval",
                                  `FALSE` = "outside"), name = NULL) +
-  labs(title = "(b)  El intervalo al 90% frente a la medida real",
+  labs(title = "(b)  The 90% interval vs the measurement",
        subtitle = sprintf(paste("Match-ups ordered by measured transparency.",
                                 "The line is the prediction,\nthe band is the",
                                 "90%% conformal interval. %d out of %d points",
@@ -84,11 +82,11 @@ pc <- ggplot(wb2, aes(bin)) +
                     guide = "none") +
   scale_y_continuous(limits = c(0, 104),
                      expand = expansion(mult = c(0, 0.02))) +
-  labs(title = "(c)  Pero no en los extremos del rango",
-       subtitle = paste("Split-conformal uses a single global quantile, so\n",
-                        "the width is constant (~6.1 m) and the interval\ncannot",
-                        "adapt: it undercovers in the clearest water"),
-       x = "Secchi medido (m)", y = "Empirical coverage (%)")
+  labs(title = "(c)  But not at the ends of the range",
+       subtitle = paste("Split-conformal uses a single global quantile,",
+                        "so the\nwidth is constant (~6.1 m) and the interval",
+                        "cannot\nadapt: it undercovers in the clearest water"),
+       x = "Measured Secchi (m)", y = "Empirical coverage (%)")
 
 fig <- (pa | pc) / pb + plot_layout(heights = c(1, 0.92))
 save_fig(fig, "fig07_conformal_uncertainty", W2, 165)

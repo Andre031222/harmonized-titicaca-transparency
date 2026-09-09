@@ -2,9 +2,9 @@
 # fig03_validation.R -- Por que la unidad de bloqueo es la CAMPANA
 #
 # (a) Modelos nulos: una unidad de bloqueo solo funciona si su propio nulo
-#     colapsa  ella. El nulo de campana cae a ~0; los de zona y estacion no.
+#     colapsa bajo ella. El nulo de campana cae a ~0; los de zona y estacion no.
 # (b) Jerarquia de validacion: aleatorio == estacion >> campana > anio, y el
-#     colapso total  extrapolacion a una zona no vista.
+#     colapso total bajo extrapolacion a una zona no vista.
 # ============================================================================
 
 source(file.path(local({a <- grep("^--file=", commandArgs(FALSE), value = TRUE)
@@ -37,8 +37,8 @@ pa <- ggplot(pa_df, aes(R2, label, fill = collapsed)) +
   labs(title = "(a)  Only campaign blocking neutralizes its own null model",
        subtitle = paste("R² of models predicting only the group mean, with",
                         "folds blocked by campaign.\nA blocking unit",
-                        "is effective if and only if its null model collapses to zero under it",
-                        ""),
+                        "is effective if and only if its own null",
+                        "model collapses to zero under it"),
        x = "Null model R²", y = NULL)
 
 # ---------------------------------------------------------------- panel (b) --
@@ -47,9 +47,9 @@ LAB <- c(random_kfold          = "Random K-fold",
          by_campaign_date      = "CAMPAIGN blocking",
          by_year               = "YEAR blocking",
          one_record_per_event  = "One record per event",
-         `LAGO MENOR`          = "Extrapolate to Minor Lake",
-         `BAHIA PUNO`          = "Extrapolate to Puno Bay",
-         `LAGO MAYOR`          = "Extrapolate to Major Lake")
+         `LAGO MENOR`          = "Extrapolate to Lago Menor",
+         `BAHIA PUNO`          = "Extrapolate to Bahía de Puno",
+         `LAGO MAYOR`          = "Extrapolate to Lago Mayor")
 
 GRP <- c(random_kfold = "Validation design", by_station = "Validation design",
          by_campaign_date = "Validation design", by_year = "Validation design",

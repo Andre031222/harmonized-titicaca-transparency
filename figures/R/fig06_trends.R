@@ -15,12 +15,8 @@ source(file.path(local({a <- grep("^--file=", commandArgs(FALSE), value = TRUE)
 tr   <- read_tidy("annual_trends.csv")
 sens <- read_tidy("trend_start_year_sensitivity.csv")
 
-ZMAP <- c("Bahia de Puno" = "Puno Bay", "Minor Lake" = "Minor Lake",
-          "Major Lake" = "Major Lake")
-PAL2 <- setNames(unname(PAL_ZONE), unname(ZMAP))
-
-tr   <- tr   |> mutate(zl = factor(ZMAP[zone_label], levels = unname(ZMAP)))
-sens <- sens |> mutate(zl = factor(ZMAP[zone_label], levels = unname(ZMAP)))
+tr   <- tr   |> mutate(zl = zone_factor(zone_label))
+sens <- sens |> mutate(zl = zone_factor(zone_label))
 
 # ---------------------------------------------------------------- panel (a) --
 lab <- tr |> distinct(zl, sen_slope_m_per_yr, p_value, n_years) |>
@@ -36,16 +32,18 @@ pa <- ggplot(tr, aes(year, secchi_median, colour = zl)) +
               linetype = "22", alpha = 0.6) +
   geom_line(linewidth = 0.55) +
   geom_point(size = 1.7) +
-  geom_text(data = lab, aes(x = 2011, y = Inf, label = txt), hjust = 0,
-            vjust = 1.6, size = 2.35, inherit.aes = FALSE, colour = INK_2) +
+  geom_label(data = lab, aes(x = 2011, y = Inf, label = txt), hjust = 0,
+             vjust = 1.35, size = 2.35, inherit.aes = FALSE, colour = INK_2,
+             fill = alpha("white", 0.85), label.size = 0,
+             label.padding = unit(1.4, "pt")) +
   facet_wrap(~zl, nrow = 1) +
-  scale_colour_manual(values = PAL2, guide = "none") +
+  scale_colour_manual(values = PAL_ZONE, guide = "none") +
   scale_x_continuous(breaks = seq(2011, 2024, 3)) +
   scale_y_continuous(expand = expansion(mult = c(0.10, 0.28))) +
   labs(title = "(a)  No zone shows significant trend in the full record",
        subtitle = paste("Annual median transparency in-situ (2011–2024,",
                         "734 readings). The vertical dotted lines\nmark",
-                        "los years no campaign: 2020, 2021 y 2023"),
+                        "the years with no campaign: 2020, 2021 and 2023"),
        x = NULL, y = "Median Secchi (m)")
 
 # ---------------------------------------------------------------- panel (b) --
@@ -55,8 +53,10 @@ pb <- ggplot(sens, aes(factor(start_year), sen_slope_m_per_yr)) +
                    colour = significant_at_005), linewidth = 0.85) +
   geom_point(aes(colour = significant_at_005, shape = significant_at_005),
              size = 2.5) +
-  geom_text(aes(label = sprintf("p=%.3f", p_value)), vjust = -1.15,
-            size = 2.15, colour = INK_2) +
+  geom_label(aes(label = sprintf("p=%.3f", p_value)), vjust = -0.85,
+             size = 2.15, colour = INK_2, fill = alpha("white", 0.85),
+             label.size = 0, label.padding = unit(1.2, "pt"),
+             show.legend = FALSE) +
   facet_wrap(~zl, nrow = 1) +
   scale_colour_manual(values = c(`TRUE` = ACCENT, `FALSE` = NEUTRAL),
                       labels = c(`TRUE` = "p < 0.05", `FALSE` = "Not significant"),
@@ -68,8 +68,8 @@ pb <- ggplot(sens, aes(factor(start_year), sen_slope_m_per_yr)) +
                      expand = expansion(mult = c(0.04, 0.14))) +
   labs(title = "(b)  The verdict is set by the start year, not the lake",
        subtitle = paste("Same Mann-Kendall test, same data, different start",
-                        "year. Starting in 2013 -the year with the lowest\nmedians-",
-                        "in the record- turns two zones into",
+                        "year. Starting in 2013 — the year\nwith the lowest",
+                        "medians in the record — turns two zones into",
                         "\"significantly more transparent\""),
        x = "Start year of the series", y = "Sen's slope (m/year)") +
   theme(legend.position = "bottom", legend.margin = margin(t = -4))

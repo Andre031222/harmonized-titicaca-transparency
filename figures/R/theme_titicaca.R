@@ -43,9 +43,44 @@ W1  <- 90;  W15 <- 140; W2 <- 190
 # --- paleta -----------------------------------------------------------------
 # Zonas troficas: de turbio (calido) a claro (frio), ordenadas por
 # transparencia media, de modo que el color codifique la variable real.
-PAL_ZONE <- c("Bahia de Puno" = "#C2582C",
-              "Minor Lake"    = "#D9A441",
-              "Major Lake"    = "#2E6E8E")
+# Los tres sectores del lago son toponimos, no terminos traducibles: el
+# manuscrito los nombra en espanol y las figuras deben coincidir. El pipeline
+# los exporta en dos formas (zona en mayusculas, zone_label sin tildes); la
+# tilde se pone aqui, en la capa de presentacion, sin tocar las claves de los
+# datos.
+#
+# zone_factor() aborta ante una zona que no reconoce. Esto no es paranoia: una
+# busqueda fallida devuelve NA en silencio, y asi fue como fig04, fig06 y
+# fig07 llegaron a un PDF con "Lago Mayor" y "Lago Menor" fundidos en una sola
+# categoria "NA" sin que nada avisara.
+ZONE_ORDER <- c("Bahía de Puno", "Lago Menor", "Lago Mayor")
+ZONE_NAME  <- c("BAHIA PUNO"    = "Bahía de Puno",
+                "LAGO MENOR"    = "Lago Menor",
+                "LAGO MAYOR"    = "Lago Mayor",
+                "Bahia de Puno" = "Bahía de Puno",
+                "Lago Menor"    = "Lago Menor",
+                "Lago Mayor"    = "Lago Mayor")
+
+# Traduce valores de datos a etiquetas de presentacion y aborta si aparece un
+# valor que el mapa no cubre. Traducir los NIVELES de un factor en vez de los
+# datos manda los valores no traducidos a NA sin avisar; asi es como agosto
+# (359 match-ups) acabo dibujado como una barra llamada "NA".
+map_strict <- function(x, map, what = "valor") {
+  out <- unname(map[as.character(x)])
+  bad <- unique(as.character(x)[is.na(out)])
+  if (length(bad)) stop(what, " no reconocido: ", paste(bad, collapse = ", "))
+  out
+}
+
+zone_factor <- function(x) {
+  out <- unname(ZONE_NAME[as.character(x)])
+  bad <- unique(as.character(x)[is.na(out)])
+  if (length(bad)) stop("zona no reconocida: ", paste(bad, collapse = ", "),
+                        "  (revisar ZONE_NAME en theme_titicaca.R)")
+  factor(out, levels = ZONE_ORDER)
+}
+
+PAL_ZONE <- setNames(c("#C2582C", "#D9A441", "#2E6E8E"), ZONE_ORDER)
 
 PAL_SENSOR <- c("Sentinel-2"  = "#2E6E8E",
                 "Landsat 8/9" = "#C2582C")
