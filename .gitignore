@@ -43,6 +43,3 @@ results/models/*.pt
 *.DS_Store
 Thumbs.db
 logs/
-
-# cache de la extraccion de p11 (26 MB, regenerable con Earth Engine)
-data/processed/window_sensitivity_raw.csv

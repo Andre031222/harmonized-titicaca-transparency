@@ -177,8 +177,10 @@ The re-extraction doubles as a reproducibility check: at ±10 days it recovers *
 810** unique match-ups from the published analysis, with per-band reflectance
 correlating at **r ≥ 0.995** and a median difference of zero.
 
-Run it with [`p11`](pipeline/p11_window_sensitivity.py) — the only stage needing Earth
-Engine credentials.
+The extraction it rests on is versioned
+(`data/processed/window_sensitivity_raw.csv`, 184 KB), so the analysis re-runs from this
+repository with `python pipeline/p11_window_sensitivity.py --eval`. Re-extracting from
+scratch is the only stage that needs Earth Engine credentials.
 
 ### 5. Uncertainty is calibrated on average, not conditionally
 
@@ -244,8 +246,9 @@ held to the same standard as the positive one.
 │   └── run_all.sh                       reproduces everything, end to end
 ├── figures/R/                fig01–fig08 (ggplot2) + shared theme and palette
 ├── data/
-│   ├── processed/            match-up tables (matchups_s2.csv, matchups_ls.csv)
-│   │                         + insitu_annual_medians.csv (input to the trend tests)
+│   ├── processed/            match-up tables (matchups_s2.csv, matchups_ls.csv),
+│   │                         insitu_annual_medians.csv (input to the trend tests)
+│   │                         and window_sensitivity_raw.csv (the p11 extraction)
 │   ├── insitu/reference/     OEFA 2016 reference values and source metadata
 │   └── lake_boundary/        lake geometry (Natural Earth, GPKG)
 ├── results/
