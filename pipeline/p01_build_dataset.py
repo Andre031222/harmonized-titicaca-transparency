@@ -113,6 +113,10 @@ def main():
         "n_stations": int(sec.station.nunique()),
         "n_campaign_dates": int(sec.campaign_date.nunique()),
         "n_independent_events": int(n_events),
+        # imagenes compuestas por match-up: la reflectancia es la mediana de
+        # todas las imagenes limpias de la ventana, no la mas cercana
+        "images_per_matchup_s2": int(sec.loc[sec.sensor == "S2", "n_img"].median()),
+        "images_per_matchup_ls": int(sec.loc[sec.sensor == "LS", "n_img"].median()),
         "n_cross_sensor_pseudoreplicates": int(n_dup),
         "years_present": sorted(int(v) for v in sec.year.unique()),
         "years_missing_in_span": [int(v) for v in missing],

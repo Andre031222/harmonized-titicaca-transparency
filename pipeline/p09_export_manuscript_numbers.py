@@ -91,6 +91,8 @@ def main():
             "campaigns": ds["n_campaign_dates"],
             "independent_events": ds["n_independent_events"],
             "cross_sensor_pairs": ds["n_cross_sensor_pseudoreplicates"],
+            "images_per_matchup_s2": ds["images_per_matchup_s2"],
+            "images_per_matchup_ls": ds["images_per_matchup_ls"],
             "year_first": min(ds["years_present"]),
             "year_last": max(ds["years_present"]),
             "years_missing": ", ".join(str(y) for y in ds["years_missing_in_span"]),

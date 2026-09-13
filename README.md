@@ -214,6 +214,7 @@ held to the same standard as the positive one.
 │   ├── p08_interpretability.py          out-of-fold SHAP + retrievability
 │   ├── p09_export_manuscript_numbers.py exports every figure quoted in the text
 │   ├── p10_verify_manuscript.py         checks the article against results/tidy/
+│   ├── p11_window_sensitivity.py        match-up window ±1/±3/±5/±10 d (needs GEE)
 │   └── run_all.sh                       reproduces everything, end to end
 ├── figures/R/                fig01–fig08 (ggplot2) + shared theme and palette
 ├── data/
@@ -286,6 +287,20 @@ bash pipeline/run_all.sh --no-tex   # skip the LaTeX build
 | 8 | `p08_interpretability` | Out-of-fold SHAP; retrievability of every co-measured variable |
 | 9 | `p09` → `p10` | Exports the numbers, then verifies the article against `results/tidy/` |
 
+One analysis sits outside `run_all.sh` because it is the only step that needs Earth
+Engine credentials. `p11` re-extracts the match-ups at ±1, ±3, ±5 and ±10 days and
+re-evaluates the retrieval under the primary design, testing whether the ±10-day
+window is too wide for a lake where wind and river discharge can shift transparency
+within days:
+
+```bash
+earthengine authenticate          # once
+python pipeline/p11_window_sensitivity.py          # extract, then evaluate
+python pipeline/p11_window_sensitivity.py --eval   # re-evaluate the cache only
+```
+
+Extraction is resumable and network-bound rather than CPU-bound.
+
 Figures are rebuilt separately:
 
 ```bash
@@ -342,20 +357,23 @@ Engine extraction that produced the tables is in the git history
 
 ## Authors
 
-Faculty of Statistical and Computer Engineering, Universidad Nacional del Altiplano
-(UNAP), Puno, Peru. Listed in the order of the manuscript.
+Listed in the order of the manuscript.
 
-| Author | ORCID |
-|---|---|
-| **Dina Maribel Yana-Yucra** | [0009-0003-6218-2735](https://orcid.org/0009-0003-6218-2735) |
-| **Richar Andre Vilca-Solorzano** \* | [0009-0003-2385-5263](https://orcid.org/0009-0003-2385-5263) |
-| **Fred Torres-Cruz** | [0000-0003-0834-6834](https://orcid.org/0000-0003-0834-6834) |
-| **Vladimiro Ibañez** | [0000-0002-0277-4945](https://orcid.org/0000-0002-0277-4945) |
+| Author | Affiliation | ORCID |
+|---|---|---|
+| **Dina Maribel Yana-Yucra** | UNAP | [0009-0003-6218-2735](https://orcid.org/0009-0003-6218-2735) |
+| **Richar Andre Vilca-Solorzano** \* | UNAP | [0009-0003-2385-5263](https://orcid.org/0009-0003-2385-5263) |
+| **Fred Torres-Cruz** | UNAP | [0000-0003-0834-6834](https://orcid.org/0000-0003-0834-6834) |
+| **Vladimiro Ibañez** | UNAP | [0000-0002-0277-4945](https://orcid.org/0000-0002-0277-4945) |
+| **Wilfredo Julián Yzarra Tito** | SENAMHI | [0000-0002-7357-5943](https://orcid.org/0000-0002-7357-5943) |
+
+UNAP — Faculty of Statistical and Computer Engineering, Universidad Nacional del
+Altiplano, Puno, Peru. SENAMHI — Servicio Nacional de Meteorología e Hidrología del
+Perú, Lima, Peru.
 
 <sub>\* Corresponding author — <75521963@est.unap.edu.pe></sub>
 
-All four authors contributed across every stage of the study and approved the
-manuscript; the CRediT statement is in the article.
+The CRediT statement is in the article.
 
 * * *
 
@@ -367,7 +385,8 @@ cite the repository and check back for the article reference:
 ```bibtex
 @misc{titicaca_transparency_code,
   author = {Yana-Yucra, Dina Maribel and Vilca-Solorzano, Richar Andre
-            and Torres-Cruz, Fred and Iba{\~n}ez, Vladimiro},
+            and Torres-Cruz, Fred and Iba{\~n}ez, Vladimiro
+            and Yzarra Tito, Wilfredo Juli{\'a}n},
   title  = {Harmonization and validation limits of satellite {Secchi}
             retrieval in {Lake Titicaca}: analysis code and match-up data},
   year   = {2026},

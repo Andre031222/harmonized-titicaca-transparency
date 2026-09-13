@@ -7,6 +7,8 @@
   "n_stations": 143,
   "n_campaign_dates": 120,
   "n_independent_events": 540,
+  "images_per_matchup_s2": 4,
+  "images_per_matchup_ls": 1,
   "n_cross_sensor_pseudoreplicates": 272,
   "years_present": [
     2013,
