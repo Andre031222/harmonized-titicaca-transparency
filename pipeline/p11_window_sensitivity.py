@@ -45,11 +45,25 @@ def load_field():
                           "Transparencia_m": "secchi", "Zona": "zona",
                           "Estacion": "station"})
     j = j.dropna(subset=["date", "lat", "lon", "secchi"])
+    # el registro de IMARPE repite E59 del 2017-07-16 con la misma lectura
+    j = j.drop_duplicates(subset=["station", "date"])
     return j[["station", "zona", "date", "lat", "lon", "secchi"]].reset_index(drop=True)
 
 
 def _point(ee, lat, lon, date):
     return ee.Geometry.Point([lon, lat]), ee.Date(date.strftime("%Y-%m-%d"))
+
+
+def _composite(ee, col, bands, mask_fn):
+    """Mediana de la coleccion; imagen enmascarada si la ventana esta vacia.
+
+    Sin este respaldo, median() sobre una coleccion vacia devuelve una imagen
+    sin bandas y select() aborta la llamada entera.
+    """
+    empty = ee.Image.constant([0] * len(bands)).rename(bands).updateMask(ee.Image(0))
+    return ee.Image(ee.Algorithms.If(col.size().gt(0),
+                                     col.map(mask_fn).median().select(bands),
+                                     empty))
 
 
 def s2_windows(ee, lat, lon, date):
@@ -62,15 +76,15 @@ def s2_windows(ee, lat, lon, date):
                 .And(scl.neq(10)).And(scl.neq(11)))
         return img.updateMask(good.And(img.select("MSK_CLDPRB").lt(CLDPRB)))
 
-    out = ee.Dictionary({})
+    # El diccionario de reduceRegion se devuelve entero: Dictionary.set aborta
+    # si el valor es nulo, y una banda enmascarada lo es.
+    out = {}
     for w in WINDOWS:
         col = base.filterDate(d0.advance(-w, "day"), d0.advance(w, "day"))
-        red = (col.map(mask).median().select(BANDS).divide(10000)
-               .reduceRegion(ee.Reducer.mean(), pt.buffer(BUFFER), 20))
-        out = out.set(f"w{w}_n", col.size())
-        for b in BANDS:
-            out = out.set(f"w{w}_{b}", red.get(b))
-    return out.getInfo()
+        out[f"w{w}_n"] = col.size()
+        out[f"w{w}"] = (_composite(ee, col, BANDS, mask).divide(10000)
+                        .reduceRegion(ee.Reducer.mean(), pt.buffer(BUFFER), 20))
+    return ee.Dictionary(out).getInfo()
 
 
 def ls_windows(ee, lat, lon, date):
@@ -85,26 +99,28 @@ def ls_windows(ee, lat, lon, date):
         return img.updateMask(clear)
 
     srb = list(ROY_SR.values())
-    out = ee.Dictionary({})
+    out = {}
     for w in WINDOWS:
         col = base.filterDate(d0.advance(-w, "day"), d0.advance(w, "day"))
-        red = (col.map(mask).median().select(srb)
-               .reduceRegion(ee.Reducer.mean(), pt.buffer(BUFFER), 30))
-        out = out.set(f"w{w}_n", col.size())
-        for b, sr in ROY_SR.items():
-            out = out.set(f"w{w}_{b}", red.get(sr))
-    return out.getInfo()
+        out[f"w{w}_n"] = col.size()
+        out[f"w{w}"] = (_composite(ee, col, srb, mask)
+                        .reduceRegion(ee.Reducer.mean(), pt.buffer(BUFFER), 30))
+    return ee.Dictionary(out).getInfo()
 
 
-def harmonize_ls(v, w):
-    """SR crudo -> reflectancia equivalente Sentinel-2 (Roy et al. 2016)."""
+def bands_at(v, w, sensor):
+    """Reflectancia equivalente Sentinel-2 para una ventana, o None si falta."""
+    red = v.get(f"w{w}") or {}
     out = {}
     for b in BANDS:
-        raw = v.get(f"w{w}_{b}")
+        raw = red.get(b if sensor == "S2" else ROY_SR[b])
         if raw is None:
             return None
-        a, slope = ROY[b]
-        out[b] = a + slope * (raw * 0.0000275 - 0.2)
+        if sensor == "S2":
+            out[b] = raw
+        else:
+            a, slope = ROY[b]
+            out[b] = a + slope * (raw * 0.0000275 - 0.2)
     return out
 
 
@@ -136,8 +152,7 @@ def extract():
             rec = {"sensor": sensor, "station": r.station, "zona": r.zona,
                    "date": key[2], "lat": r.lat, "lon": r.lon, "secchi": r.secchi}
             for w in WINDOWS:
-                vals = harmonize_ls(v, w) if sensor == "LS" else \
-                    {b: v.get(f"w{w}_{b}") for b in BANDS}
+                vals = bands_at(v, w, sensor)
                 rec[f"w{w}_n"] = v.get(f"w{w}_n")
                 for b in BANDS:
                     rec[f"w{w}_{b}"] = None if vals is None else vals[b]
@@ -155,6 +170,35 @@ def flush(rows):
         return
     pd.DataFrame(rows).to_csv(CACHE, mode="a", index=False,
                               header=not CACHE.exists(), float_format="%.6f")
+
+
+def agreement_with_primary(raw):
+    """Contraste de la ventana +-10d contra los match-ups del analisis principal.
+
+    Comprueba que esta extraccion reproduce el dataset del articulo antes de
+    leer nada de las ventanas estrechas.
+    """
+    ref = TIDY / "insitu_distribution.csv"
+    if not ref.exists():
+        return {}
+    o = pd.read_csv(ref)
+    o["key"] = o.sensor + "|" + o.station.astype(str) + "|" + o.campaign_date.astype(str)
+    # el registro de IMARPE trae E59 del 2017-07-16 por duplicado; sin esto el
+    # merge devolveria mas coincidencias que match-ups
+    o = o.drop_duplicates("key")
+    n = raw[raw.w10_n.fillna(0) > 0].drop_duplicates(["sensor", "station", "date"]).copy()
+    n["key"] = n.sensor + "|" + n.station.astype(str) + "|" + n.date.astype(str)
+    m = o.merge(n[["key"] + [f"w10_{b}" for b in BANDS]], on="key")
+    rs = {b: float(np.corrcoef(m[f"w10_{b}"], m[b])[0, 1]) for b in BANDS}
+    out = {"primary_n": int(len(o)), "recovered_n": int(len(m)),
+           "recovered_pct": round(100 * len(m) / len(o), 1),
+           "reflectance_r_min": round(min(rs.values()), 4),
+           "reflectance_r_by_band": {b: round(v, 4) for b, v in rs.items()}}
+    print(f"\n  Contraste con el dataset principal: {out['recovered_n']} de "
+          f"{out['primary_n']} match-ups unicos recuperados "
+          f"({out['recovered_pct']}%), reflectancia r>="
+          f"{out['reflectance_r_min']:.3f} en las seis bandas.")
+    return out
 
 
 def evaluate():
@@ -182,7 +226,7 @@ def evaluate():
     out.to_csv(TIDY / "window_sensitivity.csv", index=False, float_format="%.4f")
     ref = out[out.window_days == 10]
     summary = {"design": "GroupKFold(5) blocked by campaign date, RF, 12 features",
-               "windows": rows}
+               "windows": rows, **agreement_with_primary(raw)}
     if not ref.empty:
         best = out.loc[out.R2.idxmax()]
         summary["r2_gain_vs_10d"] = float(best.R2 - ref.R2.iloc[0])

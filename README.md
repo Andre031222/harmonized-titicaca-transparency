@@ -154,7 +154,33 @@ manufacture an arbitrarily large advantage for the machine-learning model.
 The model interpolates within optical regimes it has seen; it does not transfer to a
 water type absent from training.
 
-### 4. Uncertainty is calibrated on average, not conditionally
+### 4. The match-up window is not what drives the result
+
+A ±10-day window is wide for a lake whose near-shore transparency responds to wind and
+river discharge within days. Every match-up was re-extracted at four windows and
+re-evaluated under the primary design:
+
+| Window | Match-ups | Campaigns | R² | RMSE (m) |
+|---|:--:|:--:|:--:|:--:|
+| ±1 day | 186 | 41 | 0.516 | 2.23 |
+| ±3 days | 495 | 79 | 0.563 | 2.02 |
+| ±5 days | 661 | 94 | 0.556 | 1.99 |
+| **±10 days** | **812** | **120** | **0.565** | **1.88** |
+
+Accuracy is flat across the four settings. Had the wide window been admitting stale
+observations, tightening it should have raised accuracy; it does not. What narrowing
+costs is data — ±1 day keeps 186 of 812 match-ups and 41 of 120 campaign blocks, too
+few for the validation design this study argues for. RMSE is not comparable across rows,
+because each window defines a different sample.
+
+The re-extraction doubles as a reproducibility check: at ±10 days it recovers **810 of
+810** unique match-ups from the published analysis, with per-band reflectance
+correlating at **r ≥ 0.995** and a median difference of zero.
+
+Run it with [`p11`](pipeline/p11_window_sensitivity.py) — the only stage needing Earth
+Engine credentials.
+
+### 5. Uncertainty is calibrated on average, not conditionally
 
 ![Conformal prediction intervals](results/figures_r/fig07_conformal_uncertainty.png)
 
@@ -172,7 +198,7 @@ coverage falls to **71.3 % in the clearest water** and 79.5 % in the most turbid
 over-covering in the middle. Those extremes are where management decisions are made. A
 marginal coverage figure alone would hide this.
 
-### 5. Only transparency is retrievable in this water
+### 6. Only transparency is retrievable in this water
 
 ![Interpretation and retrievability](results/figures_r/fig08_shap_and_retrievability.png)
 

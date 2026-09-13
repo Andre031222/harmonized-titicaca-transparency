@@ -151,6 +151,9 @@ MANIFEST = [
     ("model_selection.csv", {"label": "LGBM optimizado -- visible_only"}, "RMSE", 1.92),
     ("model_selection.csv", {"label": "LGBM optimizado -- ratios_only"}, "R2", 0.488),
     ("model_selection.csv", {"label": "LGBM optimizado -- ratios_only"}, "RMSE", 2.04),
+    # -- Table: match-up window sensitivity (p11; solo si se corrio) ---------
+    # Los valores salen de macros, no tecleados, asi que aqui basta con que el
+    # CSV exista y cuadre con lo que exporto p09.
     # -- Table: error by trophic zone ----------------------------------------
     ("error_by_zone.csv", {"zone": "BAHIA PUNO"}, "R2", 0.221),
     ("error_by_zone.csv", {"zone": "BAHIA PUNO"}, "RMSE", 1.90),

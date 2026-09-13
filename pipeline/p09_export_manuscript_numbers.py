@@ -252,6 +252,19 @@ def main():
             N["best_model_r2"] = ms["best"].get("R2")
             N["best_model_label"] = ms["best"].get("label")
 
+    # --- sensibilidad a la ventana del match-up (p11, requiere GEE) ---------
+    ws = load_json("window_sensitivity.json")
+    if ws:
+        for w in ws.get("windows", []):
+            d = w["window_days"]
+            N[f"window_{d}_r2"] = float(w["R2"])
+            N[f"window_{d}_rmse"] = float(w["RMSE"])
+            N[f"window_{d}_n"] = int(w["n_matchups"])
+            N[f"window_{d}_campaigns"] = int(w["n_campaigns"])
+        for k in ("primary_n", "recovered_n", "recovered_pct", "reflectance_r_min"):
+            if k in ws:
+                N[f"window_{k}"] = ws[k]
+
     # --- escritura ----------------------------------------------------------
     json.dump(N, open(MET / "manuscript_numbers.json", "w"), indent=2,
               default=str)
