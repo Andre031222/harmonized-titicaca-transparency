@@ -191,5 +191,20 @@
   "window_primary_n": 810,
   "window_recovered_n": 810,
   "window_recovered_pct": 100.0,
-  "window_reflectance_r_min": 0.995
+  "window_reflectance_r_min": 0.995,
+  "spatial_n": 143,
+  "spatial_k": 6,
+  "spatial_nperm": 9999,
+  "spatial_moran_i": 0.0414,
+  "spatial_moran_p": 0.2719,
+  "spatial_moran_i_min": 0.0414,
+  "spatial_moran_i_max": 0.0837,
+  "spatial_moran_min_p": 0.0897,
+  "spatial_ring_min_p": 0.0918,
+  "spatial_ring_max_km": 160,
+  "spatial_lisa_sig": 23,
+  "spatial_lisa_expected": 7.2,
+  "spatial_lisa_fdr": 0,
+  "spatial_lisa_puno_hh": 8,
+  "spatial_lisa_hh": 12
 }

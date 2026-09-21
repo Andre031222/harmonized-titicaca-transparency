@@ -183,7 +183,25 @@ The extraction it rests on is versioned
 repository with `python pipeline/p11_window_sensitivity.py --eval`. Re-extracting from
 scratch is the only stage that needs Earth Engine credentials.
 
-### 5. Uncertainty is calibrated on average, not conditionally
+### 5. Retrieval errors are not spatially clustered
+
+![Spatial structure of the residuals](results/figures_r/fig09_spatial_residuals.png)
+
+*(a) Local Moran (LISA) class of each station's mean residual. (b) Bahía de Puno.
+(c) Moran scatter plot. (d) Moran's I by distance band against the permutation envelope.*
+
+If the errors that survive campaign-date blocking were clustered in space, the design
+would still leak spatial information between folds. They are not. Over the 143
+stations, Moran's I of the mean residual is **0.041 (P = 0.27)** with six neighbours and
+stays between 0.041 and 0.084, never significant, for four to ten; no distance band
+from 0 to 160 km leaves its permutation envelope. Locally, 23 stations reach P < 0.05
+against about 7 expected by chance, 8 of the 12 high–high ones in the Bahía de Puno,
+where the model overestimates, but **none survives Benjamini–Hochberg correction**. The
+bay's overestimation is the zone-level bias of section 3, not an independent spatial
+signal. Moran and LISA are implemented directly in `p12` with permutation tests, with no
+PySAL dependency.
+
+### 6. Uncertainty is calibrated on average, not conditionally
 
 ![Conformal prediction intervals](results/figures_r/fig07_conformal_uncertainty.png)
 
@@ -201,7 +219,7 @@ coverage falls to **71.3 % in the clearest water** and 79.5 % in the most turbid
 over-covering in the middle. Those extremes are where management decisions are made. A
 marginal coverage figure alone would hide this.
 
-### 6. Only transparency is retrievable in this water
+### 7. Only transparency is retrievable in this water
 
 ![Interpretation and retrievability](results/figures_r/fig08_shap_and_retrievability.png)
 
@@ -244,9 +262,10 @@ held to the same standard as the positive one.
 │   ├── p09_export_manuscript_numbers.py exports every figure quoted in the text
 │   ├── p10_verify_manuscript.py         checks the article against results/tidy/
 │   ├── p11_window_sensitivity.py        match-up window ±1/±3/±5/±10 d (needs GEE)
+│   ├── p12_spatial_autocorrelation.py   Moran's I, correlogram and LISA of the residuals
 │   └── run_all.sh                       reproduces everything, end to end
 ├── figures/
-│   ├── R/                    fig01–fig08 (ggplot2) + shared theme and palette
+│   ├── R/                    fig01–fig09 (ggplot2) + shared theme and palette
 │   └── basemap/              fetch_basemap.py: borders, rivers and relief for the maps
 ├── data/
 │   ├── processed/            match-up tables (matchups_s2.csv, matchups_ls.csv),
@@ -319,7 +338,8 @@ bash pipeline/run_all.sh --no-tex   # skip the LaTeX build
 | 6 | `p06_model_selection` | RF / ExtraTrees / XGBoost / LightGBM, tuned by Optuna inside nested CV, against seed-to-seed noise |
 | 7 | `p07_uncertainty` | Split-conformal intervals; coverage marginal **and** conditional on transparency |
 | 8 | `p08_interpretability` | Out-of-fold SHAP; retrievability of every co-measured variable |
-| 9 | `p09` → `p10` | Exports the numbers, then verifies the article against `results/tidy/` |
+| 9 | `p12_spatial_autocorrelation` | Global Moran's I of the station residuals, distance correlogram, LISA with FDR control |
+| 10 | `p09` → `p10` | Exports the numbers, then verifies the article against `results/tidy/` |
 
 One analysis sits outside `run_all.sh` because it is the only step that needs Earth
 Engine credentials. `p11` re-extracts the match-ups at ±1, ±3, ±5 and ±10 days and

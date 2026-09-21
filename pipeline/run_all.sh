@@ -57,6 +57,9 @@ step "p07  incertidumbre conformal"
 step "p08  SHAP fuera de fold y retrievabilidad"
 "$PY" p08_interpretability.py
 
+step "p12  autocorrelacion espacial de los residuos (Moran, LISA)"
+"$PY" p12_spatial_autocorrelation.py
+
 step "p09  exportacion de numeros al manuscrito"
 "$PY" p09_export_manuscript_numbers.py
 

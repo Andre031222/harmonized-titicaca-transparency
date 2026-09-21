@@ -268,6 +268,26 @@ def main():
             if k in ws:
                 N[f"window_{k}"] = ws[k]
 
+    # --- autocorrelacion espacial de los residuos (p12) ---------------------
+    sa = load_json("spatial_autocorrelation.json")
+    if sa:
+        ks = sa["sensitivity_k"]
+        N["spatial_n"] = int(sa["n_stations"])
+        N["spatial_k"] = int(sa["k_primary"])
+        N["spatial_nperm"] = int(sa["n_perm"])
+        N["spatial_moran_i"] = float(sa["moran_I"])
+        N["spatial_moran_p"] = float(sa["moran_p"])
+        N["spatial_moran_i_min"] = float(min(s["moran_I"] for s in ks))
+        N["spatial_moran_i_max"] = float(max(s["moran_I"] for s in ks))
+        N["spatial_moran_min_p"] = float(min(s["p"] for s in ks))
+        N["spatial_ring_min_p"] = float(min(r["p"] for r in sa["correlogram"]))
+        N["spatial_ring_max_km"] = int(max(r["hi_km"] for r in sa["correlogram"]))
+        N["spatial_lisa_sig"] = int(sa["lisa_significant"])
+        N["spatial_lisa_expected"] = round(sa["alpha"] * sa["n_stations"], 1)
+        N["spatial_lisa_fdr"] = int(sa["lisa_fdr_significant"])
+        N["spatial_lisa_puno_hh"] = int(sa["lisa_puno_hh"])
+        N["spatial_lisa_hh"] = int(sa["lisa_counts"]["HH"])
+
     # --- escritura ----------------------------------------------------------
     json.dump(N, open(MET / "manuscript_numbers.json", "w"), indent=2,
               default=str)

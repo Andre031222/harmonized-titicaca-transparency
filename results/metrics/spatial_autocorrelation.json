@@ -1,0 +1,113 @@
+{
+  "n_stations": 143,
+  "k_primary": 6,
+  "moran_I": 0.0414,
+  "moran_p": 0.2719,
+  "moran_expected": -0.007,
+  "sensitivity_k": [
+    {
+      "k": 4,
+      "moran_I": 0.0837,
+      "p": 0.0897,
+      "expected_I": -0.007
+    },
+    {
+      "k": 6,
+      "moran_I": 0.0414,
+      "p": 0.2719,
+      "expected_I": -0.007
+    },
+    {
+      "k": 8,
+      "moran_I": 0.0524,
+      "p": 0.1161,
+      "expected_I": -0.007
+    },
+    {
+      "k": 10,
+      "moran_I": 0.0432,
+      "p": 0.1374,
+      "expected_I": -0.007
+    }
+  ],
+  "correlogram": [
+    {
+      "lo_km": 0,
+      "hi_km": 5,
+      "mid_km": 2.5,
+      "moran_I": 0.1238,
+      "p": 0.1682,
+      "pairs": 105,
+      "env_lo": -0.1818,
+      "env_hi": 0.1886
+    },
+    {
+      "lo_km": 5,
+      "hi_km": 10,
+      "mid_km": 7.5,
+      "moran_I": 0.0751,
+      "p": 0.1868,
+      "pairs": 248,
+      "env_lo": -0.127,
+      "env_hi": 0.1186
+    },
+    {
+      "lo_km": 10,
+      "hi_km": 20,
+      "mid_km": 15.0,
+      "moran_I": -0.0101,
+      "p": 0.9226,
+      "pairs": 759,
+      "env_lo": -0.0719,
+      "env_hi": 0.0643
+    },
+    {
+      "lo_km": 20,
+      "hi_km": 40,
+      "mid_km": 30.0,
+      "moran_I": 0.0098,
+      "p": 0.3322,
+      "pairs": 2217,
+      "env_lo": -0.0424,
+      "env_hi": 0.03
+    },
+    {
+      "lo_km": 40,
+      "hi_km": 80,
+      "mid_km": 60.0,
+      "moran_I": -0.0266,
+      "p": 0.0918,
+      "pairs": 3690,
+      "env_lo": -0.0341,
+      "env_hi": 0.0139
+    },
+    {
+      "lo_km": 80,
+      "hi_km": 160,
+      "mid_km": 120.0,
+      "moran_I": -0.0029,
+      "p": 0.701,
+      "pairs": 3127,
+      "env_lo": -0.0405,
+      "env_hi": 0.0126
+    }
+  ],
+  "n_perm": 9999,
+  "alpha": 0.05,
+  "lisa_counts": {
+    "HH": 12,
+    "LL": 8,
+    "HL": 3,
+    "LH": 0,
+    "ns": 120
+  },
+  "lisa_significant": 23,
+  "lisa_fdr_significant": 0,
+  "lisa_fdr_counts": {
+    "HH": 0,
+    "LL": 0,
+    "HL": 0,
+    "LH": 0
+  },
+  "lisa_puno_hh": 8
+}
