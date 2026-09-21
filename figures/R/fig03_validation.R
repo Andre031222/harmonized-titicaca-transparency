@@ -75,10 +75,12 @@ pb <- ggplot(pb_df, aes(R2, name, colour = grp)) +
   geom_point(aes(size = primary)) +
   geom_text(aes(label = txt, hjust = ifelse(R2 > 0.1, -0.35, ifelse(R2 > 0, -1.1, 1.35))),
             size = 2.4, colour = INK) +
+  geom_text(data = filter(pb_df, primary), aes(x = R2 + 0.22, label = "primary design"),
+            hjust = 0, size = 2.2, colour = "#2E6E8E", fontface = "italic") +
   scale_colour_manual(values = c("Blocking design" = "#2E6E8E",
                                  "Zone withheld" = ACCENT), guide = "none") +
   scale_size_manual(values = c(`TRUE` = 2.8, `FALSE` = 1.7), guide = "none") +
-  scale_x_continuous(limits = c(-0.2, 0.78), breaks = seq(0, 0.6, 0.2)) +
+  scale_x_continuous(limits = c(-0.2, 1.02), breaks = seq(0, 0.6, 0.2)) +
   facet_grid(grp ~ ., scales = "free_y", space = "free_y", switch = "y") +
   labs(x = expression("Out-of-fold "*italic(R)^2), y = NULL) +
   theme(strip.placement = "outside",

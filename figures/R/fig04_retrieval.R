@@ -51,15 +51,7 @@ bias <- oof |> group_by(zone_label) |>
   mutate(txt = sub("-", "−", sprintf("%+.2f m", b)))
 
 # comparaciones por pares (Wilcoxon, BH) en corchetes sobre la nube
-pw <- pairwise.wilcox.test(oof$residual, oof$zone_label, p.adjust.method = "BH")$p.value
-lv <- levels(oof$zone_label)
-brk <- tibble(g1 = c(lv[1], lv[2], lv[1]), g2 = c(lv[2], lv[3], lv[3]),
-              y = c(6.6, 8.1, 9.6)) |>
-  mutate(p = unname(mapply(\(a, b) {v <- pw[b, a]; if (is.na(v)) pw[a, b] else v},
-                           g1, g2)),
-         x1 = match(g1, lv), x2 = match(g2, lv),
-         lab = vapply(p, p_fmt, ""))
-stopifnot(!any(is.na(brk$p)))
+brk <- pairwise_bh(oof$residual, oof$zone_label, c(6.6, 8.1, 9.6))
 
 pb <- ggplot(oof, aes(zone_label, residual, colour = zone_label)) +
   geom_hline(yintercept = 0, colour = INK, linewidth = 0.3, linetype = "22") +

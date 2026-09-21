@@ -190,8 +190,23 @@ n_labels <- function(df, x, y_pos, size = 2.3) {
 p_fmt <- function(p) {
   if (is.na(p)) return("")
   if (p >= 0.001) return(sprintf("italic(P) == %.3f", p))
-  e <- floor(log10(p)); m <- p / 10^e
+  if (p < 1e-300) return("italic(P) < 10^-300")
+  e <- as.integer(floor(log10(p))); m <- p / 10^e
   sprintf("italic(P) == %.1f %%*%% 10^%d", m, e)
 }
 
 cat("theme_titicaca.R cargado | ROOT =", ROOT, "\n")
+
+# Wilcoxon por pares con ajuste de Benjamini-Hochberg, par a par con
+# wilcox.test: pairwise.wilcox.test devolvia 0 exacto por desbordamiento
+# (P ~ 1e-40) en las comparaciones con Lago Mayor.
+pairwise_bh <- function(y, g, ys) {
+  lv <- levels(g)
+  pr <- tibble(g1 = c(lv[1], lv[2], lv[1]), g2 = c(lv[2], lv[3], lv[3]), y = ys)
+  raw <- mapply(function(a, b) suppressWarnings(
+    wilcox.test(y[g == a], y[g == b])$p.value), pr$g1, pr$g2)
+  stopifnot(all(is.finite(raw)), all(raw > 0))
+  pr |> mutate(p = p.adjust(unname(raw), "BH"),
+               x1 = match(g1, lv), x2 = match(g2, lv),
+               lab = vapply(p, p_fmt, ""))
+}
