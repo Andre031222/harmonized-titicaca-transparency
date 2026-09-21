@@ -393,7 +393,7 @@ Listed in the order of the manuscript.
 | **Dina Maribel Yana-Yucra** | UNAP | [0009-0003-6218-2735](https://orcid.org/0009-0003-6218-2735) |
 | **Richar Andre Vilca-Solorzano** \* | UNAP | [0009-0003-2385-5263](https://orcid.org/0009-0003-2385-5263) |
 | **Fred Torres-Cruz** | UNAP | [0000-0003-0834-6834](https://orcid.org/0000-0003-0834-6834) |
-| **Vladimiro Ibañez** | UNAP | [0000-0002-0277-4945](https://orcid.org/0000-0002-0277-4945) |
+| **Vladimiro Ibañez-Quispe** | UNAP | [0000-0002-0277-4945](https://orcid.org/0000-0002-0277-4945) |
 | **Wilfredo Julián Yzarra Tito** | SENAMHI | [0000-0002-7357-5943](https://orcid.org/0000-0002-7357-5943) |
 
 UNAP — Faculty of Statistical and Computer Engineering, Universidad Nacional del
@@ -414,7 +414,7 @@ cite the repository and check back for the article reference:
 ```bibtex
 @misc{titicaca_transparency_code,
   author = {Yana-Yucra, Dina Maribel and Vilca-Solorzano, Richar Andre
-            and Torres-Cruz, Fred and Iba{\~n}ez, Vladimiro
+            and Torres-Cruz, Fred and Iba{\~n}ez-Quispe, Vladimiro
             and Yzarra Tito, Wilfredo Juli{\'a}n},
   title  = {Harmonization and validation limits of satellite {Secchi}
             retrieval in {Lake Titicaca}: analysis code and match-up data},
