@@ -87,7 +87,11 @@ def shap_out_of_fold(d):
         for val, s, zn in zip(X[:, j], sv[:, j], d.zona.values):
             dep.append({"feature": f, "label": FEATURE_LABELS[f],
                         "value": float(val), "shap": float(s), "zona": zn})
-    return imp, pd.DataFrame(dep), gb.to_dict()
+    # todas las features, una fila por match-up: el resumen tipo enjambre
+    allv = pd.DataFrame({"feature": np.repeat(FEATURES, len(X)),
+                         "value": X.T.ravel(), "shap": sv.T.ravel()})
+    allv["label"] = allv.feature.map(FEATURE_LABELS)
+    return imp, pd.DataFrame(dep), gb.to_dict(), allv
 
 
 # ---------------------------------------------------------------------------
@@ -150,7 +154,7 @@ def retrievability(d_all):
 # ---------------------------------------------------------------------------
 def main():
     d = load()
-    imp, dep, groups = shap_out_of_fold(d)
+    imp, dep, groups, allv = shap_out_of_fold(d)
 
     # el dataset completo con matched==1 (incluye filas sin Secchi)
     raw = []
@@ -166,6 +170,7 @@ def main():
 
     imp.to_csv(TIDY / "shap_importance.csv", index=False)
     dep.to_csv(TIDY / "shap_dependence.csv", index=False)
+    allv.to_csv(TIDY / "shap_values_all.csv", index=False, float_format="%.6f")
     retr.to_csv(TIDY / "retrievability.csv", index=False)
     json.dump({"shap_design": "out-of-fold, GroupKFold(5) by campaign date",
                "importance": imp.to_dict("records"),
@@ -178,7 +183,8 @@ def main():
               open(MET / "interpretability.json", "w"), indent=2, default=str)
 
     banner("SALIDAS")
-    for f in ["shap_importance.csv", "shap_dependence.csv", "retrievability.csv"]:
+    for f in ["shap_importance.csv", "shap_dependence.csv", "shap_values_all.csv",
+              "retrievability.csv"]:
         print(f"  {TIDY / f}")
     print(f"  {MET / 'interpretability.json'}")
 

@@ -15,6 +15,8 @@ source(file.path(local({a <- grep("^--file=", commandArgs(FALSE), value = TRUE)
 imp  <- read_tidy("shap_importance.csv")
 dep  <- read_tidy("shap_dependence.csv")
 retr <- read_tidy("retrievability.csv")
+allv <- read_tidy("shap_values_all.csv")
+suppressPackageStartupMessages(library(ggbeeswarm))
 
 # ---------------------------------------------------------------- panel (a) --
 BAND_GROUP <- c("Verde/azul" = "Green/blue", "NIR/SWIR" = "NIR/SWIR",
@@ -31,17 +33,39 @@ pa_df <- imp |>
          grupo = band_group_factor(band_group))
 
 PAL_GROUP <- c("Green/blue" = "#2E6E8E", "NIR/SWIR" = ACCENT, "Other" = NEUTRAL)
-pa <- ggplot(pa_df, aes(mean_abs_shap, label, colour = grupo)) +
-  geom_segment(aes(x = 0, xend = mean_abs_shap, yend = label), linewidth = 1) +
-  geom_point(size = 2.4) +
-  geom_text(aes(label = sprintf("%.0f%%", 100 * share)), hjust = -0.45,
-            size = 2.35, colour = INK_2) +
-  scale_colour_manual(values = PAL_GROUP, name = NULL) +
-  scale_x_continuous(expand = expansion(mult = c(0, 0.14))) +
-  labs(x = "Mean |SHAP| (m)", y = NULL) +
-  theme(legend.position = "inside", legend.position.inside = c(0.98, 0.04),
-        legend.justification = c(1, 0), legend.key.size = unit(7, "pt"),
-        legend.background = element_blank(), panel.grid.major.y = element_blank(),
+
+# resumen tipo enjambre: un punto por match-up y feature, coloreado por el
+# valor de la feature (percentil dentro de la feature, de bajo a alto)
+chk <- allv |> group_by(feature) |> summarise(m = mean(abs(shap)), .groups = "drop") |>
+  inner_join(imp |> select(feature, mean_abs_shap), by = "feature")
+stopifnot(nrow(chk) == nrow(imp), all(abs(chk$m - chk$mean_abs_shap) < 1e-3))
+
+sw <- allv |>
+  group_by(feature) |> mutate(pct = percent_rank(value)) |> ungroup() |>
+  mutate(label = factor(label, levels = levels(pa_df$label)))
+share_lab <- pa_df |> mutate(txt = sprintf("%.0f%%", 100 * share))
+x_hi <- max(sw$shap) + 0.35
+
+pa <- ggplot(sw, aes(shap, label)) +
+  geom_vline(xintercept = 0, colour = INK_2, linewidth = 0.3) +
+  geom_quasirandom(aes(colour = pct), orientation = "y", size = 0.35,
+                   alpha = 0.8, width = 0.38, method = "quasirandom") +
+  geom_text(data = share_lab, aes(x = x_hi, y = label, label = txt,
+                                  colour = NULL), hjust = 0, size = 2.3,
+            fontface = "bold", colour = INK_2) +
+  scale_colour_gradientn(colours = c("#2166AC", "#9EC5E0", "#F2F2F2", "#F4A582",
+                                     "#B2182B"),
+                         name = "Feature\nvalue", breaks = c(0, 1),
+                         labels = c("Low", "High"),
+                         guide = guide_colourbar(barwidth = unit(4, "pt"),
+                                                 barheight = unit(40, "pt"))) +
+  scale_x_continuous(expand = expansion(mult = c(0.02, 0.1))) +
+  coord_cartesian(clip = "off") +
+  labs(x = "SHAP contribution to predicted Secchi (m)", y = NULL) +
+  theme(legend.position = "inside", legend.position.inside = c(0.02, 0.02),
+        legend.justification = c(0, 0), legend.title = element_text(size = 6.5),
+        legend.background = element_blank(), panel.grid.major.y = element_line(
+          colour = "grey93", linewidth = 0.25),
         axis.line.y = element_blank(), axis.ticks.y = element_blank())
 
 # ---------------------------------------------------------------- panel (b) --
@@ -106,8 +130,9 @@ pc <- ggplot(pc_df, aes(R2, label_es, colour = estado)) +
              linewidth = 0.45) +
   geom_segment(aes(x = 0, xend = R2, yend = label_es), linewidth = 1.1) +
   geom_point(size = 2.8) +
-  geom_text(aes(label = sprintf("%.3f  (n = %d)", R2, n)), hjust = -0.18,
-            size = 2.35, colour = INK_2) +
+  geom_label(aes(label = sprintf("%.3f  (n = %d)", R2, n)), hjust = -0.12,
+             size = 2.35, colour = INK_2, fill = alpha("white", 0.9),
+             linewidth = 0, label.padding = unit(1, "pt")) +
   annotate("text", x = 0.31, y = 0.55, label = "utility threshold, R² = 0.30",
            hjust = 0, size = 2.2, colour = INK_2, fontface = "italic") +
   scale_colour_manual(values = c("Retrievable" = "#3D7A57",
@@ -119,6 +144,7 @@ pc <- ggplot(pc_df, aes(R2, label_es, colour = estado)) +
         legend.background = element_blank(), panel.grid.major.y = element_blank(),
         axis.line.y = element_blank(), axis.ticks.y = element_blank())
 
-fig <- (pa | pb) / pc + plot_layout(heights = c(1.2, 0.72)) + tags_abc()
-save_fig(fig, "fig08_shap_and_retrievability", W2, 128)
+fig <- (pa | (pb / pc + plot_layout(heights = c(1.3, 1)))) +
+  plot_layout(widths = c(1, 1.05)) + tags_abc()
+save_fig(fig, "fig08_shap_and_retrievability", W2, 135)
 cat("fig08 lista\n")
