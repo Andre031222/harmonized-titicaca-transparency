@@ -15,7 +15,13 @@ source(file.path(local({a <- grep("^--file=", commandArgs(FALSE), value = TRUE)
 tr   <- read_tidy("annual_trends.csv")
 sens <- read_tidy("trend_start_year_sensitivity.csv")
 
-tr   <- tr   |> mutate(zl = zone_factor(zone_label))
+# lecturas por anio: algunos anios descansan en muy pocas (Bahia de Puno 2012: 3)
+nmed <- read_csv(file.path(ROOT, "data/processed/insitu_annual_medians.csv"),
+                 show_col_types = FALSE)
+tr   <- tr |> left_join(nmed |> select(zone = zona, year, n_read = n),
+                        by = c("zone", "year")) |>
+  mutate(zl = zone_factor(zone_label))
+stopifnot(!any(is.na(tr$n_read)))
 sens <- sens |> mutate(zl = zone_factor(zone_label))
 
 # ---------------------------------------------------------------- panel (a) --
@@ -40,7 +46,8 @@ pa <- ggplot(tr, aes(year, secchi_median, colour = zl)) +
   geom_segment(data = sen_line, aes(x = x0, xend = x1, y = y0, yend = y1),
                linewidth = 0.55, linetype = "22") +
   geom_line(linewidth = 0.55) +
-  geom_point(size = 1.7) +
+  geom_point(aes(size = n_read), shape = 21, fill = "white", stroke = 0.9) +
+  scale_size_area(max_size = 3.6, breaks = c(5, 25, 75), name = "Readings\nper year") +
   geom_label(data = lab, aes(x = 2011, y = Inf, label = txt), hjust = 0,
              vjust = 1.35, size = 2.35, inherit.aes = FALSE, colour = INK_2,
              fill = alpha("white", 0.85), label.size = 0,
@@ -49,22 +56,41 @@ pa <- ggplot(tr, aes(year, secchi_median, colour = zl)) +
            size = 1.9, colour = INK_2, fontface = "italic") +
   facet_wrap(~zl, nrow = 1) +
   scale_colour_manual(values = PAL_ZONE, guide = "none") +
+  guides(size = guide_legend(override.aes = list(colour = INK_2))) +
   scale_x_continuous(breaks = seq(2011, 2024, 3)) +
   scale_y_continuous(expand = expansion(mult = c(0.10, 0.28))) +
   labs(x = NULL, y = "Median Secchi (m)")
 
 # ---------------------------------------------------------------- panel (b) --
+# IC del 95% de la pendiente de Sen (Gilbert 1987): mismas medianas anuales,
+# anios reales, y la varianza de Mann-Kendall con correccion por empates de p05
+sen_ci <- function(x, t, z = 1.96) {
+  n <- length(x)
+  pr <- combn(n, 2)
+  sl <- sort((x[pr[2, ]] - x[pr[1, ]]) / (t[pr[2, ]] - t[pr[1, ]]))
+  ties <- table(x); ties <- ties[ties > 1]
+  v <- (n * (n - 1) * (2 * n + 5) - sum(ties * (ties - 1) * (2 * ties + 5))) / 18
+  C <- z * sqrt(v); N <- length(sl)
+  lo <- max(1, floor((N - C) / 2)); hi <- min(N, ceiling((N + C) / 2) + 1)
+  c(slope = median(sl), lo = sl[lo], hi = sl[hi])
+}
+ci <- sens |> rowwise() |>
+  mutate(ci = list(with(filter(nmed, zona == zone, year >= start_year) |>
+                          arrange(year), sen_ci(secchi_median, year)))) |>
+  ungroup() |>
+  mutate(slope_chk = vapply(ci, `[[`, 0, "slope"),
+         lo = vapply(ci, `[[`, 0, "lo"), hi = vapply(ci, `[[`, 0, "hi"))
+stopifnot(all(abs(ci$slope_chk - ci$sen_slope_m_per_yr) < 1e-3))
+sens <- ci
 pb <- ggplot(sens, aes(factor(start_year), sen_slope_m_per_yr)) +
   geom_hline(yintercept = 0, colour = INK, linewidth = 0.4) +
-  geom_segment(aes(xend = factor(start_year), yend = 0,
-                   colour = significant_at_005), linewidth = 0.85) +
+  geom_errorbar(aes(ymin = lo, ymax = hi, colour = significant_at_005),
+                width = 0.18, linewidth = 0.45) +
   geom_point(aes(colour = significant_at_005, shape = significant_at_005),
              size = 2.5) +
-  geom_label(aes(label = sprintf("P = %.3f", p_value),
-                 vjust = ifelse(sen_slope_m_per_yr < 0, 1.6, -0.85)),
-             size = 2.15, colour = INK_2, fill = alpha("white", 0.85),
-             label.size = 0, label.padding = unit(1.2, "pt"),
-             show.legend = FALSE) +
+  # P en una fila al pie de cada panel, lejos de los intervalos
+  geom_text(aes(y = -Inf, label = sprintf("P = %.3f", p_value)), vjust = -0.7,
+            size = 2.1, colour = INK_2) +
   facet_wrap(~zl, nrow = 1) +
   scale_colour_manual(values = c(`TRUE` = ACCENT, `FALSE` = NEUTRAL),
                       labels = c(`TRUE` = "P < 0.05", `FALSE` = "Not significant"),
@@ -72,8 +98,7 @@ pb <- ggplot(sens, aes(factor(start_year), sen_slope_m_per_yr)) +
   scale_shape_manual(values = c(`TRUE` = 17, `FALSE` = 16),
                      labels = c(`TRUE` = "P < 0.05", `FALSE` = "Not significant"),
                      name = NULL) +
-  scale_y_continuous(limits = c(-0.3, 0.62),
-                     expand = expansion(mult = c(0.04, 0.14))) +
+  scale_y_continuous(expand = expansion(mult = c(0.14, 0.08))) +
   labs(x = "Start year of the series", y = "Sen's slope (m/year)") +
   theme(legend.position = "inside", legend.position.inside = c(0.995, 0.98),
         legend.justification = c(1, 1), legend.key.size = unit(7, "pt"),

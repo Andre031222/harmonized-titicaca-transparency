@@ -215,6 +215,11 @@ def main():
     ts = load_tidy("trend_start_year_sensitivity.csv")
     if not ts.empty:
         N["trend_flips"] = int(ts.significant_at_005.sum())
+        # cada zona y anio inicial: el texto cita el caso 2013 y no debe teclearlo
+        for _, r in ts.iterrows():
+            k = r.zone_label.lower().replace(" ", "_").replace("í", "i")
+            N[f"trend_{k}_from_{int(r.start_year)}_slope"] = float(r.sen_slope_m_per_yr)
+            N[f"trend_{k}_from_{int(r.start_year)}_p"] = float(r.p_value)
         N["trend_combinations"] = int(len(ts))
 
     # --- incertidumbre ------------------------------------------------------

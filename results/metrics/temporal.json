@@ -108,7 +108,7 @@
       "start_year": 2011,
       "z": 1.171,
       "p_value": 0.2415,
-      "sen_slope_m_per_yr": 0.1562,
+      "sen_slope_m_per_yr": 0.125,
       "significant_at_005": false
     },
     {
@@ -128,7 +128,7 @@
       "start_year": 2012,
       "z": 1.483,
       "p_value": 0.138,
-      "sen_slope_m_per_yr": 0.25,
+      "sen_slope_m_per_yr": 0.15,
       "significant_at_005": false
     }
   ],
@@ -138,7 +138,7 @@
       "zone_label": "Bahia de Puno",
       "start_year": 2011,
       "n_years": 11,
-      "sen_slope_m_per_yr": 0.1562,
+      "sen_slope_m_per_yr": 0.125,
       "p_value": 0.2415,
       "significant_at_005": false
     },
@@ -147,7 +147,7 @@
       "zone_label": "Bahia de Puno",
       "start_year": 2012,
       "n_years": 10,
-      "sen_slope_m_per_yr": 0.25,
+      "sen_slope_m_per_yr": 0.1667,
       "p_value": 0.0248,
       "significant_at_005": true
     },
@@ -156,7 +156,7 @@
       "zone_label": "Bahia de Puno",
       "start_year": 2013,
       "n_years": 9,
-      "sen_slope_m_per_yr": 0.25,
+      "sen_slope_m_per_yr": 0.2125,
       "p_value": 0.0165,
       "significant_at_005": true
     },
@@ -165,7 +165,7 @@
       "zone_label": "Bahia de Puno",
       "start_year": 2014,
       "n_years": 8,
-      "sen_slope_m_per_yr": 0.25,
+      "sen_slope_m_per_yr": 0.1938,
       "p_value": 0.0354,
       "significant_at_005": true
     },
@@ -192,7 +192,7 @@
       "zone_label": "Lago Menor",
       "start_year": 2013,
       "n_years": 8,
-      "sen_slope_m_per_yr": 0.0625,
+      "sen_slope_m_per_yr": 0.0357,
       "p_value": 1.0,
       "significant_at_005": false
     },
@@ -201,7 +201,7 @@
       "zone_label": "Lago Menor",
       "start_year": 2014,
       "n_years": 7,
-      "sen_slope_m_per_yr": -0.1,
+      "sen_slope_m_per_yr": -0.0625,
       "p_value": 1.0,
       "significant_at_005": false
     },
@@ -210,7 +210,7 @@
       "zone_label": "Lago Mayor",
       "start_year": 2011,
       "n_years": 10,
-      "sen_slope_m_per_yr": 0.25,
+      "sen_slope_m_per_yr": 0.15,
       "p_value": 0.138,
       "significant_at_005": false
     },
@@ -219,7 +219,7 @@
       "zone_label": "Lago Mayor",
       "start_year": 2012,
       "n_years": 10,
-      "sen_slope_m_per_yr": 0.25,
+      "sen_slope_m_per_yr": 0.15,
       "p_value": 0.138,
       "significant_at_005": false
     },
@@ -228,7 +228,7 @@
       "zone_label": "Lago Mayor",
       "start_year": 2013,
       "n_years": 9,
-      "sen_slope_m_per_yr": 0.4219,
+      "sen_slope_m_per_yr": 0.2955,
       "p_value": 0.0118,
       "significant_at_005": true
     },
@@ -237,7 +237,7 @@
       "zone_label": "Lago Mayor",
       "start_year": 2014,
       "n_years": 8,
-      "sen_slope_m_per_yr": 0.2188,
+      "sen_slope_m_per_yr": 0.1375,
       "p_value": 0.0463,
       "significant_at_005": true
     }

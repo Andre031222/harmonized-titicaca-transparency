@@ -89,9 +89,15 @@ def annual_medians():
         "las tendencias.")
 
 
-def mann_kendall(x):
-    """Mann-Kendall no parametrico + pendiente de Sen."""
+def mann_kendall(x, t):
+    """Mann-Kendall no parametrico + pendiente de Sen.
+
+    La pendiente se calcula sobre los anios reales (t), no sobre la posicion en
+    la serie: faltan 2020, 2021 y 2023, y dividir por j - i contaba 2019 -> 2022
+    como un anio e inflaba la pendiente hasta un 70 %. El estadistico de
+    Mann-Kendall solo depende del orden, asi que la P no cambia."""
     x = np.asarray(x, float)
+    t = np.asarray(t, float)
     n = len(x)
     s = sum(np.sign(x[j] - x[i]) for i in range(n - 1) for j in range(i + 1, n))
     _, counts = np.unique(x, return_counts=True)
@@ -101,7 +107,7 @@ def mann_kendall(x):
         return 0.0, 1.0, 0.0
     z = (s - np.sign(s)) / np.sqrt(var) if s != 0 else 0.0
     p = 2 * (1 - stats.norm.cdf(abs(z)))
-    slopes = [(x[j] - x[i]) / (j - i) for i in range(n - 1) for j in range(i + 1, n)]
+    slopes = [(x[j] - x[i]) / (t[j] - t[i]) for i in range(n - 1) for j in range(i + 1, n)]
     return float(z), float(p), float(np.median(slopes)) if slopes else 0.0
 
 
@@ -181,7 +187,7 @@ def main():
                .secchi_median.sort_index())
         if len(sub) < 4:
             continue
-        z_stat, p, slope = mann_kendall(sub.values)
+        z_stat, p, slope = mann_kendall(sub.values, sub.index.values)
         trows.append({"zone": z, "zone_label": ZONE_LABELS[z],
                       "n_years": int(len(sub)), "start_year": int(sub.index.min()),
                       "z": round(z_stat, 3), "p_value": round(p, 4),
@@ -210,7 +216,7 @@ def main():
                    .set_index("year").secchi_median.sort_index())
             if len(sub) < 4:
                 continue
-            _, p, slope = mann_kendall(sub.values)
+            _, p, slope = mann_kendall(sub.values, sub.index.values)
             sig = p < 0.05
             sens.append({"zone": z, "zone_label": ZONE_LABELS[z],
                          "start_year": start, "n_years": int(len(sub)),

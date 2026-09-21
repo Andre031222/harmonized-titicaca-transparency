@@ -1,13 +1,13 @@
 zone,zone_label,start_year,n_years,sen_slope_m_per_yr,p_value,significant_at_005
-BAHIA PUNO,Bahia de Puno,2011,11,0.1562,0.2415,False
-BAHIA PUNO,Bahia de Puno,2012,10,0.25,0.0248,True
-BAHIA PUNO,Bahia de Puno,2013,9,0.25,0.0165,True
-BAHIA PUNO,Bahia de Puno,2014,8,0.25,0.0354,True
+BAHIA PUNO,Bahia de Puno,2011,11,0.125,0.2415,False
+BAHIA PUNO,Bahia de Puno,2012,10,0.1667,0.0248,True
+BAHIA PUNO,Bahia de Puno,2013,9,0.2125,0.0165,True
+BAHIA PUNO,Bahia de Puno,2014,8,0.1938,0.0354,True
 LAGO MENOR,Lago Menor,2011,9,0.0,1.0,False
 LAGO MENOR,Lago Menor,2012,9,0.0,1.0,False
-LAGO MENOR,Lago Menor,2013,8,0.0625,1.0,False
-LAGO MENOR,Lago Menor,2014,7,-0.1,1.0,False
-LAGO MAYOR,Lago Mayor,2011,10,0.25,0.138,False
-LAGO MAYOR,Lago Mayor,2012,10,0.25,0.138,False
-LAGO MAYOR,Lago Mayor,2013,9,0.4219,0.0118,True
-LAGO MAYOR,Lago Mayor,2014,8,0.2188,0.0463,True
+LAGO MENOR,Lago Menor,2013,8,0.0357,1.0,False
+LAGO MENOR,Lago Menor,2014,7,-0.0625,1.0,False
+LAGO MAYOR,Lago Mayor,2011,10,0.15,0.138,False
+LAGO MAYOR,Lago Mayor,2012,10,0.15,0.138,False
+LAGO MAYOR,Lago Mayor,2013,9,0.2955,0.0118,True
+LAGO MAYOR,Lago Mayor,2014,8,0.1375,0.0463,True
