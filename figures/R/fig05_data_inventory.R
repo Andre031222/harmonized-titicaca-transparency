@@ -28,69 +28,82 @@ SEASON_ES <- c("Lluvias (Dic-Mar)" = "Wet season (Dec-Mar)",
 
 
 # ---------------------------------------------------------------- panel (a) --
+# Matriz anio x mes con sus marginales: totales por mes arriba y por anio y
+# sensor a la derecha. La temporada de lluvias (dic-mar) va sombreada en ambas.
 grid_full <- expand.grid(year = seq(min(dist$year), max(dist$year)),
                          month = 1:12)
 cov <- dist |>
   count(year, month, name = "n") |>
   right_join(grid_full, by = c("year", "month")) |>
   mutate(n = replace_na(n, 0),
-         mes = factor(MES[month], levels = MES),
-         has_data = n > 0)
-
+         mes = factor(MES[month], levels = MES))
+years <- sort(unique(cov$year))
 year_gaps <- cov |> group_by(year) |> summarise(tot = sum(n), .groups = "drop") |>
   filter(tot == 0)
+WET <- c(1, 2, 3, 12)
+wet_cols <- tibble(x0 = c(0.5, 11.5), x1 = c(3.5, 12.5))
+BLUE_WET <- "#7BA8C4"
 
-pa <- ggplot(cov, aes(mes, factor(year))) +
+heat <- ggplot(cov, aes(mes, factor(year, levels = years))) +
   geom_tile(aes(fill = ifelse(n > 0, n, NA)), colour = "white", linewidth = 0.7) +
+  geom_rect(data = wet_cols, aes(xmin = x0, xmax = x1, ymin = -Inf, ymax = Inf),
+            inherit.aes = FALSE, fill = BLUE_WET, alpha = 0.16) +
+  annotate("rect", xmin = 0.5, xmax = 12.5,
+           ymin = match(year_gaps$year, years) - 0.5,
+           ymax = match(year_gaps$year, years) + 0.5,
+           fill = ACCENT, alpha = 0.10) +
   geom_text(data = filter(cov, n > 0), aes(label = n), size = 2.2,
             colour = "white", fontface = "bold") +
-  annotate("rect", xmin = 0.5, xmax = 12.5,
-           ymin = match(year_gaps$year, sort(unique(cov$year))) - 0.5,
-           ymax = match(year_gaps$year, sort(unique(cov$year))) + 0.5,
-           fill = ACCENT, alpha = 0.10) +
-  geom_text(data = year_gaps, aes(x = 6.5, y = factor(year),
+  geom_text(data = year_gaps, aes(x = 6.5, y = factor(year, levels = years),
                                   label = "no campaign"),
-            inherit.aes = FALSE, size = 2.3, colour = ACCENT,
-            fontface = "italic") +
+            inherit.aes = FALSE, size = 2.2, colour = ACCENT, fontface = "italic") +
   scale_fill_gradient(low = "#8FB4C7", high = "#1F4D66", na.value = "grey96",
-                      name = "match-ups", breaks = c(25, 60, 100),
-                      guide = guide_colourbar(
-                        barwidth = unit(60, "pt"), barheight = unit(5, "pt"),
-                        title.position = "left", title.vjust = 1)) +
-  scale_x_discrete(drop = FALSE) +
+                      guide = "none") +
+  scale_x_discrete(drop = FALSE, labels = function(x) substr(x, 1, 1)) +
   labs(x = NULL, y = NULL) +
-  theme(legend.position = "bottom", legend.direction = "horizontal",
-        legend.margin = margin(t = -2), panel.grid = element_blank(),
-        axis.line = element_blank(), axis.ticks = element_blank())
+  theme(panel.grid = element_blank(), axis.line = element_blank(),
+        axis.ticks = element_blank(), plot.margin = margin(0, 0, 2, 2))
 
-# ---------------------------------------------------------------- panel (b) --
-seas2 <- seas |>
-  mutate(mes    = factor(map_strict(month_label, MES_ES, "mes"), levels = MES),
-         season = factor(map_strict(season, SEASON_ES, "temporada"),
-                         levels = unname(SEASON_ES)))
+# marginal superior: match-ups por mes
+seas2 <- seas |> mutate(mes = factor(map_strict(month_label, MES_ES, "mes"),
+                                     levels = MES))
+top <- ggplot(seas2, aes(mes, n)) +
+  geom_rect(data = wet_cols, aes(xmin = x0, xmax = x1, ymin = -Inf, ymax = Inf),
+            inherit.aes = FALSE, fill = BLUE_WET, alpha = 0.16) +
+  geom_col(fill = "#2E6E8E", width = 0.72) +
+  geom_text(data = filter(seas2, n > 0), aes(label = n), vjust = -0.35,
+            size = 2.1, colour = INK) +
+  annotate("text", x = 2, y = 300, label = "wet season:\nno match-ups",
+           size = 2.1, colour = "#3F6F8C", lineheight = 0.95, fontface = "italic") +
+  scale_x_discrete(drop = FALSE) +
+  scale_y_continuous(limits = c(0, 470), breaks = c(0, 200, 400),
+                     expand = expansion(mult = c(0, 0))) +
+  labs(x = NULL, y = "Match-ups", tag = "a") +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.line.x = element_blank(), panel.grid.major.y = element_blank(),
+        axis.title.y = element_text(size = 7), plot.margin = margin(2, 0, 0, 2))
 
-# la temporada de lluvias no tiene ni un match-up: en vez de una leyenda con
-# un color que nunca aparece, se sombrea su franja de meses
-wet <- which(levels(seas2$mes) %in% c("Jan", "Feb", "Mar", "Dec"))
-stopifnot(length(wet) == 4)
-wet_rect <- tibble(x0 = c(0.5, 11.5), x1 = c(3.5, 12.5))
-pb <- ggplot(seas2, aes(mes, n)) +
-  geom_rect(data = wet_rect, aes(xmin = x0, xmax = x1, ymin = -Inf, ymax = Inf),
-            inherit.aes = FALSE, fill = "#7BA8C4", alpha = 0.16) +
-  geom_col(aes(fill = season), width = 0.7, show.legend = FALSE) +
-  geom_text(data = filter(seas2, n > 0), aes(label = n), vjust = -0.4,
-            size = 2.3, colour = INK, fontface = "bold") +
-  annotate("text", x = 2, y = 330, label = "wet season:\nno match-ups",
-           size = 2.3, colour = "#3F6F8C", lineheight = 1, fontface = "italic") +
-  annotate("text", x = 8.5, y = 450, label = "dry season (Jul–Oct)",
-           size = 2.3, colour = "#2E6E8E", fontface = "italic") +
-  scale_fill_manual(values = c("Wet season (Dec-Mar)" = "#7BA8C4",
-                               "Transition" = "grey70",
-                               "Dry season (Jul-Oct)" = "#2E6E8E"), name = NULL) +
-  scale_x_discrete(labels = function(x) substr(x, 1, 1)) +
-  scale_y_continuous(limits = c(0, 470), expand = expansion(mult = c(0, 0))) +
-  labs(x = "Month", y = "Match-ups") +
-  theme(panel.grid.major.y = element_blank(), axis.ticks.x = element_blank())
+# marginal derecho: match-ups por anio y sensor
+SENS <- c(LS = "Landsat 8/9", S2 = "Sentinel-2")
+ys <- dist |> count(year, sensor) |>
+  mutate(sensor = factor(map_strict(sensor, SENS, "sensor"), levels = rev(SENS))) |>
+  right_join(tibble(year = years), by = "year") |>
+  mutate(n = replace_na(n, 0))
+right <- ggplot(filter(ys, n > 0),
+                aes(n, factor(year, levels = years), fill = sensor)) +
+  geom_col(width = 0.72) +
+  scale_fill_manual(values = PAL_SENSOR, name = NULL,
+                    breaks = unname(SENS)) +
+  scale_y_discrete(drop = FALSE, limits = as.character(years)) +
+  scale_x_continuous(breaks = c(0, 50, 100), expand = expansion(mult = c(0, 0.05))) +
+  labs(x = "Match-ups", y = NULL) +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        axis.line.y = element_blank(), panel.grid.major.y = element_blank(),
+        axis.title.x = element_text(size = 7),
+        legend.position = "inside", legend.position.inside = c(1, 1),
+        legend.justification = c(1, 0), legend.key.size = unit(6, "pt"),
+        legend.text = element_text(size = 6), legend.background = element_blank(),
+        plot.margin = margin(0, 2, 2, 0))
 
 # ---------------------------------------------------------------- panel (c) --
 pc_df <- dist |> mutate(zone_label = zone_factor(zona))
@@ -121,6 +134,15 @@ pc <- ggplot(pc_df, aes(zone_label, secchi, colour = zone_label)) +
   scale_y_continuous(limits = c(-2.6, 22.3), breaks = seq(0, 16, 4)) +
   labs(x = NULL, y = "Secchi disk depth (m)")
 
-fig <- pa / (pb | pc) + plot_layout(heights = c(1.2, 1)) + tags_abc()
-save_fig(fig, "fig05_data_inventory", W2, 150)
+pc <- pc + labs(tag = "b")
+design <- "
+AA#D
+BCCD
+"
+fig <- wrap_plots(A = top, B = heat, C = right, D = pc, design = design) +
+  plot_layout(design = c(area(1, 1, 1, 2), area(2, 1, 2, 2), area(2, 3, 2, 3),
+                         area(1, 4, 2, 4)),
+              widths = c(1, 1.9, 0.62, 1.55), heights = c(0.32, 1)) &
+  theme(plot.tag = element_text(size = 10, face = "bold"))
+save_fig(fig, "fig05_data_inventory", W2, 105)
 cat("fig05 lista\n")
