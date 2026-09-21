@@ -18,6 +18,9 @@ pair  <- read_tidy("harmonization_paired.csv")
 sig   <- read_tidy("spectral_signature.csv")
 
 BAND_ORDER <- c("Blue", "Green", "Red", "NIR", "SWIR1", "SWIR2")
+VERDICT_LAB <- c(bueno = "Good", aceptable = "Acceptable", debil = "Weak",
+                 roto = "Broken")
+
 ord <- function(x) factor(x, levels = BAND_ORDER)
 
 # ---------------------------------------------------------------- panel (a) --
@@ -35,11 +38,15 @@ pa <- ggplot(pa_df, aes(band_label, intercept_over_signal, fill = severity)) +
   geom_col(width = 0.62) +
   geom_text(aes(label = sprintf("%.1f×", intercept_over_signal)),
             vjust = -0.45, size = 2.55, colour = INK, fontface = "bold") +
-  scale_fill_manual(values = PAL_VERDICT, guide = "none") +
+  scale_fill_manual(values = PAL_VERDICT, labels = VERDICT_LAB,
+                    breaks = names(VERDICT_LAB), name = NULL, drop = FALSE) +
   scale_y_log10(breaks = c(1, 3, 10, 30, 100),
                 labels = c("1×", "3×", "10×", "30×", "100×"),
                 expand = expansion(mult = c(0.02, 0.16))) +
-  labs(x = NULL, y = "Intercept / native signal")
+  labs(x = NULL, y = "Intercept / native signal") +
+  theme(legend.position = "inside", legend.position.inside = c(0.02, 0.98),
+        legend.justification = c(0, 1), legend.key.size = unit(6, "pt"),
+        axis.ticks.x = element_blank())
 
 # ---------------------------------------------------------------- panel (b) --
 # Si la armonizacion funcionara, un clasificador no deberia superar el chance.
@@ -82,25 +89,33 @@ lab_df <- coefs |>
                               pearson_r < 0.70 ~ "aceptable",
                               TRUE ~ "bueno"))
 
-pc <- pair |>
-  mutate(band_label = ord(band_label)) |>
-  ggplot(aes(ls_roy, s2)) +
+# Con ejes iguales la nube de NIR/SWIR quedaba en una esquina (el desfase es
+# de un orden de magnitud y ya lo muestra d). Cada panel se acerca al
+# percentil 1-99 de cada sensor; la linea 1:1 solo aparece donde cae dentro.
+pc_df <- pair |> mutate(band_label = ord(band_label)) |> group_by(band_label) |>
+  mutate(inside = between(ls_roy, quantile(ls_roy, 0.01), quantile(ls_roy, 0.99)) &
+                  between(s2, quantile(s2, 0.01), quantile(s2, 0.99))) |>
+  ungroup()
+out_n <- lab_df |> mutate(band_label = ord(band_label))
+
+pc <- ggplot(filter(pc_df, inside), aes(ls_roy, s2)) +
   geom_abline(slope = 1, intercept = 0, colour = INK, linetype = "22",
-              linewidth = 0.4) +
-  geom_point(aes(colour = band_label), size = 0.55, alpha = 0.30,
-             show.legend = FALSE) +
+              linewidth = 0.35) +
+  geom_point(size = 0.5, alpha = 0.35, colour = "#4A4A4A", shape = 16) +
   geom_smooth(method = "lm", formula = y ~ x, se = FALSE,
-              colour = ACCENT, linewidth = 0.6) +
-  geom_text(data = lab_df, aes(x = -Inf, y = Inf, label = txt, colour = severity),
-            hjust = -0.18, vjust = 1.45, size = 2.5, fontface = "bold",
-            inherit.aes = FALSE, show.legend = FALSE) +
-  facet_wrap(~band_label, nrow = 2, scales = "free") +
-  scale_colour_manual(values = c(PAL_VERDICT,
-                                 setNames(rep(INK_2, 6), BAND_ORDER))) +
-  scale_x_continuous(n.breaks = 3, labels = label_number(accuracy = 0.01)) +
-  scale_y_continuous(n.breaks = 3, labels = label_number(accuracy = 0.01)) +
-  labs(x = "Landsat 8/9 harmonized with Roy (2016)", y = "Sentinel-2") +
-  theme(panel.grid.minor = element_blank())
+              colour = ACCENT, linewidth = 0.55, fullrange = FALSE) +
+  geom_label(data = out_n, aes(x = Inf, y = -Inf, label = txt, colour = severity),
+             hjust = 1.05, vjust = -0.3, size = 2.4, fontface = "bold",
+             fill = "white", label.size = 0, label.padding = unit(1, "pt"),
+             inherit.aes = FALSE, show.legend = FALSE) +
+  facet_wrap(~band_label, nrow = 1, scales = "free") +
+  scale_colour_manual(values = PAL_VERDICT) +
+  scale_x_continuous(n.breaks = 3, labels = label_number(accuracy = 0.001)) +
+  scale_y_continuous(n.breaks = 3, labels = label_number(accuracy = 0.001)) +
+  labs(x = "Landsat 8/9 reflectance, harmonized with Roy (2016)",
+       y = "Sentinel-2 reflectance") +
+  theme(aspect.ratio = 0.9, panel.grid.major.y = element_blank(),
+        axis.text = element_text(size = 5.5))
 
 # ---------------------------------------------------------------- panel (d) --
 # Firma espectral antes y despues de la recalibracion local sobre agua.
@@ -121,21 +136,24 @@ ratio_df <- pd_df |>
 pd <- ggplot(pd_df, aes(band_label, median, colour = sensor, group = sensor)) +
   geom_line(linewidth = 0.65) +
   geom_point(size = 1.7) +
-  geom_text(data = ratio_df, aes(x = band_label, y = pmax(`Landsat 8/9`,
-                                                          `Sentinel-2`),
-                                 label = txt),
-            inherit.aes = FALSE, vjust = -0.85, size = 2.35, colour = INK_2) +
+  # las razones van en una fila fija encima de las curvas: sobre cada punto
+  # se montaban en la linea descendente
+  geom_text(data = ratio_df, aes(x = band_label, y = 0.054, label = txt),
+            inherit.aes = FALSE, size = 2.3, colour = INK_2) +
+  annotate("text", x = 0.62, y = 0.054, label = "LS/S2", hjust = 1, size = 2.1,
+           colour = INK_2, fontface = "italic") +
   facet_wrap(~harmonization, nrow = 1) +
   scale_colour_manual(values = PAL_SENSOR, name = NULL) +
   scale_y_continuous(labels = label_number(accuracy = 0.01),
-                     expand = expansion(mult = c(0.06, 0.20))) +
+                     breaks = seq(0, 0.04, 0.01), limits = c(0, 0.056), expand = expansion(mult = c(0.02, 0))) +
+  coord_cartesian(clip = "off") +
   labs(x = NULL, y = "Median reflectance") +
   theme(legend.position = "bottom",
         legend.margin = margin(t = -4))
 
 # ---------------------------------------------------------------- montaje ----
 fig <- (pa | pb) / pc / pd +
-  plot_layout(heights = c(1, 1.18, 1.02)) + tags_abc()
+  plot_layout(heights = c(1, 0.62, 1)) + tags_abc()
 
-save_fig(fig, "fig01_harmonization_failure", W2, 200)
+save_fig(fig, "fig01_harmonization_failure", W2, 175)
 cat("fig01 lista\n")
