@@ -42,7 +42,7 @@ year_gaps <- cov |> group_by(year) |> summarise(tot = sum(n), .groups = "drop") 
 
 pa <- ggplot(cov, aes(mes, factor(year))) +
   geom_tile(aes(fill = ifelse(n > 0, n, NA)), colour = "white", linewidth = 0.7) +
-  geom_text(data = filter(cov, n > 0), aes(label = n), size = 2.3,
+  geom_text(data = filter(cov, n > 0), aes(label = n), size = 2.2,
             colour = "white", fontface = "bold") +
   annotate("rect", xmin = 0.5, xmax = 12.5,
            ymin = match(year_gaps$year, sort(unique(cov$year))) - 0.5,
@@ -50,7 +50,7 @@ pa <- ggplot(cov, aes(mes, factor(year))) +
            fill = ACCENT, alpha = 0.10) +
   geom_text(data = year_gaps, aes(x = 6.5, y = factor(year),
                                   label = "no campaign"),
-            inherit.aes = FALSE, size = 2.5, colour = ACCENT,
+            inherit.aes = FALSE, size = 2.3, colour = ACCENT,
             fontface = "italic") +
   scale_fill_gradient(low = "#8FB4C7", high = "#1F4D66", na.value = "grey96",
                       name = "match-ups", breaks = c(25, 60, 100),
@@ -58,13 +58,10 @@ pa <- ggplot(cov, aes(mes, factor(year))) +
                         barwidth = unit(60, "pt"), barheight = unit(5, "pt"),
                         title.position = "left", title.vjust = 1)) +
   scale_x_discrete(drop = FALSE) +
-  labs(title = "(a)  Three years with no campaigns and no data outside the dry season",
-       subtitle = paste("Number of satellite-field match-ups by year and month.",
-                        "There is no data for 2020, 2021 or 2023,\nso the",
-                        "2022-2024 hold-out only contains 2022 and 2024"),
-       x = NULL, y = NULL) +
+  labs(x = NULL, y = NULL) +
   theme(legend.position = "bottom", legend.direction = "horizontal",
-        legend.margin = margin(t = -2), panel.grid = element_blank())
+        legend.margin = margin(t = -2), panel.grid = element_blank(),
+        axis.line = element_blank(), axis.ticks = element_blank())
 
 # ---------------------------------------------------------------- panel (b) --
 seas2 <- seas |>
@@ -77,44 +74,37 @@ pb <- ggplot(seas2, aes(mes, n, fill = season)) +
   # doce meses no caben en una fila a media pagina: salian pegados
   scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
   geom_text(data = filter(seas2, n > 0), aes(label = n), vjust = -0.4,
-            size = 2.35, colour = INK, fontface = "bold") +
-  annotate("text", x = 3.1, y = 235, label = "0 match-ups in the\nentire wet season",
-           size = 2.5, colour = ACCENT, fontface = "bold", lineheight = 1.1,
+            size = 2.2, colour = INK) +
+  annotate("text", x = 3.1, y = 235, label = "No match-ups in the\nwet season",
+           size = 2.3, colour = ACCENT, lineheight = 1.05,
            hjust = 0.5) +
   scale_fill_manual(values = c("Wet season (Dec-Mar)" = "#7BA8C4",
                                "Transition" = "grey82",
                                "Dry season (Jul-Oct)" = "#2E6E8E"), name = NULL) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.14))) +
-  labs(title = "(b)  Only dry season data exists",
-       subtitle = paste("Bahía de Puno blooms occur during\nthe wet season,",
-                        "which the dataset\ndoes not cover at all"),
-       x = NULL, y = "Match-ups") +
-  theme(legend.position = "bottom", legend.margin = margin(t = -4))
+  labs(x = NULL, y = "Match-ups") +
+  theme(legend.position = "bottom", legend.margin = margin(t = -4),
+        legend.key.size = unit(6, "pt"))
 
 # ---------------------------------------------------------------- panel (c) --
 pc_df <- dist |> mutate(zone_label = zone_factor(zona))
-stats <- pc_df |> group_by(zone_label) |>
-  summarise(n = n(), med = median(secchi), mn = mean(secchi),
-            sd = sd(secchi), .groups = "drop") |>
-  mutate(txt = sprintf("n = %d\nmean %.1f ± %.1f m", n, mn, sd))
+kw    <- kruskal.test(secchi ~ zone_label, data = pc_df)$p.value
+means <- pc_df |> group_by(zone_label) |>
+  summarise(txt = sprintf("%.1f \u00b1 %.1f m", mean(secchi), sd(secchi)),
+            .groups = "drop")
 
-pc <- ggplot(pc_df, aes(secchi, zone_label, fill = zone_label)) +
-  geom_violin(colour = NA, alpha = 0.28, width = 1.0) +
-  geom_boxplot(width = 0.16, outlier.size = 0.4, outlier.alpha = 0.4,
-               colour = INK_2, linewidth = 0.35, alpha = 0.92) +
-  geom_text(data = stats, aes(x = 0.3, y = zone_label, label = txt),
-            inherit.aes = FALSE, hjust = 0, vjust = -1.15, size = 2.25,
-            colour = INK_2, lineheight = 1.05) +
-  scale_fill_manual(values = PAL_ZONE, guide = "none") +
-  scale_x_continuous(breaks = seq(0, 16, 4), limits = c(0, 18)) +
-  scale_y_discrete(expand = expansion(add = c(0.6, 0.95))) +
-  labs(title = "(c)  The trophic gradient dominates Secchi",
-       subtitle = paste("Only 73 distinct values in 812 match-ups:",
-                        "\nreadings are rounded to half a metre, so the",
-                        "\nRMSE of 1.86 m borders the granularity of",
-                        "\nthe reference measurement itself"),
-       x = "Secchi disk depth (m)", y = NULL)
+pc <- ggplot(pc_df, aes(zone_label, secchi, colour = zone_label)) +
+  raincloud(point_size = 0.45) +
+  geom_text(data = means, aes(zone_label, 18.2, label = txt), inherit.aes = FALSE,
+            size = 2.2, colour = INK) +
+  n_labels(pc_df, zone_label, 0.6) +
+  annotate("text", x = 0.55, y = 20.2, hjust = 0, size = 2.2, colour = INK_2,
+           parse = TRUE, label = paste0('"Kruskal\u2013Wallis, "*', p_fmt(kw))) +
+  scale_colour_manual(values = PAL_ZONE, guide = "none") +
+  scale_x_discrete(labels = function(x) sub(" de ", "\nde ", sub("Lago ", "Lago\n", x))) +
+  scale_y_continuous(limits = c(-0.6, 20.5), breaks = seq(0, 16, 4)) +
+  labs(x = NULL, y = "Secchi disk depth (m)")
 
-fig <- pa / (pb | pc) + plot_layout(heights = c(1.25, 1))
-save_fig(fig, "fig05_data_inventory", W2, 175)
+fig <- pa / (pb | pc) + plot_layout(heights = c(1.2, 1)) + tags_abc()
+save_fig(fig, "fig05_data_inventory", W2, 150)
 cat("fig05 lista\n")

@@ -69,10 +69,10 @@ map_theme <- theme(
                                   linetype = "22"),
   panel.background = element_rect(fill = NA, colour = NA),
   panel.border = element_rect(fill = NA, colour = INK, linewidth = 0.5),
-  axis.text = element_text(size = rel(0.62), colour = INK_2),
+  axis.text = element_text(size = rel(0.82), colour = INK_2),
   axis.title = element_blank(), plot.margin = margin(1, 1, 1, 1),
-  legend.title = element_text(size = rel(0.64)),
-  legend.text = element_text(size = rel(0.58)))
+  legend.title = element_text(size = rel(0.85)),
+  legend.text = element_text(size = rel(0.8)))
 
 north <- function(loc = "tr", w = 0.9, h = 1.15) {
   annotation_north_arrow(location = loc, which_north = "true",
@@ -255,9 +255,7 @@ pe <- ggplot(st_summary, aes(n_campaigns, secchi_mean, colour = zone_label)) +
   labs(x = "Campaigns in which the station was visited",
        y = "Mean measured Secchi (m)") +
   theme(legend.position = "bottom", legend.margin = margin(t = -6),
-        axis.title = element_text(size = rel(0.72)),
-        axis.text = element_text(size = rel(0.66)),
-        legend.text = element_text(size = rel(0.66)),
+        legend.key.size = unit(6, "pt"),
         plot.margin = margin(4, 6, 2, 4))
 
 # ------------------------------------------------------------- montaje --

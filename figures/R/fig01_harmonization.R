@@ -35,17 +35,11 @@ pa <- ggplot(pa_df, aes(band_label, intercept_over_signal, fill = severity)) +
   geom_col(width = 0.62) +
   geom_text(aes(label = sprintf("%.1f×", intercept_over_signal)),
             vjust = -0.45, size = 2.55, colour = INK, fontface = "bold") +
-  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
   scale_fill_manual(values = PAL_VERDICT, guide = "none") +
   scale_y_log10(breaks = c(1, 3, 10, 30, 100),
                 labels = c("1×", "3×", "10×", "30×", "100×"),
                 expand = expansion(mult = c(0.02, 0.16))) +
-  labs(title = "(a)  Land intercept exceeds the signal",
-       subtitle = paste("Roy et al. (2016) coefficients, fitted over",
-                        "\nvegetation and soil, vs native Landsat",
-                        "\nreflectance over the lake water. The dashed",
-                        "\nline marks intercept = signal"),
-       x = NULL, y = "Intercept / native signal")
+  labs(x = NULL, y = "Intercept / native signal")
 
 # ---------------------------------------------------------------- panel (b) --
 # Si la armonizacion funcionara, un clasificador no deberia superar el chance.
@@ -76,12 +70,7 @@ pb <- ggplot(pb_df, aes(accuracy, label)) +
                      limits = c(0.5, 1.12),
                      breaks = seq(0.5, 1, 0.1),
                      expand = expansion(mult = c(0, 0))) +
-  labs(title = "(b)  Sensors remain distinguishable",
-       subtitle = paste("Accuracy of a Random Forest predicting the",
-                        "\nsource sensor from already harmonized",
-                        "\nreflectance. If harmonization worked,",
-                        "\nit would be at chance"),
-       x = "Classifier accuracy", y = NULL)
+  labs(x = "Classifier accuracy", y = NULL)
 
 # ---------------------------------------------------------------- panel (c) --
 # Acuerdo banda a banda en los 270 eventos vistos por ambos sensores.
@@ -110,12 +99,7 @@ pc <- pair |>
                                  setNames(rep(INK_2, 6), BAND_ORDER))) +
   scale_x_continuous(n.breaks = 3, labels = label_number(accuracy = 0.01)) +
   scale_y_continuous(n.breaks = 3, labels = label_number(accuracy = 0.01)) +
-  labs(title = "(c)  Blue is the band that agrees least between sensors",
-       subtitle = paste0("Sentinel-2 reflectance vs Roy-harmonized Landsat",
-                         " in the ", coefs$n_paired[1], " events observed\n",
-                         "by both sensors at the same station and date.",
-                         " The dashed line is 1:1"),
-       x = "Landsat 8/9 harmonized with Roy (2016)", y = "Sentinel-2") +
+  labs(x = "Landsat 8/9 harmonized with Roy (2016)", y = "Sentinel-2") +
   theme(panel.grid.minor = element_blank())
 
 # ---------------------------------------------------------------- panel (d) --
@@ -145,17 +129,13 @@ pd <- ggplot(pd_df, aes(band_label, median, colour = sensor, group = sensor)) +
   scale_colour_manual(values = PAL_SENSOR, name = NULL) +
   scale_y_continuous(labels = label_number(accuracy = 0.01),
                      expand = expansion(mult = c(0.06, 0.20))) +
-  labs(title = "(d)  Local recalibration over water does harmonize bands",
-       subtitle = paste("Median reflectance over water by sensor. Labels are",
-                        "the Landsat / Sentinel-2 ratio:\nit goes from 15.4x in",
-                        "NIR to ~1.0x in every band"),
-       x = NULL, y = "Median reflectance") +
+  labs(x = NULL, y = "Median reflectance") +
   theme(legend.position = "bottom",
         legend.margin = margin(t = -4))
 
 # ---------------------------------------------------------------- montaje ----
 fig <- (pa | pb) / pc / pd +
-  plot_layout(heights = c(1, 1.18, 1.02))
+  plot_layout(heights = c(1, 1.18, 1.02)) + tags_abc()
 
-save_fig(fig, "fig01_harmonization_failure", W2, 235)
+save_fig(fig, "fig01_harmonization_failure", W2, 200)
 cat("fig01 lista\n")

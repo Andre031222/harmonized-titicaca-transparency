@@ -96,38 +96,37 @@ ACCENT <- "#C2582C"
 NEUTRAL<- "#8C8C8C"
 
 # --- tema -------------------------------------------------------------------
-theme_titicaca <- function(base_size = 11, base_family = "") {
-  theme_minimal(base_size = base_size, base_family = base_family) +
+# Estilo de las revistas Nature: la figura no lleva titulos ni subtitulos en
+# los paneles (la explicacion va en el pie), solo la letra del panel en negrita
+# minuscula; ejes en L, tipografia de 7-8 pt al tamano de impresion y una guia
+# horizontal tenue en lugar de cuadricula.
+theme_titicaca <- function(base_size = 8, base_family = "") {
+  theme_classic(base_size = base_size, base_family = base_family) +
     theme(
-      text             = element_text(colour = INK),
-      plot.title       = element_text(size = rel(1.05), face = "bold",
-                                      colour = INK, hjust = 0,
-                                      margin = margin(b = 2)),
-      plot.subtitle    = element_text(size = rel(0.92), colour = INK_2,
-                                      hjust = 0, margin = margin(b = 7),
-                                      lineheight = 1.15),
-      plot.caption     = element_text(size = rel(0.80), colour = INK_2,
-                                      hjust = 0, margin = margin(t = 7),
-                                      lineheight = 1.15),
-      plot.title.position   = "plot",
-      plot.caption.position = "plot",
-      axis.title       = element_text(size = rel(0.95), colour = INK_2),
-      axis.text        = element_text(size = rel(0.88), colour = INK_2),
-      axis.ticks       = element_line(colour = GRID, linewidth = 0.3),
-      axis.ticks.length = unit(2, "pt"),
-      panel.grid.major = element_line(colour = GRID, linewidth = 0.3),
-      panel.grid.minor = element_blank(),
-      panel.spacing    = unit(9, "pt"),
-      strip.text       = element_text(size = rel(0.92), face = "bold",
-                                      colour = INK, hjust = 0,
-                                      margin = margin(b = 3, t = 3)),
-      strip.background = element_blank(),
-      legend.title     = element_text(size = rel(0.90), colour = INK_2),
-      legend.text      = element_text(size = rel(0.88), colour = INK_2),
-      legend.key.size  = unit(9, "pt"),
-      legend.margin    = margin(0, 0, 0, 0),
-      legend.box.margin= margin(0, 0, 0, 0),
-      plot.margin      = margin(6, 8, 5, 6)
+      text              = element_text(colour = INK),
+      plot.title        = element_blank(),
+      plot.subtitle     = element_blank(),
+      plot.caption      = element_blank(),
+      axis.line         = element_line(colour = INK, linewidth = 0.3),
+      axis.ticks        = element_line(colour = INK, linewidth = 0.3),
+      axis.ticks.length = unit(2.2, "pt"),
+      axis.title        = element_text(size = rel(1.0), colour = INK),
+      axis.text         = element_text(size = rel(0.9), colour = INK_2),
+      panel.grid.major.y = element_line(colour = "#EDEDED", linewidth = 0.25),
+      panel.spacing     = unit(8, "pt"),
+      strip.text        = element_text(size = rel(0.95), face = "bold",
+                                       colour = INK, hjust = 0,
+                                       margin = margin(b = 2, t = 2)),
+      strip.background  = element_blank(),
+      legend.title      = element_text(size = rel(0.9), colour = INK),
+      legend.text       = element_text(size = rel(0.85), colour = INK_2),
+      legend.key.size   = unit(8, "pt"),
+      legend.margin     = margin(0, 0, 0, 0),
+      legend.box.margin = margin(0, 0, 0, 0),
+      legend.background = element_blank(),
+      plot.tag          = element_text(size = 10, face = "bold", colour = INK),
+      plot.tag.position = c(0, 1),
+      plot.margin       = margin(8, 6, 4, 4)
     )
 }
 
@@ -161,10 +160,38 @@ metric_label <- function(r2, rmse, n = NULL, mae = NULL) {
   s
 }
 
-#' Etiqueta de panel (a), (b), ... con el estilo de la revista.
-tag_theme <- function() {
-  theme(plot.tag = element_text(size = rel(1.05), face = "bold", colour = INK),
-        plot.tag.position = c(0.005, 0.995))
+#' Letras de panel a, b, c ... en negrita minuscula, como en Nature.
+tags_abc <- function() {
+  plot_annotation(tag_levels = "a",
+                  theme = theme(plot.margin = margin(2, 2, 2, 2)))
+}
+
+#' Nube de lluvia: media densidad + caja estrecha + puntos. Requiere ggdist.
+raincloud <- function(fill_alpha = 0.55, point_size = 0.7, width = 0.55,
+                      side = "right") {
+  list(
+    ggdist::stat_halfeye(aes(fill = after_scale(alpha(colour, fill_alpha))),
+                         adjust = 0.8, width = width, justification = -0.18,
+                         .width = 0, point_colour = NA, side = side),
+    geom_boxplot(width = 0.12, outlier.shape = NA, linewidth = 0.3,
+                 fill = "white", colour = INK),
+    ggbeeswarm::geom_quasirandom(size = point_size, alpha = 0.55, width = 0.13,
+                                 shape = 16))
+}
+
+#' "n = ..." bajo cada grupo de un eje discreto.
+n_labels <- function(df, x, y_pos, size = 2.3) {
+  counts <- dplyr::count(df, {{ x }})
+  geom_text(data = counts, aes(x = {{ x }}, y = y_pos, label = paste0("n = ", n)),
+            inherit.aes = FALSE, size = size, colour = INK_2, vjust = 1)
+}
+
+#' Valor P con el formato de las revistas Nature: P = 0.03, P = 2.1 x 10^-5.
+p_fmt <- function(p) {
+  if (is.na(p)) return("")
+  if (p >= 0.001) return(sprintf("italic(P) == %.3f", p))
+  e <- floor(log10(p)); m <- p / 10^e
+  sprintf("italic(P) == %.1f %%*%% 10^%d", m, e)
 }
 
 cat("theme_titicaca.R cargado | ROOT =", ROOT, "\n")

@@ -151,6 +151,7 @@
   "conformal_cov_95": 94.33,
   "conformal_width_95": 7.366,
   "conformal_max_error": 0.9400000000000001,
+  "conformal_outside": 86,
   "conformal_cov_clearest": 71.26440000000001,
   "conformal_cov_turbidest": 79.4872,
   "shap_share_verde_azul": 72.56,

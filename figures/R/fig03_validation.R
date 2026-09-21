@@ -1,100 +1,91 @@
 # ============================================================================
-# fig03_validation.R -- Por que la unidad de bloqueo es la CAMPANA
+# fig03_validation.R -- Diagnostico de la unidad de bloqueo
 #
-# (a) Modelos nulos: una unidad de bloqueo solo funciona si su propio nulo
-#     colapsa bajo ella. El nulo de campana cae a ~0; los de zona y estacion no.
-# (b) Jerarquia de validacion: aleatorio == estacion >> campana > anio, y el
-#     colapso total bajo extrapolacion a una zona no vista.
+# (a) Los tres modelos nulos bajo cada diseno de bloqueo (matriz 3x3). La
+#     diagonal colapsa por construccion; lo que importa es lo que sobrevive
+#     fuera de ella.
+# (b) R2 fuera de fold del Random Forest bajo cada diseno y bajo
+#     extrapolacion a una zona no vista.
 # ============================================================================
 
 source(file.path(local({a <- grep("^--file=", commandArgs(FALSE), value = TRUE)
   if (length(a)) dirname(normalizePath(sub("^--file=", "", a[1]))) else getwd()}),
   "theme_titicaca.R"))
 
-nulls <- read_tidy("null_models.csv")
-hier  <- read_tidy("validation_hierarchy.csv")
+grid <- read_tidy("null_models_grid.csv")
+hier <- read_tidy("validation_hierarchy.csv")
 
-# ---------------------------------------------------------------- panel (a) --
-pa_df <- nulls |>
-  mutate(label = recode(null_model,
-                        zona           = "ZONE mean",
-                        station        = "STATION mean",
-                        campaign_date  = "CAMPAIGN mean"),
-         collapsed = R2 < 0.05,
-         label = fct_reorder(label, R2))
+# ------------------------------------------------------------------ (a) --
+UNIT <- c(station = "Station", campaign_date = "Campaign date",
+          year = "Year", zona = "Zone")
+pa_df <- grid |>
+  mutate(fold = factor(map_strict(blocked_by, UNIT, "bloqueo"),
+                       levels = c("Station", "Campaign date", "Year")),
+         null = factor(map_strict(null_model, UNIT, "nulo"),
+                       levels = rev(c("Zone", "Station", "Campaign date"))),
+         diag = (blocked_by == null_model) |
+                (blocked_by == "year" & null_model == "campaign_date"),
+         txt = sub("-", "−", sprintf("%.3f", R2)))
 
-pa <- ggplot(pa_df, aes(R2, label, fill = collapsed)) +
-  geom_vline(xintercept = 0, colour = INK, linewidth = 0.4) +
-  geom_col(width = 0.55) +
-  geom_text(aes(label = sprintf("%+.3f", R2),
-                hjust = ifelse(R2 > 0.05, -0.18, 1.18)),
-            size = 2.6, colour = INK, fontface = "bold") +
-  scale_fill_manual(values = c(`TRUE` = "#3D7A57", `FALSE` = ACCENT),
-                    guide = "none") +
-  scale_x_continuous(limits = c(-0.12, 0.40),
-                     breaks = seq(-0.1, 0.4, 0.1),
-                     expand = expansion(mult = c(0, 0.02))) +
-  labs(title = "(a)  Only campaign blocking neutralizes its own null model",
-       subtitle = paste("R² of models predicting only the group mean, with",
-                        "folds blocked by campaign.\nA blocking unit",
-                        "is effective if and only if its own null",
-                        "model collapses to zero under it"),
-       x = "Null model R²", y = NULL)
+pa <- ggplot(pa_df, aes(fold, null, fill = R2)) +
+  geom_tile(colour = "white", linewidth = 1.2) +
+  geom_tile(data = filter(pa_df, diag), fill = NA, colour = INK,
+            linewidth = 0.45, linetype = "22", width = 0.94, height = 0.94) +
+  geom_text(aes(label = txt, colour = R2 > 0.2), size = 2.7, fontface = "bold") +
+  scale_fill_gradient(low = "#F3F6F8", high = "#1F4E79", limits = c(-0.05, 0.32),
+                      oob = squish, name = expression(italic(R)^2),
+                      guide = guide_colourbar(barwidth = unit(4, "pt"),
+                                              barheight = unit(40, "pt"))) +
+  scale_colour_manual(values = c(`TRUE` = "white", `FALSE` = INK), guide = "none") +
+  scale_x_discrete(position = "top", expand = c(0, 0)) +
+  scale_y_discrete(expand = c(0, 0)) +
+  labs(x = "Folds blocked by", y = "Null model\n(mean of)") +
+  coord_fixed() +
+  theme(axis.line = element_blank(), axis.ticks = element_blank(),
+        panel.grid.major.y = element_blank(),
+        axis.title.x.top = element_text(margin = margin(b = 4)))
 
-# ---------------------------------------------------------------- panel (b) --
+# ------------------------------------------------------------------ (b) --
 LAB <- c(random_kfold          = "Random K-fold",
-         by_station            = "STATION blocking",
-         by_campaign_date      = "CAMPAIGN blocking",
-         by_year               = "YEAR blocking",
+         by_station            = "Station",
+         by_campaign_date      = "Campaign date",
+         by_year               = "Year",
          one_record_per_event  = "One record per event",
-         `LAGO MENOR`          = "Extrapolate to Lago Menor",
-         `BAHIA PUNO`          = "Extrapolate to Bahía de Puno",
-         `LAGO MAYOR`          = "Extrapolate to Lago Mayor")
-
-GRP <- c(random_kfold = "Validation design", by_station = "Validation design",
-         by_campaign_date = "Validation design", by_year = "Validation design",
-         one_record_per_event = "Validation design",
-         `LAGO MENOR` = "Extrapolation to unseen zone",
-         `BAHIA PUNO` = "Extrapolation to unseen zone",
-         `LAGO MAYOR` = "Extrapolation to unseen zone")
+         `LAGO MENOR`          = "Lago Menor",
+         `BAHIA PUNO`          = "Bahía de Puno",
+         `LAGO MAYOR`          = "Lago Mayor")
+GRP <- c(random_kfold = "Blocking design", by_station = "Blocking design",
+         by_campaign_date = "Blocking design", by_year = "Blocking design",
+         one_record_per_event = "Blocking design",
+         `LAGO MENOR` = "Zone withheld", `BAHIA PUNO` = "Zone withheld",
+         `LAGO MAYOR` = "Zone withheld")
 
 pb_df <- hier |>
   filter(case %in% names(LAB)) |>
-  mutate(name = LAB[case], grp = GRP[case],
-         grp = factor(grp, levels = c("Validation design",
-                                      "Extrapolation to unseen zone")),
+  mutate(name = map_strict(case, LAB, "caso"),
+         grp = factor(map_strict(case, GRP, "grupo"),
+                      levels = c("Blocking design", "Zone withheld")),
          primary = case == "by_campaign_date",
-         name = fct_reorder(name, R2))
+         name = fct_reorder(name, R2),
+         txt = sub("-", "−", sprintf("%.3f", R2)))
 
-pb <- ggplot(pb_df, aes(R2, name)) +
-  geom_vline(xintercept = 0, colour = INK, linewidth = 0.4) +
-  geom_segment(aes(x = 0, xend = R2, yend = name, colour = grp),
-               linewidth = 0.9) +
-  geom_point(aes(colour = grp, size = primary)) +
-  geom_text(aes(label = sprintf("%+.3f", R2),
-                hjust = ifelse(R2 > 0.05, -0.28, 1.28)),
-            size = 2.5, colour = INK, fontface = "bold") +
-  geom_text(aes(label = sprintf("RMSE %.2f m", RMSE), x = 1.02),
-            hjust = 1, size = 2.3, colour = INK_2) +
-  scale_colour_manual(values = c("Validation design" = "#2E6E8E",
-                                 "Extrapolation to unseen zone" = ACCENT),
-                      name = NULL) +
-  scale_size_manual(values = c(`TRUE` = 3.1, `FALSE` = 2.0), guide = "none") +
-  scale_x_continuous(limits = c(-0.30, 1.04), breaks = seq(-0.2, 0.8, 0.2),
-                     expand = expansion(mult = c(0.01, 0))) +
-  # Facetas arriba, no a la izquierda: la tira lateral chocaba con las
-  # etiquetas del eje y.
-  facet_wrap(~grp, ncol = 1, scales = "free_y") +
-  labs(title = "(b) Station blocking changes nothing; extrapolation breaks everything",
-       subtitle = paste("Out-of-fold R² of the Random Forest; the large point is",
-                        "the primary design.\nThe fact that station blocking matches",
-                        "with random does not prove absence of leakage:\nit proves that it",
-                        "retains nothing"),
-       x = "Out-of-fold R²", y = NULL) +
-  theme(legend.position = "none",
-        strip.text = element_text(face = "bold", colour = INK_2,
-                                  size = rel(0.88), hjust = 0))
+pb <- ggplot(pb_df, aes(R2, name, colour = grp)) +
+  geom_vline(xintercept = 0, colour = INK, linewidth = 0.3) +
+  geom_segment(aes(x = 0, xend = R2, yend = name), linewidth = 0.8) +
+  geom_point(aes(size = primary)) +
+  geom_text(aes(label = txt, hjust = ifelse(R2 > 0.1, -0.35, ifelse(R2 > 0, -1.1, 1.35))),
+            size = 2.4, colour = INK) +
+  scale_colour_manual(values = c("Blocking design" = "#2E6E8E",
+                                 "Zone withheld" = ACCENT), guide = "none") +
+  scale_size_manual(values = c(`TRUE` = 2.8, `FALSE` = 1.7), guide = "none") +
+  scale_x_continuous(limits = c(-0.2, 0.78), breaks = seq(0, 0.6, 0.2)) +
+  facet_grid(grp ~ ., scales = "free_y", space = "free_y", switch = "y") +
+  labs(x = expression("Out-of-fold "*italic(R)^2), y = NULL) +
+  theme(strip.placement = "outside",
+        strip.text.y.left = element_text(angle = 90, face = "bold", hjust = 0.5),
+        panel.grid.major.y = element_blank(), axis.line.y = element_blank(),
+        axis.ticks.y = element_blank())
 
-fig <- pa / pb + plot_layout(heights = c(1, 2.05))
-save_fig(fig, "fig03_validation_design", W2, 168)
+fig <- (pa | pb) + plot_layout(widths = c(1, 1.25)) + tags_abc()
+save_fig(fig, "fig03_validation_design", W2, 78)
 cat("fig03 lista\n")

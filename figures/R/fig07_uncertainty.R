@@ -38,29 +38,31 @@ pa <- ggplot(cov, aes(nominal, empirical_coverage)) +
   scale_y_continuous(labels = percent_format(accuracy = 1),
                      limits = c(0.44, 1.01)) +
   coord_equal() +
-  labs(title = "(a)  Calibrated, on average",
-       subtitle = paste("Out-of-fold empirical coverage vs\nnominal.",
-                        "Gray band is ±3 points"),
-       x = "Nominal level", y = "Empirical coverage")
+  labs(x = "Nominal level", y = "Empirical coverage")
 
 # ---------------------------------------------------------------- panel (b) --
-iv_ord <- iv |> arrange(secchi) |> mutate(idx = row_number())
-n_out <- sum(!iv_ord$covered)
+# Medido frente a predicho, una barra por intervalo. Los puntos que quedan
+# fuera (naranja) se acumulan en los extremos del rango: el fallo condicional.
+set.seed(1)
+iv_pl <- iv |> mutate(xj = secchi + runif(n(), -0.18, 0.18)) |> arrange(covered)
+n_out <- sum(!iv$covered)
+lim7  <- c(0, max(c(iv$upper, iv$secchi)) + 0.5)
 
-pb <- ggplot(iv_ord, aes(idx)) +
-  geom_ribbon(aes(ymin = lower, ymax = upper), fill = "#2E6E8E", alpha = 0.16) +
-  geom_point(aes(y = secchi, colour = covered), size = 0.5, alpha = 0.75) +
-  geom_line(aes(y = predicted), colour = "#1F4D66", linewidth = 0.4) +
-  scale_colour_manual(values = c(`TRUE` = INK_2, `FALSE` = ACCENT),
-                      labels = c(`TRUE` = "inside interval",
-                                 `FALSE` = "outside"), name = NULL) +
-  labs(title = "(b)  The 90% interval vs the measurement",
-       subtitle = sprintf(paste("Match-ups ordered by measured transparency.",
-                                "The line is the prediction,\nthe band is the",
-                                "90%% conformal interval. %d out of %d points",
-                                "fall outside"), n_out, nrow(iv_ord)),
-       x = "Match-up (ordered by measured Secchi)", y = "Secchi (m)") +
-  theme(legend.position = "bottom", legend.margin = margin(t = -4))
+pb <- ggplot(iv_pl, aes(xj, predicted, colour = covered)) +
+  geom_abline(slope = 1, intercept = 0, colour = INK, linetype = "22",
+              linewidth = 0.3) +
+  geom_linerange(aes(ymin = lower, ymax = upper), linewidth = 0.18, alpha = 0.35) +
+  geom_point(size = 0.6, shape = 16, alpha = 0.8) +
+  annotate("text", x = 0.3, y = lim7[2], hjust = 0, vjust = 1, size = 2.3,
+           colour = INK_2, label = sprintf("%d of %d outside the 90%% interval",
+                                           n_out, nrow(iv))) +
+  scale_colour_manual(values = c(`TRUE` = "#6F97AD", `FALSE` = ACCENT),
+                      labels = c(`TRUE` = "Inside interval", `FALSE` = "Outside"),
+                      name = NULL) +
+  coord_cartesian(xlim = c(0, 17.2), ylim = lim7, expand = FALSE) +
+  labs(x = "Measured Secchi (m)", y = "Predicted Secchi with 90% interval (m)") +
+  theme(legend.position = "inside", legend.position.inside = c(1, 0.02),
+        legend.justification = c(1, 0), legend.key.size = unit(6, "pt"))
 
 # ---------------------------------------------------------------- panel (c) --
 wb2 <- wb |> mutate(bin = factor(bin, levels = wb$bin))
@@ -82,12 +84,8 @@ pc <- ggplot(wb2, aes(bin)) +
                     guide = "none") +
   scale_y_continuous(limits = c(0, 104),
                      expand = expansion(mult = c(0, 0.02))) +
-  labs(title = "(c)  But not at the ends of the range",
-       subtitle = paste("Split-conformal uses a single global quantile,",
-                        "so the\nwidth is constant (~6.1 m) and the interval",
-                        "cannot\nadapt: it undercovers in the clearest water"),
-       x = "Measured Secchi (m)", y = "Empirical coverage (%)")
+  labs(x = "Measured Secchi (m)", y = "Empirical coverage (%)")
 
-fig <- (pa | pc) / pb + plot_layout(heights = c(1, 0.92))
+fig <- (pa | pc) / pb + plot_layout(heights = c(1, 1.05)) + tags_abc()
 save_fig(fig, "fig07_conformal_uncertainty", W2, 165)
 cat("fig07 lista\n")

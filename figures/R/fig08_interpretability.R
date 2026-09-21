@@ -38,12 +38,10 @@ pa <- ggplot(pa_df, aes(mean_abs_shap, label, fill = grupo)) +
                                "NIR/SWIR"   = ACCENT,
                                "Other"      = NEUTRAL), name = NULL) +
   scale_x_continuous(expand = expansion(mult = c(0, 0.16))) +
-  labs(title = "(a)  Green and blue dominate attribution",
-       subtitle = paste("Mean |SHAP| computed OUT-OF-FOLD: each",
-                        "\nobservation is explained by the model that",
-                        "\ndid not see it. Labels are the share of the total"),
-       x = "Mean |SHAP| (m)", y = NULL) +
-  theme(legend.position = "bottom", legend.margin = margin(t = -4))
+  labs(x = "Mean |SHAP| (m)", y = NULL) +
+  theme(legend.position = "bottom", legend.margin = margin(t = -4),
+        legend.key.size = unit(6, "pt"), panel.grid.major.y = element_blank(),
+        axis.line.y = element_blank(), axis.ticks.y = element_blank())
 
 # ---------------------------------------------------------------- panel (b) --
 top_feat <- imp$feature[1]
@@ -65,13 +63,7 @@ pb <- ggplot(pb_df, aes(value, shap)) +
   scale_colour_manual(values = PAL_ZONE, name = NULL) +
   guides(colour = guide_legend(nrow = 2,
                                override.aes = list(size = 1.6, alpha = 1))) +
-  labs(title = sprintf("(b)  How %s acts", imp$label[1]),
-       subtitle = sprintf(paste("SHAP value vs. feature value. Greener",
-                                "\nwater relative to blue pushes the",
-                                "prediction\ntoward less transparent water.",
-                                "Trimmed to\nthe 1-99th percentile (%d extreme",
-                                "points out)"), n_drop),
-       x = imp$label[1], y = "SHAP Contribution (m)") +
+  labs(x = imp$label[1], y = "SHAP contribution (m)") +
   theme(legend.position = "bottom", legend.margin = margin(t = -4))
 
 # ---------------------------------------------------------------- panel (c) --
@@ -87,29 +79,26 @@ temperature",
                            lst_thermal = "Temperature
 (thermal ST_B10)"),
          label_es = fct_reorder(label_es, R2),
-         estado = ifelse(retrievable, "Retrievable", "NOT retrievable"))
+         estado = ifelse(retrievable, "Retrievable", "Not retrievable"))
 
 pc <- ggplot(pc_df, aes(R2, label_es, fill = estado)) +
   geom_vline(xintercept = 0.30, colour = INK, linetype = "22",
              linewidth = 0.45) +
   geom_col(width = 0.58) +
-  geom_text(aes(label = sprintf("R² %+.3f   (n = %d)", R2, n),
+  geom_text(aes(label = sprintf("%.3f  (n = %d)", R2, n),
                 hjust = ifelse(R2 > 0.05, -0.06, -0.30)),
             size = 2.35, colour = INK_2) +
   annotate("text", x = 0.305, y = 0.6, label = "utility threshold", hjust = 0,
            size = 2.2, colour = INK_2, fontface = "italic") +
   scale_fill_manual(values = c("Retrievable" = "#3D7A57",
-                               "NOT retrievable" = NEUTRAL), name = NULL) +
+                               "Not retrievable" = NEUTRAL), name = NULL) +
   scale_x_continuous(limits = c(-0.05, 0.92),
                      expand = expansion(mult = c(0.01, 0))) +
-  labs(title = "(c)  Only transparency is retrievable in this water",
-       subtitle = paste("Random Forest with the same honest design (campaign",
-                        "blocking) for each variable.
-The negative claim is",
-                        "subject to the same rigor as the positive one"),
-       x = "Out-of-fold R²", y = NULL) +
-  theme(legend.position = "bottom", legend.margin = margin(t = -4))
+  labs(x = expression("Out-of-fold "*italic(R)^2), y = NULL) +
+  theme(legend.position = "bottom", legend.margin = margin(t = -4),
+        legend.key.size = unit(6, "pt"), panel.grid.major.y = element_blank(),
+        axis.line.y = element_blank(), axis.ticks.y = element_blank())
 
-fig <- (pa | pb) / pc + plot_layout(heights = c(1.1, 1))
-save_fig(fig, "fig08_shap_and_retrievability", W2, 168)
+fig <- (pa | pb) / pc + plot_layout(heights = c(1.25, 0.75)) + tags_abc()
+save_fig(fig, "fig08_shap_and_retrievability", W2, 140)
 cat("fig08 lista\n")

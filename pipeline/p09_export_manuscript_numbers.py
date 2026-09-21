@@ -226,6 +226,9 @@ def main():
     if not cc.empty:
         N["conformal_max_error"] = float(cc.calibration_error.abs().max() * 100)
 
+    iv = load_tidy("conformal_intervals.csv")
+    if not iv.empty:
+        N["conformal_outside"] = int((~iv.covered.astype(bool)).sum())
     wb = load_tidy("interval_width_by_secchi.csv")
     if not wb.empty:
         N["conformal_cov_clearest"] = float(wb.coverage.iloc[-1] * 100)
