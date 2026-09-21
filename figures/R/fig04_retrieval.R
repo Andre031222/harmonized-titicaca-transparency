@@ -11,6 +11,7 @@
 source(file.path(local({a <- grep("^--file=", commandArgs(FALSE), value = TRUE)
   if (length(a)) dirname(normalizePath(sub("^--file=", "", a[1]))) else getwd()}),
   "theme_titicaca.R"))
+source(file.path(ROOT, "figures", "R", "map_base.R"))
 suppressPackageStartupMessages({library(sf); library(ggspatial)})
 sf_use_s2(FALSE)
 
@@ -91,30 +92,27 @@ st_bias <- oof |>
 lim_b <- 2
 
 pc <- ggplot() +
-  geom_sf(data = lake, fill = "#EEF3F6", colour = "#7FA3BA", linewidth = 0.3) +
+  relief_layers() +
   geom_sf(data = st_bias |> arrange(abs(bias)),
-          aes(fill = bias, size = n), shape = 21, colour = "white", stroke = 0.25) +
+          aes(fill = bias, size = n), shape = 21, colour = "white", stroke = 0.3) +
   scale_fill_gradient2(low = "#2166AC", mid = "#F7F7F7", high = "#B2182B",
                        midpoint = 0, limits = c(-lim_b, lim_b), oob = squish,
                        breaks = c(-2, -1, 0, 1, 2),
                        labels = c("≤−2", "−1", "0", "1", "≥2"),
                        name = "Mean bias (m)",
-                       guide = guide_colourbar(barwidth = unit(4, "pt"),
+                       guide = guide_colourbar(order = 1, barwidth = unit(4, "pt"),
                                                barheight = unit(34, "pt"))) +
-  scale_size_continuous(range = c(0.7, 3), name = "Match-ups",
+  scale_size_continuous(range = c(0.8, 3.2), name = "Match-ups",
                         breaks = c(2, 6, 12),
-                        guide = guide_legend(override.aes = list(fill = "#9E9E9E"))) +
-  annotation_north_arrow(location = "tr", height = unit(0.7, "cm"),
-                         width = unit(0.55, "cm"),
-                         style = north_arrow_fancy_orienteering(text_size = 5)) +
-  annotation_scale(location = "bl", width_hint = 0.3, text_cex = 0.5,
-                   height = unit(0.1, "cm"), bar_cols = c(INK, "white")) +
-  coord_sf(crs = 32719, datum = NA) +
-  theme_void(base_size = 8) +
-  theme(legend.position = "right", legend.title = element_text(size = 6.5),
-        legend.text = element_text(size = 6), legend.key.size = unit(7, "pt"),
-        plot.tag = element_text(size = 10, face = "bold"),
-        plot.tag.position = c(0, 1), plot.margin = margin(8, 2, 2, 2))
+                        guide = guide_legend(order = 2, override.aes = list(
+                          fill = "#9E9E9E"))) +
+  north("tr") + scale_bar("bl", 0.3) +
+  lake_coord() +
+  scale_x_continuous(breaks = c(-70, -69.5, -69, -68.5)) +
+  scale_y_continuous(breaks = c(-16.5, -16, -15.5)) +
+  map_theme +
+  theme(legend.position = "right", legend.key.size = unit(7, "pt"),
+        plot.margin = margin(2, 2, 2, 2))
 
 # ------------------------------------------------------------------ (d) --
 # el ratio sin acotar (R2 = -2.46) aplastaba el eje: queda como flecha fuera

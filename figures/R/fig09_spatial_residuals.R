@@ -11,6 +11,7 @@
 source(file.path(local({a <- grep("^--file=", commandArgs(FALSE), value = TRUE)
   if (length(a)) dirname(normalizePath(sub("^--file=", "", a[1]))) else getwd()}),
   "theme_titicaca.R"))
+source(file.path(ROOT, "figures", "R", "map_base.R"))
 suppressPackageStartupMessages({library(sf); library(ggspatial); library(jsonlite)})
 sf_use_s2(FALSE)
 
@@ -50,39 +51,36 @@ lisa_layer <- function(size) {
                          name = NULL))
 }
 
-# ------------------------------------------------------------------ (a) --
-pa <- ggplot() +
-  geom_sf(data = lake, fill = "#EEF3F6", colour = "#7FA3BA", linewidth = 0.3) +
-  lisa_layer(1.9) +
-  geom_sf(data = bay_poly, fill = NA, colour = INK, linewidth = 0.45) +
-  annotate("text", x = bay[["xmin"]], y = bay[["ymax"]] + 1500, label = "b",
-           hjust = 0, vjust = 0, size = 3, fontface = "bold") +
-  annotation_north_arrow(location = "tl", height = unit(0.7, "cm"),
-                         width = unit(0.55, "cm"),
-                         style = north_arrow_fancy_orienteering(text_size = 5)) +
-  annotation_scale(location = "bl", width_hint = 0.3, text_cex = 0.5,
-                   height = unit(0.1, "cm"), bar_cols = c(INK, "white")) +
-  coord_sf(crs = 32719, datum = NA) +
-  theme_void(base_size = 8) +
-  theme(legend.position = "inside", legend.position.inside = c(0.99, 0.99),
-        legend.justification = c(1, 1), legend.key.size = unit(8, "pt"),
-        legend.text = element_text(size = 6.5),
-        plot.tag = element_text(size = 10, face = "bold"),
-        plot.margin = margin(4, 2, 2, 2))
-
-# ------------------------------------------------------------------ (b) --
-pb <- ggplot() +
-  geom_sf(data = lake, fill = "#EEF3F6", colour = "#7FA3BA", linewidth = 0.35) +
-  lisa_layer(3) +
-  annotation_scale(location = "tl", width_hint = 0.3, text_cex = 0.5,
-                   height = unit(0.1, "cm"), bar_cols = c(INK, "white")) +
-  coord_sf(crs = 32719, datum = NA, xlim = bay[c("xmin", "xmax")],
-           ylim = bay[c("ymin", "ymax")], expand = FALSE) +
-  theme_void(base_size = 8) +
-  theme(legend.position = "none",
-        panel.border = element_rect(fill = NA, colour = INK, linewidth = 0.45),
-        plot.tag = element_text(size = 10, face = "bold"),
-        plot.margin = margin(4, 2, 2, 6))
+# El recuadro y el marco de (b) se dibujan primero en un color marcador para
+# ubicarlos en el PNG y trazar la flecha curva entre ellos (segunda pasada).
+MARK <- "#FF00FE"
+panel_a <- function(box_col) {
+  ggplot() +
+    relief_layers() +
+    lisa_layer(1.9) +
+    geom_sf(data = bay_poly, fill = NA, colour = box_col, linewidth = 0.7) +
+    north("tl") + scale_bar("bl", 0.3) +
+    lake_coord() +
+    scale_x_continuous(breaks = c(-70, -69.5, -69, -68.5)) +
+    scale_y_continuous(breaks = c(-16.5, -16, -15.5)) +
+    map_theme + legend_box(c(0.015, 0.075), c(0, 0)) +
+    theme(legend.key.size = unit(8, "pt"), legend.text = element_text(size = 6.5),
+          plot.margin = margin(4, 2, 2, 2))
+}
+panel_b <- function(box_col) {
+  ggplot() +
+    relief_layers() +
+    lisa_layer(3) +
+    scale_bar("bl", 0.35) +
+    coord_sf(crs = UTM, datum = 4326, xlim = bay[c("xmin", "xmax")],
+             ylim = bay[c("ymin", "ymax")], expand = FALSE) +
+    scale_x_continuous(breaks = c(-70, -69.9, -69.8)) +
+    scale_y_continuous(breaks = c(-15.9, -15.8, -15.7)) +
+    map_theme +
+    theme(legend.position = "none",
+          panel.border = element_rect(fill = NA, colour = box_col, linewidth = 1.1),
+          plot.margin = margin(4, 2, 2, 10))
+}
 
 # ------------------------------------------------------------------ (c) --
 # con pesos estandarizados por fila la pendiente de Wz sobre z es la I global
@@ -122,7 +120,37 @@ pd <- ggplot(ring, aes(mid_km, moran_I)) +
   theme(axis.text.x = element_text(size = 6))
 
 # ---------------------------------------------------------------- montaje --
-fig <- (pa | pb) / (pc | pd) +
-  plot_layout(widths = c(1.45, 1), heights = c(1.35, 1)) + tags_abc()
-save_fig(fig, "fig09_spatial_residuals", W2, 165)
+build <- function(box_col) {
+  (panel_a(box_col) | panel_b(box_col)) / (pc | pd) +
+    plot_layout(widths = c(1.45, 1), heights = c(1.35, 1)) + tags_abc()
+}
+W_MM <- W2; H_MM <- 165
+
+# pasada 1: ubicar recuadro (izquierda) y marco de (b) (derecha) en el PNG
+tmp <- tempfile(fileext = ".png")
+ggsave(tmp, build(MARK), width = W_MM, height = H_MM, units = "mm", dpi = 150,
+       device = ragg::agg_png, bg = "white")
+img <- png::readPNG(tmp)
+mask <- img[, , 1] > 0.9 & img[, , 2] < 0.15 & img[, , 3] > 0.9
+H <- nrow(mask); Wd <- ncol(mask)
+bbox_of <- function(cols) {
+  m <- mask; m[, -cols] <- FALSE
+  ij <- which(m, arr.ind = TRUE)
+  stopifnot(nrow(ij) > 20)
+  c(x0 = min(ij[, 2]) / Wd, x1 = max(ij[, 2]) / Wd,
+    y0 = 1 - max(ij[, 1]) / H, y1 = 1 - min(ij[, 1]) / H)
+}
+box_a <- bbox_of(seq_len(floor(Wd * 0.55)))
+frm_b <- bbox_of(seq(floor(Wd * 0.55) + 1, Wd))
+stopifnot(box_a[["x1"]] < frm_b[["x0"]])
+
+# pasada 2: figura final con la flecha curva del recuadro al panel ampliado
+arrow_df <- data.frame(x = box_a[["x1"]], y = box_a[["y1"]],
+                       xend = frm_b[["x0"]] - 0.004,
+                       yend = frm_b[["y0"]] + 0.88 * (frm_b[["y1"]] - frm_b[["y0"]]))
+fig <- cowplot::ggdraw() + cowplot::draw_plot(build(BOX)) +
+  geom_curve(data = arrow_df, aes(x = x, y = y, xend = xend, yend = yend),
+             curvature = -0.35, colour = BOX, linewidth = 0.6,
+             arrow = arrow(length = unit(5, "pt"), type = "closed"))
+save_fig(fig, "fig09_spatial_residuals", W_MM, H_MM)
 cat("fig09 lista\n")
