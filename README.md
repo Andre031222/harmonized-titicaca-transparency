@@ -27,12 +27,13 @@ volume, the largest tropical lake in the world. It is a transboundary Ramsar sit
 the freshwater reserve for millions of Andean people, yet its water quality is
 documented only by infrequent field campaigns.
 
-![Monitoring network and sampling effort](results/figures_r/fig02_study_area.png)
+![Study area at three scales and the monitoring network](results/figures_r/fig02_study_area.png)
 
-*The 143 IMARPE/ALT stations with a satellite–field match-up, coloured by mean measured
-Secchi depth. The trophic gradient — turbid Bahía de Puno, intermediate Lago Menor,
-clear Lago Mayor — is visible in the field data alone. Most stations were visited in
-very few campaigns.*
+*(a) South America. (b) The northern Altiplano: SRTM relief, the endorheic basin and its
+rivers (HydroSHEDS), and the Peru–Bolivia border crossing the lake. (c) The 143 IMARPE/ALT
+stations with a match-up, coloured by mean measured Secchi depth — the trophic gradient,
+turbid Bahía de Puno to clear Lago Mayor, is visible in the field data alone. (d) Bahía de
+Puno enlarged. (e) Most stations were visited in very few campaigns.*
 
 We assemble **1,002 real satellite–field match-ups** (812 carrying a Secchi reading)
 from Sentinel-2 MSI and Landsat 8/9 OLI against twelve years of IMARPE limnological
@@ -244,11 +245,15 @@ held to the same standard as the positive one.
 │   ├── p10_verify_manuscript.py         checks the article against results/tidy/
 │   ├── p11_window_sensitivity.py        match-up window ±1/±3/±5/±10 d (needs GEE)
 │   └── run_all.sh                       reproduces everything, end to end
-├── figures/R/                fig01–fig08 (ggplot2) + shared theme and palette
+├── figures/
+│   ├── R/                    fig01–fig08 (ggplot2) + shared theme and palette
+│   └── basemap/              fetch_basemap.py: borders, rivers and relief for the maps
 ├── data/
 │   ├── processed/            match-up tables (matchups_s2.csv, matchups_ls.csv),
 │   │                         insitu_annual_medians.csv (input to the trend tests)
 │   │                         and window_sensitivity_raw.csv (the p11 extraction)
+│   ├── basemap/              Natural Earth borders, HydroSHEDS basin and rivers, SRTM
+│   │                         relief (about 4 MB, so the maps rebuild offline)
 │   ├── insitu/reference/     OEFA 2016 reference values and source metadata
 │   └── lake_boundary/        lake geometry (Natural Earth, GPKG)
 ├── results/
