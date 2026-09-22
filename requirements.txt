@@ -1,6 +1,6 @@
 # ============================================================
 # Water transparency retrieval in Lake Titicaca
-# Python dependencies for pipeline/ (p00-p09)
+# Python dependencies for pipeline/ (p00-p12) and figures/
 #
 #   python3.11 -m venv .venv
 #   .venv/bin/pip install -r requirements.txt
@@ -27,3 +27,15 @@ shap==0.52.0            # p08, out-of-fold TreeExplainer
 
 # ---- Utilities --------------------------------------------
 joblib==1.6.0           # model persistence
+
+# ---- Spatial ----------------------------------------------
+geopandas==1.1.4        # p12 (Moran/LISA), basemap, graphical abstract
+shapely==2.1.2
+pyproj==3.8.0
+pyogrio==0.13.0
+rasterio==1.5.1         # graphical abstract (SRTM relief)
+
+# ---- Figures and Earth Engine -----------------------------
+matplotlib==3.11.1      # graphical abstract (3D)
+pillow==12.3.0          # fig02 zoom-line measurement
+earthengine-api==1.7.42 # p11 and basemap extraction only; needs credentials

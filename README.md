@@ -310,7 +310,9 @@ Figures are built in R (≥ 4.4), not Python:
 
 ```r
 install.packages(c("ggplot2","patchwork","dplyr","tidyr","readr",
-                   "forcats","scales","stringr","sf","viridis"))
+                   "forcats","scales","stringr","sf","terra","tidyterra",
+                   "ggspatial","ggnewscale","cowplot","ggdist","ggbeeswarm",
+                   "jsonlite","MASS","png","ragg","viridis"))
 ```
 
 * * *
@@ -334,7 +336,7 @@ bash pipeline/run_all.sh --no-tex   # skip the LaTeX build
 | 2 | `p02_fix1_harmonization` | Quantifies the Roy intercepts against the native over-water signal; runs the classifier two-sample test; refits water-specific coefficients |
 | 3 | `p04_fix3_validation` | The null-model grid, the blocking hierarchy, leave-one-zone-out, error by zone |
 | 4 | `p03_fix2_baselines` | The classical baseline, bounded and unbounded (imports from `p04`, so it runs after) |
-| 5 | `p05_fix4_temporal` | Temporal hold-out, seasonal coverage, Mann–Kendall trends and their sensitivity to the start year |
+| 5 | `p05_fix4_temporal` | Temporal hold-out, seasonal coverage, dry-season Mann–Kendall trends and their sensitivity to season and start year |
 | 6 | `p06_model_selection` | RF / ExtraTrees / XGBoost / LightGBM, tuned by Optuna inside nested CV, against seed-to-seed noise |
 | 7 | `p07_uncertainty` | Split-conformal intervals; coverage marginal **and** conditional on transparency |
 | 8 | `p08_interpretability` | Out-of-fold SHAP; retrievability of every co-measured variable |
@@ -388,7 +390,7 @@ by a model that never saw it.
 | **OEFA (2016)** | Reference values, inner Puno Bay | Public government report |
 | **Sentinel-2 MSI / Landsat 8-9 OLI** | Surface reflectance, Collection 2 Level-2 | Free via [Google Earth Engine](https://earthengine.google.com) |
 | **Match-up tables** (`data/processed/`) | 1,002 satellite ↔ in-situ pairs (340 Sentinel-2, 662 Landsat 8/9); 812 carry a Secchi reading | **Versioned in this repository** |
-| **Annual medians** (`data/processed/insitu_annual_medians.csv`) | Median Secchi per trophic zone per year, 2011–2024, with the count behind each — the input the Mann–Kendall tests actually consume | **Versioned in this repository** |
+| **Annual medians** (`data/processed/insitu_annual_medians.csv`) | Median Secchi per trophic zone, year and season, 2011–2024, with the count behind each — the input the Mann–Kendall tests actually consume | **Versioned in this repository** |
 
 Trends are computed on the full in-situ record rather than the match-up subset, because
 they are a claim about the lake and not about cloud-free image availability. That record
@@ -461,12 +463,13 @@ cite the repository and check back for the article reference:
   withheld. Integration must be incremental: each new campaign both validates the
   current map and extends the training set.
 - **Episodic record.** No campaigns in 2020, 2021 or 2023, so a hold-out described as
-  "2022–2024" contains only 2022 and 2024, and the trend analysis rests on 9–11 annual
-  values.
-- **Fragile trends.** No zone shows a significant Mann–Kendall trend over the full
-  record, but starting the series in 2013 — the lowest-median year — turns two zones
-  significantly positive. The full record and the sensitivity table are both reported.
-- **Coarse reference.** Secchi readings are recorded to the nearest half metre, giving
+  "2022–2024" contains only 2022 and 2024, and the trend analysis rests on 8–10
+  dry-season annual values.
+- **Fragile trends.** On the dry-season series only Lago Mayor rises significantly
+  (Sen +0.30 m/yr, P = 0.012). Adding the single wet-season campaign (December 2012)
+  erases that trend (P = 0.14), and Bahía de Puno turns significant or not depending
+  on the start year. Both series and every start year are reported.
+- **Coarse reference.** 87% of the Secchi readings are multiples of 0.5 m, giving
   only 73 distinct values across 812 match-ups, so an RMSE of 1.86 m is within a small
   multiple of the granularity of the reference measurement itself.
 - **One lake.** The two diagnostics are general; the water-specific coefficients are
