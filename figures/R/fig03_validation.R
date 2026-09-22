@@ -108,7 +108,7 @@ LAB <- c(random_kfold          = "Random K-fold",
          LS_only               = "Landsat 8/9 only")
 GRP <- c(blocking = "Blocking design", leave_one_zone_out = "Zone withheld",
          harmonization = "Features and sensor")
-NOTE <- c(by_station = "143 stations", by_campaign_date = "120 campaigns",
+NOTE <- c(by_station = "143 stations", by_campaign_date = "120 campaign dates",
           by_year = "9 years", one_record_per_event = "n = 540",
           S2_only = "n = 274", LS_only = "n = 538")
 
