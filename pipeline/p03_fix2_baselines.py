@@ -55,9 +55,11 @@ def classical_kloiber(d, groups, gkf):
     """Forma estandar: ln(Zsd) ~ ln(azul/verde), acotada al rango observable."""
     X = np.log(np.clip(d[["B2_B3"]].values, 1e-6, None))
     y = d.secchi.values
-    hi = float(y.max() * 1.5)     # margen fisico generoso, no ajustado al test
     yt, yp = [], []
     for tr, te in gkf.split(X, y, groups):
+        # tope fisico generoso (1.5 veces el maximo), calculado solo con el
+        # fold de entrenamiento para no mirar el test
+        hi = float(y[tr].max() * 1.5)
         lr = LinearRegression().fit(X[tr], np.log(np.clip(y[tr], 1e-3, None)))
         yp.append(np.clip(np.exp(lr.predict(X[te])), SECCHI_CLIP_LO, hi))
         yt.append(y[te])
