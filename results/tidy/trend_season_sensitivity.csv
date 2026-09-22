@@ -1,0 +1,7 @@
+zone,zone_label,n_years,start_year,z,p_value,sen_slope_m_per_yr,significant_at_005,series
+BAHIA PUNO,Bahia de Puno,10,2011,1.252,0.2105,0.1562,False,dry_season
+LAGO MENOR,Lago Menor,8,2013,0.0,1.0,0.0357,False,dry_season
+LAGO MAYOR,Lago Mayor,9,2013,2.52,0.0118,0.2955,True,dry_season
+BAHIA PUNO,Bahia de Puno,11,2011,1.171,0.2415,0.125,False,all_campaigns
+LAGO MENOR,Lago Menor,9,2012,0.0,1.0,0.0,False,all_campaigns
+LAGO MAYOR,Lago Mayor,10,2012,1.483,0.138,0.15,False,all_campaigns

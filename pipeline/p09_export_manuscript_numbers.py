@@ -101,6 +101,7 @@ def main():
             "secchi_min": ds["secchi_min"], "secchi_max": ds["secchi_max"],
             "secchi_mean": ds["secchi_mean"], "secchi_sd": ds["secchi_sd"],
             "secchi_unique_values": ds["secchi_n_unique_values"],
+            "secchi_half_metre_pct": 100 * ds["secchi_frac_half_metre_multiples"],
         })
 
     # --- armonizacion -------------------------------------------------------
@@ -194,6 +195,13 @@ def main():
         N[f"zone_{k}_rmse"] = float(r.RMSE)
         N[f"zone_{k}_bias"] = float(r.bias)
         N[f"zone_{k}_n"] = int(r.n)
+    # el sesgo sale de las predicciones sin redondear: error_by_zone.csv lo
+    # guarda con 3 decimales y redondear otra vez daba 1.01 en vez de 1.02
+    oof = load_tidy("oof_predictions.csv")
+    if not oof.empty:
+        for zl, b in oof.groupby("zone_label").residual.mean().items():
+            k = zl.lower().replace(" ", "_").replace("í", "i")
+            N[f"zone_{k}_bias"] = float(b)
 
     # --- temporal -----------------------------------------------------------
     th = load_tidy("temporal_holdout.csv")
@@ -211,6 +219,15 @@ def main():
             k = r.zone_label.lower().replace(" ", "_").replace("í", "i")
             N[f"trend_{k}_slope"] = float(r.sen_slope_m_per_yr)
             N[f"trend_{k}_p"] = float(r.p_value)
+            N[f"trend_{k}_years"] = int(r.n_years)
+
+    # sensibilidad: la misma prueba incluyendo la campana de lluvias (dic 2012)
+    tss = load_tidy("trend_season_sensitivity.csv")
+    if not tss.empty:
+        for _, r in tss[tss.series == "all_campaigns"].iterrows():
+            k = r.zone_label.lower().replace(" ", "_").replace("í", "i")
+            N[f"trend_{k}_all_slope"] = float(r.sen_slope_m_per_yr)
+            N[f"trend_{k}_all_p"] = float(r.p_value)
 
     ts = load_tidy("trend_start_year_sensitivity.csv")
     if not ts.empty:

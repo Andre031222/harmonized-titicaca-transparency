@@ -71,9 +71,14 @@ def annual_medians():
         j = j.dropna(subset=["date"])
         j["year"] = j["date"].dt.year
         j = j[j.secchi.notna()]
-        med = (j.groupby(["zona", "year"], as_index=False)
+        # la unica campana de lluvias (dic 2012) no es comparable con las de
+        # julio-octubre: se marca para poder excluirla de la serie principal
+        j["season"] = np.where(j.date.dt.month.isin(WET_MONTHS), "wet", "dry")
+        med = (j.groupby(["zona", "year", "season"], as_index=False)
                  .agg(secchi_median=("secchi", "median"), n=("secchi", "size"))
                  .sort_values(["zona", "year"]))
+        assert not med.duplicated(["zona", "year"]).any(), \
+            "un anio con campanas de ambas estaciones: la mediana anual mezclaria"
         med.to_csv(agg, index=False, float_format="%.4f")
         print(f"  registro in-situ crudo: {len(j)} lecturas de Secchi -> "
               f"agregado a data/processed/{agg.name}")
@@ -82,11 +87,41 @@ def annual_medians():
     if agg.exists():
         print(f"  registro crudo no disponible (no se redistribuye); se usan "
               f"las\n  medianas anuales versionadas en data/processed/{agg.name}")
-        return pd.read_csv(agg)
+        med = pd.read_csv(agg)
+        if "season" not in med.columns:
+            raise ValueError(f"{agg.name} no trae la columna season: "
+                             "regenerarlo desde el registro crudo")
+        return med
 
     raise FileNotFoundError(
         "Falta el registro in-situ y su agregado anual: no se pueden calcular "
         "las tendencias.")
+
+
+WET_MONTHS = [12, 1, 2, 3]
+
+
+def trend_table(med, label):
+    """Mann-Kendall + Sen por zona sobre una serie de medianas anuales."""
+    trows, series = [], []
+    for z in ZONES:
+        sub = (med[med.zona == z].set_index("year")
+               .secchi_median.sort_index())
+        if len(sub) < 4:
+            continue
+        z_stat, p, slope = mann_kendall(sub.values, sub.index.values)
+        trows.append({"zone": z, "zone_label": ZONE_LABELS[z],
+                      "n_years": int(len(sub)), "start_year": int(sub.index.min()),
+                      "z": round(z_stat, 3), "p_value": round(p, 4),
+                      "sen_slope_m_per_yr": round(slope, 4),
+                      "significant_at_005": bool(p < 0.05)})
+        for yr, val in sub.items():
+            series.append({"zone": z, "zone_label": ZONE_LABELS[z],
+                           "year": int(yr), "secchi_median": float(val)})
+        print(f"  [{label}] {ZONE_LABELS[z]:15s} n_anios={len(sub):2d} "
+              f"pendiente Sen={slope:+.3f} m/anio  p={p:.3f}  "
+              f"{'SIGNIFICATIVA' if p < 0.05 else 'no significativa'}")
+    return trows, series
 
 
 def mann_kendall(x, t):
@@ -172,33 +207,21 @@ def main():
     print("  => el modelo esta calibrado y validado SOLO para epoca seca.")
 
     # --- (4) tendencias anuales ---------------------------------------------
-    # IMPORTANTE: la tendencia es una afirmacion sobre el REGISTRO IN-SITU, no
-    # sobre el subconjunto que casualmente tuvo imagen limpia. Se calcula sobre
-    # el registro completo (2011-2024, 734 lecturas de Secchi), no sobre los
-    # 812 match-ups. La diferencia NO es cosmetica: ver el analisis de
-    # sensibilidad al anio inicial mas abajo.
-    banner("(4) TENDENCIAS ANUALES (Mann-Kendall / Sen) -- registro in-situ completo", "-")
-    med = annual_medians()
-    print(f"  registro in-situ completo: n={int(med.n.sum())} lecturas de Secchi, "
-          f"anios {sorted(int(y) for y in med.year.unique())}\n")
-    trows, series = [], []
-    for z in ZONES:
-        sub = (med[med.zona == z].set_index("year")
-               .secchi_median.sort_index())
-        if len(sub) < 4:
-            continue
-        z_stat, p, slope = mann_kendall(sub.values, sub.index.values)
-        trows.append({"zone": z, "zone_label": ZONE_LABELS[z],
-                      "n_years": int(len(sub)), "start_year": int(sub.index.min()),
-                      "z": round(z_stat, 3), "p_value": round(p, 4),
-                      "sen_slope_m_per_yr": round(slope, 4),
-                      "significant_at_005": bool(p < 0.05)})
-        for yr, val in sub.items():
-            series.append({"zone": z, "zone_label": ZONE_LABELS[z],
-                           "year": int(yr), "secchi_median": float(val)})
-        print(f"  {ZONE_LABELS[z]:15s} n_anios={len(sub):2d} "
-              f"pendiente Sen={slope:+.3f} m/anio  p={p:.3f}  "
-              f"{'SIGNIFICATIVA' if p < 0.05 else 'no significativa'}")
+    # La tendencia es una afirmacion sobre el REGISTRO IN-SITU, no sobre el
+    # subconjunto con imagen limpia. Serie principal: solo epoca seca. El
+    # registro trae una unica campana de lluvias (dic 2012, primer punto de
+    # Lago Mayor y Lago Menor); compararla con julio-octubre mezcla estaciones
+    # y basta para borrar la tendencia de Lago Mayor. Se reporta como
+    # sensibilidad.
+    banner("(4) TENDENCIAS ANUALES (Mann-Kendall / Sen) -- registro in-situ", "-")
+    med_all = annual_medians()
+    med = med_all[med_all.season == "dry"]
+    wet_years = sorted(int(y) for y in med_all.loc[med_all.season == "wet", "year"].unique())
+    print(f"  registro in-situ: n={int(med_all.n.sum())} lecturas; campanas de "
+          f"lluvias en {wet_years}, excluidas de la serie principal\n")
+    trows, series = trend_table(med, "seca")
+    print()
+    trows_all, _ = trend_table(med_all, "todas")
 
     # --- (4b) SENSIBILIDAD AL ANIO INICIAL ----------------------------------
     # Este es el quinto error, que aun no se habia cometido pero estaba a un
@@ -206,7 +229,7 @@ def main():
     # del registro) en lugar de 2011, DOS zonas pasan a tener tendencia
     # positiva "significativa". El resultado lo fija la eleccion del anio
     # inicial, no el lago.
-    banner("(4b) SENSIBILIDAD DE LA TENDENCIA AL ANIO INICIAL", "-")
+    banner("(4b) SENSIBILIDAD DE LA TENDENCIA AL ANIO INICIAL (epoca seca)", "-")
     print("  Mismo test, mismo dato, distinto anio de inicio de la serie:\n")
     sens = []
     print(f"  {'Zona':15s} {'inicio':>7s} {'n':>3s} {'Sen(m/anio)':>12s} {'p':>8s}  veredicto")
@@ -224,15 +247,10 @@ def main():
                          "p_value": round(p, 4), "significant_at_005": bool(sig)})
             print(f"  {ZONE_LABELS[z]:15s} {start:7d} {len(sub):3d} {slope:+12.3f} "
                   f"{p:8.4f}  {'SIGNIFICATIVA' if sig else 'no significativa'}")
-    n_flip = sum(1 for s in sens if s["start_year"] >= 2013 and s["significant_at_005"])
-    print(f"\n  {n_flip} de {len(sens)} combinaciones cambian de veredicto segun")
-    print("  donde se empiece la serie. 2013 es el anio con las medianas mas")
-    print("  bajas del registro, asi que arrancar ahi fabrica una tendencia")
-    print("  positiva artificial.")
-    print("\n  DECISION: se reporta el registro COMPLETO (2011-2024) -> sin")
-    print("  tendencia significativa en ninguna zona, y se publica esta tabla de")
-    print("  sensibilidad. Con 9-11 valores anuales y 3 anios sin campana, la")
-    print("  potencia es baja: es AUSENCIA DE EVIDENCIA, no evidencia de estabilidad.")
+    n_sig = sum(1 for r in sens if r["significant_at_005"])
+    print(f"\n  {n_sig} de {len(sens)} combinaciones zona-anio inicial son significativas.")
+    print("  Con 8-11 valores anuales y 3 anios sin campana la potencia es baja: el")
+    print("  veredicto depende del anio inicial y de la estacion incluida.")
 
     # --- salidas ------------------------------------------------------------
     pd.DataFrame(rows).to_csv(TIDY / "temporal_holdout.csv", index=False)
@@ -240,13 +258,18 @@ def main():
     pd.DataFrame(series).merge(pd.DataFrame(trows), on=["zone", "zone_label"]) \
         .to_csv(TIDY / "annual_trends.csv", index=False)
     pd.DataFrame(sens).to_csv(TIDY / "trend_start_year_sensitivity.csv", index=False)
+    season_sens = pd.concat([pd.DataFrame(trows).assign(series="dry_season"),
+                             pd.DataFrame(trows_all).assign(series="all_campaigns")])
+    season_sens.to_csv(TIDY / "trend_season_sensitivity.csv", index=False)
     json.dump({"years_present": [int(v) for v in years],
                "years_missing": [int(v) for v in missing],
                "months_present": [int(v) for v in sorted(d.month.unique())],
                "n_wet_season_matchups": wet,
                "season_coverage": "austral dry season only (July-October)",
                "temporal_holdouts": rows,
-               "trends_full_insitu_record": trows,
+               "trends_dry_season": trows,
+               "trends_all_campaigns": trows_all,
+               "wet_season_campaign_years": wet_years,
                "trend_start_year_sensitivity": sens,
                "corrections": [
                    "There are no campaigns in 2020, 2021 or 2023.",
@@ -255,12 +278,11 @@ def main():
                    "false: no 2023 data exist.",
                    "All match-ups fall between July and October; no wet-season "
                    "claim is supportable.",
-                   "Trends must be computed on the full in-situ record "
-                   "(2011-2024), not on the match-up subset. Starting the series "
-                   "in 2013 -- the lowest-median year on record -- turns two "
-                   "zones significantly positive (Lago Mayor Sen +0.42 m/yr, "
-                   "p=0.012). On the full record no zone shows a significant "
-                   "trend. The verdict is set by the start year, not by the lake."]},
+                   "Trends are computed on the in-situ record, not on the "
+                   "match-up subset, and on dry-season campaigns only: the "
+                   "single wet-season campaign (December 2012) is not "
+                   "comparable, and including it removes the Lago Mayor trend. "
+                   "Both series and every start year are reported."]},
               open(MET / "temporal.json", "w"), indent=2)
 
     banner("SALIDAS")
