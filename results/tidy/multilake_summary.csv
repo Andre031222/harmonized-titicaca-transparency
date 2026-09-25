@@ -1,0 +1,7 @@
+lake,country,clarity,s2_green_median,worst_band_ratio,median_band_ratio,bands_within_20pct,negative_native_bands,n_points
+Lake Tahoe,United States,clear,0.0087,17.95,5.78,0,2,300
+Lake Titicaca,Peru/Bolivia,clear,0.01449,9.15,2.95,0,1,300
+Lake Baikal,Russia,clear,0.01714,12.22,3.89,0,1,300
+Lake Malawi,Malawi/Mozambique,clear,0.02618,4.53,1.75,1,1,300
+Lake Erie,United States/Canada,turbid,0.04066,2.59,1.05,0,1,300
+Lake Okeechobee,United States,turbid,0.04099,2.98,1.31,2,0,300

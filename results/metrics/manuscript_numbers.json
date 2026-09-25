@@ -240,5 +240,12 @@
   "spatial_lisa_expected": 7.2,
   "spatial_lisa_fdr": 0,
   "spatial_lisa_puno_hh": 8,
-  "spatial_lisa_hh": 12
+  "spatial_lisa_hh": 12,
+  "multilake_n": 6,
+  "multilake_points": 300,
+  "multilake_spearman": -0.886,
+  "multilake_clearest_ratio": 17.95,
+  "multilake_clearest_lake": "Lake Tahoe",
+  "multilake_turbid_ratio_max": 2.98,
+  "multilake_negative_nir": 5
 }

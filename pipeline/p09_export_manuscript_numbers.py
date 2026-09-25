@@ -55,6 +55,7 @@ ROUNDING = [
     (lambda k: "_acc" in k or "_cov" in k or "_pct" in k or "_share" in k, 1),
     (lambda k: k.endswith("_r2") or k.endswith("_rtwo"), 3),
     (lambda k: k.startswith("local_r_"), 2),
+    (lambda k: k.endswith("_spearman"), 2),
     (lambda k: k.endswith("_p"), 3),
     (lambda k: "_maxpred" in k, 1),
     (lambda k: any(t in k for t in ("_rmse", "_mae", "_bias", "_width",
@@ -309,6 +310,19 @@ def main():
         N["spatial_lisa_fdr"] = int(sa["lisa_fdr_significant"])
         N["spatial_lisa_puno_hh"] = int(sa["lisa_puno_hh"])
         N["spatial_lisa_hh"] = int(sa["lisa_counts"]["HH"])
+
+    # --- el diagnostico en otros lagos grandes (p13, requiere GEE) ----------
+    ml = load_json("multilake_harmonization.json")
+    if ml:
+        lakes = pd.DataFrame(ml["lakes"])
+        N["multilake_n"] = int(len(lakes))
+        N["multilake_points"] = int(lakes.n_points.iloc[0])
+        N["multilake_spearman"] = float(ml["spearman_green_vs_worst_ratio"])
+        N["multilake_clearest_ratio"] = float(lakes.worst_band_ratio.iloc[0])
+        N["multilake_clearest_lake"] = str(lakes.lake.iloc[0])
+        N["multilake_turbid_ratio_max"] = float(
+            lakes[lakes.clarity == "turbid"].worst_band_ratio.max())
+        N["multilake_negative_nir"] = int((lakes.negative_native_bands > 0).sum())
 
     # --- escritura ----------------------------------------------------------
     json.dump(N, open(MET / "manuscript_numbers.json", "w"), indent=2,

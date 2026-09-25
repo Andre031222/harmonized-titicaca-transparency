@@ -201,7 +201,28 @@ bay's overestimation is the zone-level bias of section 3, not an independent spa
 signal. Moran and LISA are implemented directly in `p12` with permutation tests, with no
 PySAL dependency.
 
-### 6. Uncertainty is calibrated on average, not conditionally
+### 6. The harmonization failure is not particular to Lake Titicaca
+
+The same check, run on **6 large lakes with no field data at all** (300 open-water
+points each, 1 km from shore, seasonal medians 2021–2024), shows that the departure
+between Roy-harmonized Landsat and Sentinel-2 grows as the water gets clearer:
+
+| Lake | Water | S2 green | Harmonized LS / S2 (median, worst) |
+|---|---|--:|--:|
+| Tahoe | clear | 0.0087 | 5.78, **17.9** |
+| Titicaca | clear | 0.0145 | 2.95, 9.2 |
+| Baikal | clear | 0.0171 | 3.89, 12.2 |
+| Malawi | clear | 0.0262 | 1.75, 4.5 |
+| Erie | turbid | 0.0407 | 1.05, 2.6 |
+| Okeechobee | turbid | 0.0410 | 1.31, 3.0 |
+
+A valid transform would give 1. The rank correlation between green reflectance (a
+turbidity proxy) and the worst-band departure is **−0.89**, and in 5 of the 6 lakes the
+native Landsat near-infrared median over water is *negative* — there is no signal for an
+additive intercept of 0.0448 to correct. These are seasonal medians, not same-day pairs,
+so they check the transform rather than replace the paired analysis of section 1.
+
+### 7. Uncertainty is calibrated on average, not conditionally
 
 ![Conformal prediction intervals](results/figures_r/fig07_conformal_uncertainty.png)
 
@@ -219,7 +240,7 @@ coverage falls to **71.3 % in the clearest water** and 79.5 % in the most turbid
 over-covering in the middle. Those extremes are where management decisions are made. A
 marginal coverage figure alone would hide this.
 
-### 7. Only transparency is retrievable in this water
+### 8. Only transparency is retrievable in this water
 
 ![Interpretation and retrievability](results/figures_r/fig08_shap_and_retrievability.png)
 
@@ -263,6 +284,7 @@ held to the same standard as the positive one.
 │   ├── p10_verify_manuscript.py         checks the article against results/tidy/
 │   ├── p11_window_sensitivity.py        match-up window ±1/±3/±5/±10 d (needs GEE)
 │   ├── p12_spatial_autocorrelation.py   Moran's I, correlogram and LISA of the residuals
+│   ├── p13_multilake_harmonization.py   the harmonization check on 6 large lakes (needs GEE)
 │   └── run_all.sh                       reproduces everything, end to end
 ├── figures/
 │   ├── R/                    fig01–fig09 (ggplot2) + shared theme and palette
@@ -270,7 +292,8 @@ held to the same standard as the positive one.
 ├── data/
 │   ├── processed/            match-up tables (matchups_s2.csv, matchups_ls.csv),
 │   │                         insitu_annual_medians.csv (input to the trend tests)
-│   │                         and window_sensitivity_raw.csv (the p11 extraction)
+│   │                         window_sensitivity_raw.csv (p11) and
+│   │                         multilake_reflectance_raw.csv (p13)
 │   ├── basemap/              Natural Earth borders, HydroSHEDS basin and rivers, SRTM
 │   │                         relief (about 4 MB, so the maps rebuild offline)
 │   ├── insitu/reference/     OEFA 2016 reference values and source metadata
@@ -353,6 +376,9 @@ within days:
 earthengine authenticate          # once
 python pipeline/p11_window_sensitivity.py          # extract, then evaluate
 python pipeline/p11_window_sensitivity.py --eval   # re-evaluate the cache only
+
+python pipeline/p13_multilake_harmonization.py         # 6 lakes, extract and evaluate
+python pipeline/p13_multilake_harmonization.py --eval  # re-evaluate the cache only
 ```
 
 Extraction is resumable and network-bound rather than CPU-bound.

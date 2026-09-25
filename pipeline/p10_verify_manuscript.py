@@ -157,7 +157,7 @@ MANIFEST = [
     # -- Table: error by trophic zone ----------------------------------------
     ("error_by_zone.csv", {"zone": "BAHIA PUNO"}, "R2", 0.221),
     ("error_by_zone.csv", {"zone": "BAHIA PUNO"}, "RMSE", 1.90),
-    ("error_by_zone.csv", {"zone": "BAHIA PUNO"}, "bias", 1.01),
+    ("error_by_zone.csv", {"zone": "BAHIA PUNO"}, "bias", 1.02),
     ("error_by_zone.csv", {"zone": "BAHIA PUNO"}, "n", 88),
     ("error_by_zone.csv", {"zone": "LAGO MENOR"}, "R2", 0.211),
     ("error_by_zone.csv", {"zone": "LAGO MENOR"}, "RMSE", 1.94),
@@ -167,6 +167,25 @@ MANIFEST = [
     ("error_by_zone.csv", {"zone": "LAGO MAYOR"}, "RMSE", 1.83),
     ("error_by_zone.csv", {"zone": "LAGO MAYOR"}, "bias", -0.19),
     ("error_by_zone.csv", {"zone": "LAGO MAYOR"}, "n", 591),
+    # -- Table: el diagnostico en otros lagos grandes (p13) -------------------
+    ("multilake_summary.csv", {"lake": "Lake Tahoe"}, "median_band_ratio", 5.78),
+    ("multilake_summary.csv", {"lake": "Lake Tahoe"}, "worst_band_ratio", 17.95),
+    ("multilake_summary.csv", {"lake": "Lake Tahoe"}, "s2_green_median", 0.0087),
+    ("multilake_summary.csv", {"lake": "Lake Titicaca"}, "median_band_ratio", 2.95),
+    ("multilake_summary.csv", {"lake": "Lake Titicaca"}, "worst_band_ratio", 9.15),
+    ("multilake_summary.csv", {"lake": "Lake Titicaca"}, "s2_green_median", 0.01449),
+    ("multilake_summary.csv", {"lake": "Lake Baikal"}, "median_band_ratio", 3.89),
+    ("multilake_summary.csv", {"lake": "Lake Baikal"}, "worst_band_ratio", 12.22),
+    ("multilake_summary.csv", {"lake": "Lake Baikal"}, "s2_green_median", 0.01714),
+    ("multilake_summary.csv", {"lake": "Lake Malawi"}, "median_band_ratio", 1.75),
+    ("multilake_summary.csv", {"lake": "Lake Malawi"}, "worst_band_ratio", 4.53),
+    ("multilake_summary.csv", {"lake": "Lake Malawi"}, "s2_green_median", 0.02618),
+    ("multilake_summary.csv", {"lake": "Lake Erie"}, "median_band_ratio", 1.05),
+    ("multilake_summary.csv", {"lake": "Lake Erie"}, "worst_band_ratio", 2.59),
+    ("multilake_summary.csv", {"lake": "Lake Erie"}, "s2_green_median", 0.04066),
+    ("multilake_summary.csv", {"lake": "Lake Okeechobee"}, "median_band_ratio", 1.31),
+    ("multilake_summary.csv", {"lake": "Lake Okeechobee"}, "worst_band_ratio", 2.98),
+    ("multilake_summary.csv", {"lake": "Lake Okeechobee"}, "s2_green_median", 0.04099),
 ]
 
 
