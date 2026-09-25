@@ -111,7 +111,7 @@ def main():
              fontweight="bold", color="#1A1A1A")
     fig.text(0.02, 0.04, f"SRTM relief, vertical exaggeration ×{EXAG:.0f}",
              fontsize=8, color="#6A6A6A")
-    fig.savefig(OUT, dpi=150, facecolor="white")
+    fig.savefig(OUT, dpi=300, facecolor="white")
     print(f"  -> {OUT}")
 
 
