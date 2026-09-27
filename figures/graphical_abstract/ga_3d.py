@@ -98,9 +98,9 @@ def main():
     cb = fig.colorbar(sc, cax=cax)
     cb.set_label("Mean Secchi depth (m)", fontsize=10)
     cb.ax.tick_params(labelsize=9)
-    txt = [("Harmonization", "Land-derived Landsat→Sentinel-2\ncoefficients fail over clear water"),
-           ("Validation", "Campaign-date blocking: R² = 0.574,\nRMSE 1.86 m (n = 812)"),
-           ("Limits", "90% intervals under-cover the\nclearest and most turbid water")]
+    txt = [("Harmonization", "After HLS adjustment a classifier still\ntells the sensors apart (94% balanced)"),
+           ("Validation", "Sampling-date blocking: R² = 0.548,\nRMSE 1.91 m (n = 812)"),
+           ("Limits", "90% intervals under-cover the\nclearest water (70%)")]
     y = 0.50
     for head, body in txt:
         fig.text(0.70, y, head, fontsize=11, fontweight="bold", color="#1A1A1A")
