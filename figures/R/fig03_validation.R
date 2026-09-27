@@ -17,16 +17,16 @@ source(file.path(local({a <- grep("^--file=", commandArgs(FALSE), value = TRUE)
 grid <- read_tidy("null_models_grid.csv")
 hier <- read_tidy("validation_hierarchy.csv")
 
-UNIT <- c(station = "Station", campaign_date = "Campaign date",
+UNIT <- c(station = "Station", campaign_date = "Sampling date",
           year = "Year", zona = "Zone")
 BLUE <- "#2E6E8E"
 
 # ------------------------------------------------------------------ (a) --
 pa_df <- grid |>
   mutate(fold = factor(map_strict(blocked_by, UNIT, "bloqueo"),
-                       levels = c("Station", "Campaign date", "Year")),
+                       levels = c("Station", "Sampling date", "Year")),
          null = factor(map_strict(null_model, UNIT, "nulo"),
-                       levels = rev(c("Zone", "Station", "Campaign date"))),
+                       levels = rev(c("Zone", "Station", "Sampling date"))),
          # la campana esta anidada en el anio: bloquear por anio tambien la retiene
          diag = (blocked_by == null_model) |
                 (blocked_by == "year" & null_model == "campaign_date"),
@@ -94,21 +94,21 @@ pb <- ggplot(pb_df, aes(y = fold)) +
 # ------------------------------------------------------------------ (c) --
 LAB <- c(random_kfold          = "Random K-fold",
          by_station            = "Station",
-         by_campaign_date      = "Campaign date",
+         by_campaign_date      = "Sampling date",
          by_year               = "Year",
          one_record_per_event  = "One record per event",
          `LAGO MENOR`          = "Lago Menor",
          `BAHIA PUNO`          = "Bahía de Puno",
          `LAGO MAYOR`          = "Lago Mayor",
-         roy_all               = "Roy, all 12 features",
+         hls_all               = "HLS, all 12 features",
          visible_only          = "Visible bands only",
          ratios_only           = "Band ratios only",
-         local_reharm          = "Local water recalibration",
+         local_reharm          = "Local recalibration (in fold)",
          S2_only               = "Sentinel-2 only",
          LS_only               = "Landsat 8/9 only")
 GRP <- c(blocking = "Blocking design", leave_one_zone_out = "Zone withheld",
          harmonization = "Features and sensor")
-NOTE <- c(by_station = "143 stations", by_campaign_date = "120 campaign dates",
+NOTE <- c(by_station = "143 stations", by_campaign_date = "120 sampling dates",
           by_year = "9 years", one_record_per_event = "n = 540",
           S2_only = "n = 274", LS_only = "n = 538")
 
@@ -143,7 +143,7 @@ pc <- ggplot(pc_df, aes(R2, name, colour = grp)) +
   facet_grid(grp ~ ., scales = "free_y", space = "free_y", switch = "y") +
   scale_colour_manual(values = PAL_GRP, guide = "none") +
   scale_size_manual(values = c(`TRUE` = 3.2, `FALSE` = 2), guide = "none") +
-  scale_x_continuous(limits = c(-0.08, 1.42), breaks = seq(0, 0.6, 0.2),
+  scale_x_continuous(limits = c(-0.2, 1.42), breaks = seq(0, 0.6, 0.2),
                      expand = expansion(mult = c(0, 0))) +
   coord_cartesian(clip = "off") +
   labs(x = expression("Out-of-fold "*italic(R)^2), y = NULL) +

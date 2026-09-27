@@ -17,7 +17,6 @@ sf_use_s2(FALSE)
 
 oof   <- read_tidy("oof_predictions.csv") |> mutate(zone_label = zone_factor(zone_label))
 bench <- read_tidy("benchmark_models.csv")
-art   <- read_tidy("baseline_artefact.csv")
 lake  <- st_read(file.path(ROOT, "data/lake_boundary/titicaca.gpkg"), quiet = TRUE) |>
   st_transform(32719)
 
@@ -67,11 +66,11 @@ pb <- ggplot(oof, aes(zone_label, residual, colour = zone_label)) +
   geom_text(data = bias, aes(zone_label, -8.2, label = txt), inherit.aes = FALSE,
             size = 2.3, colour = INK, fontface = "bold") +
   n_labels(oof, zone_label, -9.3) +
-  annotate("text", x = 0.5, y = 11.6, hjust = 0, size = 2.2, colour = INK_2,
+  annotate("text", x = 0.5, y = 12.9, hjust = 0, size = 2.2, colour = INK_2,
            parse = TRUE, label = paste0('"Kruskal–Wallis, "*', p_fmt(kw))) +
   scale_colour_manual(values = PAL_ZONE, guide = "none") +
   scale_x_discrete(labels = zone_x) +
-  scale_y_continuous(limits = c(-9.8, 12), breaks = seq(-6, 6, 3)) +
+  scale_y_continuous(limits = c(-9.8, 13.3), breaks = seq(-6, 6, 3)) +
   labs(x = NULL, y = "Residual (m)")
 
 # ------------------------------------------------------------------ (c) --
@@ -107,39 +106,31 @@ pc <- ggplot() +
         plot.margin = margin(2, 2, 2, 2))
 
 # ------------------------------------------------------------------ (d) --
-# el ratio sin acotar (R2 = -2.46) aplastaba el eje: queda como flecha fuera
-# de escala y el panel muestra los tres modelos comparables
+# Benchmark bajo el mismo diseno: los dos algoritmos clasicos de razon de
+# bandas no tienen habilidad; el lineal multibanda y el RF si.
 pd_df <- bench |>
+  filter(family != "artefact") |>
   mutate(name = case_when(
-    family == "artefact"  ~ "Blue/green ratio,\nunbounded",
-    family == "classical" ~ "Blue/green ratio,\nbounded",
+    family == "kloiber"   ~ "Kloiber et al. (2002),\nblue/red + blue",
+    family == "classical" ~ "Two-band\nblue/green ratio",
     family == "linear"    ~ "Multiband linear",
     TRUE                  ~ "Random Forest"),
-    kind = ifelse(family == "artefact", "a", ifelse(family == "rf", "rf", "b")),
-    name = fct_reorder(name, R2),
-    shown = pmax(R2, 0))
-art_row <- filter(pd_df, kind == "a")
+    kind = ifelse(family == "rf", "rf", ifelse(family == "linear", "lin", "cl")),
+    name = fct_reorder(name, R2))
 
 pd <- ggplot(pd_df, aes(y = name)) +
   geom_vline(xintercept = 0, colour = INK, linewidth = 0.3) +
-  geom_segment(data = filter(pd_df, kind != "a"),
-               aes(x = 0, xend = R2, colour = kind), linewidth = 1.1) +
-  geom_point(data = filter(pd_df, kind != "a"), aes(x = R2, colour = kind),
-             size = 3) +
-  geom_text(data = filter(pd_df, kind != "a"),
-            aes(x = R2, label = sprintf("%.3f", R2)), hjust = -0.45, size = 2.4,
-            fontface = "bold", colour = INK) +
-  geom_text(data = pd_df, aes(x = 0.86, label = sprintf("%.2f m", RMSE)),
+  geom_segment(aes(x = 0, xend = R2, colour = kind), linewidth = 1.1) +
+  geom_point(aes(x = R2, colour = kind), size = 3) +
+  geom_text(aes(x = pmax(R2, 0), label = sub("-", "−", sprintf("%.3f", R2))),
+            hjust = -0.35, size = 2.4, fontface = "bold", colour = INK) +
+  geom_text(aes(x = 0.86, label = sprintf("%.2f m", RMSE)),
             hjust = 1, size = 2.3, colour = INK_2) +
   annotate("text", x = 0.86, y = 4.55, label = "RMSE", hjust = 1, size = 2.2,
            colour = INK_2, fontface = "italic") +
-  geom_segment(data = art_row, aes(x = 0.3, xend = 0.02, y = name, yend = name),
-               colour = "#9E9E9E", linewidth = 0.6,
-               arrow = arrow(length = unit(4, "pt"), type = "closed")) +
-  geom_text(data = art_row, aes(x = 0.32, label = sprintf("R² = %.2f, off scale", R2)),
-            hjust = 0, size = 2.3, colour = "#7A7A7A", fontface = "italic") +
-  scale_colour_manual(values = c(b = "#8FB4C7", rf = "#2E6E8E"), guide = "none") +
-  scale_x_continuous(limits = c(-0.02, 0.88), breaks = seq(0, 0.6, 0.2),
+  scale_colour_manual(values = c(cl = "#BDBDBD", lin = "#8FB4C7", rf = "#2E6E8E"),
+                      guide = "none") +
+  scale_x_continuous(limits = c(-0.05, 0.88), breaks = seq(0, 0.6, 0.2),
                      expand = expansion(mult = c(0, 0))) +
   scale_y_discrete(limits = levels(pd_df$name),
                    expand = expansion(add = c(0.6, 0.9))) +
@@ -148,43 +139,30 @@ pd <- ggplot(pd_df, aes(y = name)) +
         axis.ticks.y = element_blank())
 
 # ------------------------------------------------------------------ (e) --
-pe_df <- art |>
-  select(observed, predicted_unbounded, predicted_bounded) |>
-  pivot_longer(-observed, names_to = "version", values_to = "pred") |>
-  mutate(version = recode(version, predicted_unbounded = "Unbounded",
-                          predicted_bounded = "Bounded"))
-worst <- art |> slice_max(predicted_unbounded, n = 1)
-one_one <- tibble(x = seq(1, 17, 0.1))
-
-pe <- ggplot(pe_df, aes(observed, pred)) +
-  geom_line(data = one_one, aes(x, x), colour = INK, linetype = "22",
-            linewidth = 0.3) +
-  geom_hline(yintercept = max(art$observed), colour = ACCENT, linetype = "12",
-             linewidth = 0.35) +
-  annotate("text", x = 17, y = max(art$observed) * 1.3, hjust = 1, size = 2.2,
-           colour = ACCENT, label = sprintf("observed maximum, %.1f m",
-                                            max(art$observed))) +
-  geom_point(aes(colour = version, fill = version, shape = version), size = 1,
-             alpha = 0.6, stroke = 0.35) +
-  annotate("segment", x = worst$observed + 3, xend = worst$observed + 0.35,
-           y = worst$predicted_unbounded, yend = worst$predicted_unbounded,
-           colour = INK, linewidth = 0.4,
-           arrow = arrow(length = unit(4, "pt"), type = "closed")) +
-  annotate("text", x = worst$observed + 3.2, y = worst$predicted_unbounded,
-           hjust = 0, size = 2.3, colour = INK, lineheight = 0.95,
-           label = sprintf("%.1f m predicted for a\n%.1f m measurement",
-                           worst$predicted_unbounded, worst$observed)) +
-  scale_colour_manual(values = c(Unbounded = "#8A8A8A", Bounded = "#2E6E8E"),
-                      name = NULL) +
-  scale_fill_manual(values = c(Unbounded = NA, Bounded = "#2E6E8E"), name = NULL) +
-  scale_shape_manual(values = c(Unbounded = 21, Bounded = 21), name = NULL) +
-  scale_y_log10(breaks = c(0.1, 1, 3, 10, 30, 100),
-                labels = c("0.1", "1", "3", "10", "30", "100")) +
-  coord_cartesian(xlim = c(1, 17), ylim = c(0.04, 250)) +
-  labs(x = "Measured Secchi (m)", y = "Predicted Secchi (m, log scale)") +
-  guides(colour = guide_legend(override.aes = list(size = 2, alpha = 1))) +
-  theme(legend.position = "inside", legend.position.inside = c(0.02, 0.02),
-        legend.justification = c(0, 0), legend.key.size = unit(7, "pt"),
+# Residuo medio por estacion frente a la distancia a la orilla (p12): cerca de
+# tierra la correccion atmosferica terrestre sufre el efecto de adyacencia.
+sa  <- jsonlite::fromJSON(file.path(ROOT, "results/metrics/spatial_autocorrelation.json"))
+pe_df <- read_tidy("lisa_stations.csv") |> mutate(zone_label = zone_factor(zone_label))
+sh <- sa$shore_distance$all
+pe <- ggplot(pe_df, aes(shore_km, residual)) +
+  geom_hline(yintercept = 0, colour = INK, linetype = "22", linewidth = 0.3) +
+  geom_point(aes(fill = zone_label, size = n), shape = 21, colour = "white",
+             stroke = 0.25, alpha = 0.9) +
+  geom_smooth(method = "loess", formula = y ~ x, span = 0.9, colour = INK,
+              fill = "grey70", linewidth = 0.55, alpha = 0.3) +
+  annotate("text", x = Inf, y = Inf, hjust = 1.03, vjust = 1.3, size = 2.3,
+           colour = INK, parse = TRUE,
+           label = sprintf('"Spearman "*rho*" = %.2f, "*italic(P)*" = %.3f"',
+                           sh$rho_residual, sh$p_residual)) +
+  scale_fill_manual(values = PAL_ZONE, name = NULL) +
+  scale_size_continuous(range = c(0.8, 3.2), guide = "none") +
+  scale_x_continuous(trans = "log10", breaks = c(0.2, 0.5, 1, 2, 5, 10, 20),
+                     labels = c("0.2", "0.5", "1", "2", "5", "10", "20")) +
+  labs(x = "Distance to shore (km, log scale)",
+       y = "Station mean residual (m)") +
+  guides(fill = guide_legend(override.aes = list(size = 2.2))) +
+  theme(legend.position = "inside", legend.position.inside = c(0.99, 0.03),
+        legend.justification = c(1, 0), legend.key.size = unit(6, "pt"),
         legend.background = element_blank())
 
 fig <- (pa | pb | pc) / (pd | pe) +
