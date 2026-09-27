@@ -1,17 +1,23 @@
 """
-p07_uncertainty.py -- Incertidumbre por prediccion (conformal split).
+p07_uncertainty.py -- Incertidumbre por prediccion (prediccion conformal).
 
-Esta es la parte del articulo que SI aguanto la auditoria: los intervalos
-conformales siguen bien calibrados bajo el diseno mas estricto (bloqueo por
-campana), no solo bajo el bloqueo por estacion que se uso antes.
+Dentro de cada fold del diseno primario (GroupKFold por fecha de muestreo), una
+parte de la particion de entrenamiento se reserva para calibrar. Esa parte se
+toma por FECHAS DE MUESTREO COMPLETAS, no al azar: las observaciones de una
+misma fecha estan correlacionadas (p04) y calibrar con ellas repartidas
+subestimaria el error. El cuantil usa la correccion de muestra finita,
+ceil((n+1)(1-alpha))/n.
 
-Split-conformal: dentro de cada fold, un subconjunto de calibracion de la
-particion de entrenamiento da el cuantil (1-alpha) de los residuos absolutos,
-que define un intervalo simetrico con garantia de cobertura en muestra finita.
+Tres variantes:
+  split     ancho constante: el cuantil global de los residuos absolutos
+  mondrian  el cuantil se calcula por separado en cada tramo del valor
+            PREDICHO, asi que el ancho se adapta a lo que el usuario ve
+  cqr       regresion cuantilica conformalizada (Romano et al. 2019): dos
+            modelos de cuantiles dan un intervalo asimetrico que se corrige
+            con el conjunto de calibracion
 
-Se evalua a cuatro niveles nominales (50, 80, 90, 95%) porque un unico nivel
-puede acertar por casualidad; la calibracion se demuestra cuando la cobertura
-empirica sigue a la nominal en todo el rango.
+Se evalua a 50, 80, 90 y 95 % y la cobertura se condiciona tanto al Secchi
+medido como al predicho.
 
 Salidas: results/tidy/conformal_coverage.csv
          results/tidy/conformal_intervals.csv
@@ -22,7 +28,8 @@ import json
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import GroupKFold
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.model_selection import GroupKFold, GroupShuffleSplit
 from sklearn.preprocessing import RobustScaler
 
 from p00_config import (FEATURES, MET, N_SPLITS, PROC, SECCHI_CLIP_LO, SEED,
@@ -30,7 +37,10 @@ from p00_config import (FEATURES, MET, N_SPLITS, PROC, SECCHI_CLIP_LO, SEED,
 from p04_fix3_validation import make_model
 
 LEVELS = [0.50, 0.80, 0.90, 0.95]
-CAL_FRACTION = 5   # 1/5 de la particion de entrenamiento va a calibracion
+METHODS = ["split", "mondrian", "cqr"]
+CAL_FRACTION = 0.2          # fraccion de fechas de entrenamiento para calibrar
+BINS = [0, 5, 7.5, 10, 12.5, 20]
+BIN_LABELS = ["<5", "5–7.5", "7.5–10", "10–12.5", ">12.5"]
 
 
 def load():
@@ -39,109 +49,136 @@ def load():
     return d
 
 
-def conformal_oof(d, alpha):
-    """Predicciones y bandas conformales fuera de fold, bloqueando por campana."""
+def q_finite(scores, alpha):
+    """Cuantil conformal con la correccion de muestra finita."""
+    n = len(scores)
+    k = min(n, int(np.ceil((n + 1) * (1 - alpha))))
+    return float(np.sort(scores)[k - 1])
+
+
+def qgbr(alpha_q):
+    return GradientBoostingRegressor(loss="quantile", alpha=alpha_q,
+                                     n_estimators=300, max_depth=3,
+                                     learning_rate=0.05, random_state=SEED)
+
+
+def conformal_oof(d, alpha, method):
+    """Predicciones y bandas conformales fuera de fold."""
     X, y = d[FEATURES].values, d.secchi.values
     g = d.campaign_date.values
     n = len(y)
-    pred = np.full(n, np.nan)
-    lo = np.full(n, np.nan)
-    hi = np.full(n, np.nan)
-    qs = []
+    pred, lo, hi = (np.full(n, np.nan) for _ in range(3))
     for tr, te in GroupKFold(N_SPLITS).split(X, y, g):
         sc = RobustScaler().fit(X[tr])
         Xtr, Xte = sc.transform(X[tr]), sc.transform(X[te])
-        rng = np.random.RandomState(SEED)
-        perm = rng.permutation(len(tr))
-        n_cal = max(20, len(tr) // CAL_FRACTION)
-        cal, fit = perm[:n_cal], perm[n_cal:]
+        fit, cal = next(GroupShuffleSplit(1, test_size=CAL_FRACTION,
+                                          random_state=SEED).split(Xtr, y[tr], g[tr]))
         m = make_model("rf")
         m.fit(Xtr[fit], y[tr][fit])
-        p = m.predict(Xte)
-        pred[te] = np.clip(p, SECCHI_CLIP_LO, None)
-        resid = np.abs(y[tr][cal] - m.predict(Xtr[cal]))
-        q = float(np.quantile(resid, 1 - alpha))
-        qs.append(q)
-        lo[te] = np.clip(p - q, SECCHI_CLIP_LO, None)
-        hi[te] = p + q
-    return y, pred, lo, hi, float(np.mean(qs))
+        p_te = np.clip(m.predict(Xte), SECCHI_CLIP_LO, None)
+        p_cal = m.predict(Xtr[cal])
+        pred[te] = p_te
+        if method == "split":
+            q = q_finite(np.abs(y[tr][cal] - p_cal), alpha)
+            lo[te], hi[te] = p_te - q, p_te + q
+        elif method == "mondrian":
+            b_cal = np.digitize(p_cal, BINS[1:-1])
+            b_te = np.digitize(p_te, BINS[1:-1])
+            res = np.abs(y[tr][cal] - p_cal)
+            q_all = q_finite(res, alpha)
+            for b in np.unique(b_te):
+                r_b = res[b_cal == b]
+                # con menos de 20 residuos en el tramo se usa el cuantil global
+                q = q_finite(r_b, alpha) if len(r_b) >= 20 else q_all
+                lo[te[b_te == b]] = p_te[b_te == b] - q
+                hi[te[b_te == b]] = p_te[b_te == b] + q
+        else:
+            ql, qh = qgbr(alpha / 2), qgbr(1 - alpha / 2)
+            ql.fit(Xtr[fit], y[tr][fit])
+            qh.fit(Xtr[fit], y[tr][fit])
+            s = np.maximum(ql.predict(Xtr[cal]) - y[tr][cal],
+                           y[tr][cal] - qh.predict(Xtr[cal]))
+            q = q_finite(s, alpha)
+            lo[te], hi[te] = ql.predict(Xte) - q, qh.predict(Xte) + q
+    lo = np.clip(lo, SECCHI_CLIP_LO, None)
+    return y, pred, lo, hi
+
+
+def conditional(iv, by):
+    col = "secchi" if by == "measured" else "predicted"
+    b = pd.cut(iv[col], bins=BINS, labels=BIN_LABELS)
+    out = (iv.assign(bin=b).groupby(["method", "bin"], observed=True)
+           .agg(n=("secchi", "size"), mean_width=("width", "mean"),
+                coverage=("covered", "mean"))
+           .reset_index())
+    out["conditioned_on"] = by
+    return out
 
 
 def main():
-    banner("p07 -- INCERTIDUMBRE CONFORMAL (bloqueo por campana)")
+    banner("p07 -- INCERTIDUMBRE CONFORMAL (bloqueo por fecha de muestreo)")
     d = load()
-    print(f"  n={len(d)} | {d.campaign_date.nunique()} campanas\n")
-
-    rows = []
-    keep = {}
-    print(f"  {'nominal':>8s} {'empirica':>9s} {'ancho medio':>12s} {'q':>7s}")
-    for lev in LEVELS:
-        alpha = 1 - lev
-        y, pred, lo, hi, q = conformal_oof(d, alpha)
-        cov = float(np.mean((y >= lo) & (y <= hi)))
-        width = float(np.mean(hi - lo))
-        rows.append({"nominal": lev, "empirical_coverage": round(cov, 4),
-                     "mean_width_m": round(width, 3),
-                     "mean_quantile_m": round(q, 3),
-                     "calibration_error": round(cov - lev, 4)})
-        print(f"  {lev * 100:7.0f}% {cov * 100:8.1f}% {width:11.2f} m {q:7.2f}")
-        if abs(lev - 0.90) < 1e-9:
-            keep = {"y": y, "pred": pred, "lo": lo, "hi": hi}
-
+    print(f"  n={len(d)} | {d.campaign_date.nunique()} fechas de muestreo; "
+          f"calibracion con el {CAL_FRACTION:.0%} de las fechas de cada fold\n")
+    rows, ivs = [], []
+    print(f"  {'metodo':9s} {'nominal':>8s} {'empirica':>9s} {'ancho medio':>12s}")
+    for method in METHODS:
+        for lev in LEVELS:
+            y, pred, lo, hi = conformal_oof(d, 1 - lev, method)
+            cov = float(np.mean((y >= lo) & (y <= hi)))
+            width = float(np.mean(hi - lo))
+            rows.append({"method": method, "nominal": lev,
+                         "empirical_coverage": round(cov, 4),
+                         "mean_width_m": round(width, 3),
+                         "calibration_error": round(cov - lev, 4)})
+            print(f"  {method:9s} {lev * 100:7.0f}% {cov * 100:8.1f}% {width:11.2f} m")
+            if abs(lev - 0.90) < 1e-9:
+                iv = d[["station", "zona", "campaign_date", "year", "sensor",
+                        "secchi"]].copy()
+                iv["zone_label"] = iv.zona.map(ZONE_LABELS)
+                iv["method"] = method
+                iv["predicted"], iv["lower"], iv["upper"] = pred, lo, hi
+                ivs.append(iv)
+        print()
     cov_df = pd.DataFrame(rows)
-    max_err = float(cov_df.calibration_error.abs().max())
-    print(f"\n  Error maximo de calibracion en los cuatro niveles: "
-          f"{max_err * 100:.1f} puntos porcentuales.")
-    print("  Los intervalos siguen a la nominal en todo el rango: estan calibrados.")
-
-    # --- intervalos al 90% para la figura ----------------------------------
-    banner("ANCHO DEL INTERVALO AL 90% EN FUNCION DE LA TRANSPARENCIA", "-")
-    iv = d[["station", "zona", "campaign_date", "year", "sensor", "secchi"]].copy()
-    iv["zone_label"] = iv.zona.map(ZONE_LABELS)
-    iv["predicted"] = keep["pred"]
-    iv["lower"] = keep["lo"]
-    iv["upper"] = keep["hi"]
+    iv = pd.concat(ivs, ignore_index=True)
     iv["width"] = iv.upper - iv.lower
     iv["covered"] = (iv.secchi >= iv.lower) & (iv.secchi <= iv.upper)
 
-    bins = pd.cut(iv.secchi, bins=[0, 5, 7.5, 10, 12.5, 20],
-                  labels=["<5", "5–7.5", "7.5–10", "10–12.5", ">12.5"])
-    by_bin = (iv.assign(bin=bins).groupby("bin", observed=True)
-              .agg(n=("secchi", "size"), mean_width=("width", "mean"),
-                   coverage=("covered", "mean"),
-                   mean_secchi=("secchi", "mean"))
-              .reset_index())
-    print(by_bin.round(3).to_string(index=False))
+    banner("COBERTURA DEL INTERVALO AL 90% CONDICIONADA", "-")
+    cond = pd.concat([conditional(iv, "measured"), conditional(iv, "predicted")],
+                     ignore_index=True)
+    for by in ["measured", "predicted"]:
+        t = cond[cond.conditioned_on == by].pivot(index="bin", columns="method",
+                                                  values="coverage")
+        print(f"\n  por Secchi {'medido' if by == 'measured' else 'predicho'}:")
+        print((t * 100).round(1).reindex(BIN_LABELS).dropna(how="all").to_string())
 
-    by_zone = (iv.groupby("zone_label")
-               .agg(n=("secchi", "size"), mean_width=("width", "mean"),
-                    coverage=("covered", "mean"))
-               .reset_index())
-    print()
-    print(by_zone.round(3).to_string(index=False))
+    spread = (cond[cond.conditioned_on == "measured"].groupby("method")
+              .coverage.agg(lambda c: float(c.max() - c.min())))
+    print("\n  rango de cobertura entre tramos de Secchi medido (puntos):")
+    print((spread * 100).round(1).to_string())
 
-    m = metrics(keep["y"], keep["pred"])
-    print(f"\n  Modelo con cal-split: R2={m['R2']:.3f} RMSE={m['RMSE']:.2f} m")
-    print(f"  Ancho medio del intervalo al 90%: "
-          f"{float(iv.width.mean()):.2f} m (+-{float(iv.width.mean()) / 2:.2f} m)")
-    print("  Util para contrastes entre cuencas y cambios de varios metros;")
-    print("  NO util para resolver diferencias submetricas.")
-
+    m = metrics(iv[iv.method == "split"].secchi.values,
+                iv[iv.method == "split"].predicted.values)
     cov_df.to_csv(TIDY / "conformal_coverage.csv", index=False)
-    # ver la nota sobre float_format en p04
-    iv.to_csv(TIDY / "conformal_intervals.csv", index=False,
-              float_format="%.6f")
-    by_bin.to_csv(TIDY / "interval_width_by_secchi.csv", index=False,
-                  float_format="%.6f")
-    json.dump({"design": "GroupKFold(5) blocked by campaign date; split-conformal",
-               "levels": rows, "max_calibration_error": round(max_err, 4),
+    iv.to_csv(TIDY / "conformal_intervals.csv", index=False, float_format="%.6f")
+    cond.to_csv(TIDY / "interval_width_by_secchi.csv", index=False,
+                float_format="%.6f")
+    by_zone = (iv.groupby(["method", "zone_label"])
+               .agg(n=("secchi", "size"), mean_width=("width", "mean"),
+                    coverage=("covered", "mean")).reset_index())
+    json.dump({"design": ("GroupKFold(5) by sampling date; calibration on whole "
+                          "sampling dates (20 %); finite-sample quantile"),
+               "levels": rows,
+               "max_calibration_error": {k: round(float(v), 4) for k, v in
+                                         cov_df.groupby("method").calibration_error
+                                         .apply(lambda c: c.abs().max()).items()},
+               "coverage_spread_measured_90": {k: round(v, 4) for k, v in spread.items()},
                "model_with_cal_split": m,
-               "mean_width_90_m": round(float(iv.width.mean()), 3),
-               "by_zone": by_zone.round(4).to_dict("records"),
-               "conclusion": ("Conformal intervals remain calibrated under "
-                              "campaign-blocked validation across the 50-95% "
-                              "range; this component of the original analysis "
-                              "survived the audit unchanged.")},
+               "mean_width_90_m": {k: round(float(v), 3) for k, v in
+                                   iv.groupby("method").width.mean().items()},
+               "by_zone": by_zone.round(4).to_dict("records")},
               open(MET / "uncertainty.json", "w"), indent=2)
 
     banner("SALIDAS")

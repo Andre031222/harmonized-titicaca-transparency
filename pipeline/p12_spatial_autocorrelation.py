@@ -40,6 +40,12 @@ def station_table():
           .reset_index())
     xy = gpd.GeoSeries(gpd.points_from_xy(st.lon, st.lat), crs=4326).to_crs(32719)
     st["x_km"], st["y_km"] = xy.x / 1000, xy.y / 1000
+    # distancia a la orilla: cerca de tierra la correccion atmosferica terrestre
+    # sufre el efecto de adyacencia
+    from p00_config import DATA
+    lake = gpd.read_file(DATA / "lake_boundary" / "titicaca.gpkg").to_crs(32719)
+    shore = lake.boundary.union_all()
+    st["shore_km"] = xy.distance(shore).values / 1000
     return st
 
 
@@ -139,6 +145,21 @@ def main():
                       "env_lo": round(env[0], 4), "env_hi": round(env[1], 4)})
         print(f"  anillo {lo:3d}-{hi:3d} km: I = {I:+.3f}  p = {p:.4f}  pares = {pairs}")
 
+    banner("(C) ¿DEPENDE EL ERROR DE LA DISTANCIA A LA ORILLA?", "-")
+    from scipy.stats import spearmanr
+    shore = {}
+    for name, sub in [("all", st), ("Bahia de Puno", st[st.zone_label == "Bahia de Puno"])]:
+        rho, p = spearmanr(sub.shore_km, sub.residual)
+        rho_a, p_a = spearmanr(sub.shore_km, sub.residual.abs())
+        shore[name] = {"n": int(len(sub)), "rho_residual": round(float(rho), 3),
+                       "p_residual": round(float(p), 4),
+                       "rho_abs_residual": round(float(rho_a), 3),
+                       "p_abs_residual": round(float(p_a), 4),
+                       "shore_km_median": round(float(sub.shore_km.median()), 2)}
+        print(f"  {name:14s} n={len(sub):3d}  residuo: rho={rho:+.2f} (P={p:.3f})  "
+              f"|residuo|: rho={rho_a:+.2f} (P={p_a:.3f})  "
+              f"orilla mediana {sub.shore_km.median():.1f} km")
+
     W = knn_weights(D, K_PRIMARY)
     Ii, p_loc, lag, cls = lisa(y, W, rng)
     st["local_I"], st["p_local"], st["lag"], st["cluster"] = Ii, p_loc, lag, cls
@@ -159,6 +180,7 @@ def main():
     out = {"n_stations": int(len(st)), "k_primary": K_PRIMARY,
            "moran_I": prim["moran_I"], "moran_p": prim["p"],
            "moran_expected": prim["expected_I"], "sensitivity_k": sens,
+           "shore_distance": shore,
            "correlogram": rings, "n_perm": N_PERM, "alpha": ALPHA,
            "lisa_counts": {c: int(counts.get(c, 0))
                            for c in ["HH", "LL", "HL", "LH", "ns"]},

@@ -20,8 +20,10 @@ Requiere Earth Engine:  earthengine authenticate
 import json
 import sys
 
+import numpy as np
 import pandas as pd
-from p00_config import BANDS, MET, PROC, ROY, SEED, TIDY, banner
+from p00_config import (BANDS, HLS_MSI_TO_OLI, MET, MSI_SOURCE, PROC, SEED,
+                        TIDY, banner)
 
 CACHE = PROC / "multilake_reflectance_raw.csv"
 N_POINTS = 300
@@ -74,7 +76,7 @@ def composite(ee, region, months, sensor):
             good = (scl.neq(1).And(scl.neq(3)).And(scl.neq(8)).And(scl.neq(9))
                     .And(scl.neq(10)).And(scl.neq(11)))
             return (img.updateMask(good.And(img.select("MSK_CLDPRB").lt(CLDPRB)))
-                    .select(["B2", "B3", "B4", "B8", "B11", "B12"])
+                    .select(["B2", "B3", "B4", "B8", "B8A", "B11", "B12"])
                     .multiply(1e-4))
         return col.map(mask).median(), 20
 
@@ -119,11 +121,14 @@ def extract():
                     p = f["properties"]
                     if any(p.get(b) is None for b in BANDS):
                         continue
+                    if sensor == "S2" and p.get("B8A") is None:
+                        continue
                     lon, lat = chunk[int(p["i"])]
                     rows.append({"lake": name, "country": country,
                                  "clarity": clarity, "sensor": sensor,
                                  "lon": lon, "lat": lat,
-                                 **{b: p[b] for b in BANDS}})
+                                 **{b: p[b] for b in BANDS},
+                                 "B8A": p.get("B8A")})
                     got += 1
             print(f"    {sensor}: {got} muestras")
     d = pd.DataFrame(rows)
@@ -134,8 +139,8 @@ def extract():
 
 
 def evaluate(d):
-    """Si la transformacion de Roy valiese sobre el agua de estos lagos, la
-    mediana de Landsat armonizado y la de Sentinel-2 coincidirian (razon ~1).
+    """Si el ajuste de banda de HLS bastase sobre el agua de estos lagos, la
+    mediana de Landsat nativo y la de Sentinel-2 ajustado coincidirian (~1).
 
     No se repite aqui la prueba del clasificador: necesita pares del mismo dia,
     y estos compuestos estacionales mezclan fechas distintas, con lo que
@@ -150,15 +155,19 @@ def evaluate(d):
             print(f"  {lake:18s} muestras insuficientes, se omite")
             continue
         for b in BANDS:
-            a_roy, slope = ROY[b]
-            nat, s2m = float(ls[b].median()), float(s2[b].median())
-            har = a_roy + slope * nat
+            src = MSI_SOURCE[b]
+            slope, icpt = HLS_MSI_TO_OLI[src]
+            nat = float(ls[b].median())
+            s2_raw = float(s2[src].median())
+            s2_hls = float((slope * s2[src] + icpt).median())
             rows.append({"lake": lake, "country": country, "clarity": clarity,
-                         "band": b, "roy_intercept": a_roy,
+                         "band": b, "msi_band": src, "hls_intercept": icpt,
                          "native_ls_median": round(nat, 6),
-                         "s2_median": round(s2m, 6),
-                         "harmonized_ls_median": round(har, 6),
-                         "harmonized_over_s2": round(har / s2m, 2) if s2m > 1e-4 else None,
+                         "s2_median": round(s2_raw, 6),
+                         "s2_hls_median": round(s2_hls, 6),
+                         "hls_shift_pct": round((s2_hls - s2_raw) / s2_raw * 100, 1)
+                         if s2_raw > 1e-4 else None,
+                         "ls_over_s2_hls": round(nat / s2_hls, 2) if s2_hls > 1e-4 else None,
                          "n_ls": len(ls), "n_s2": len(s2)})
     band_df = pd.DataFrame(rows)
     nat = band_df.pivot(index="lake", columns="band", values="native_ls_median")
@@ -166,35 +175,39 @@ def evaluate(d):
     print("  devuelve senal, y un intercepto aditivo no tiene nada que corregir\n")
     print(nat.to_string())
 
-    banner("(B) LANDSAT ARMONIZADO CON ROY FRENTE A SENTINEL-2 (razon de medianas)")
-    piv = band_df.pivot(index="lake", columns="band", values="harmonized_over_s2")
-    print("  si la transformacion valiese sobre agua, cada celda seria ~1.0\n")
+    banner("(B) LANDSAT NATIVO FRENTE A SENTINEL-2 CON HLS (razon de medianas)")
+    piv = band_df.pivot(index="lake", columns="band", values="ls_over_s2_hls")
+    print("  si el ajuste de HLS bastase sobre agua, cada celda seria ~1.0\n")
     print(piv.to_string())
 
+    # Resumen en las bandas visibles, que son las que usa el retrieval; el rojo
+    # y el NIR de los lagos claros estan en el ruido y su razon no significa nada
     summ = []
     for (lake, country, clarity), g in band_df.groupby(["lake", "country", "clarity"],
                                                        sort=False):
-        r = g.dropna(subset=["harmonized_over_s2"]).harmonized_over_s2
+        r = g.set_index("band").ls_over_s2_hls
         s2_green = float(d[(d.lake == lake) & (d.sensor == "S2")].B3.median())
         summ.append({"lake": lake, "country": country, "clarity": clarity,
                      "s2_green_median": round(s2_green, 5),
-                     "worst_band_ratio": float(r.max()),
-                     "median_band_ratio": round(float(r.median()), 2),
-                     "bands_within_20pct": int(((r - 1).abs() <= 0.2).sum()),
-                     "negative_native_bands": int((g.native_ls_median < 0).sum()),
+                     "blue_ratio": float(r["B2"]), "green_ratio": float(r["B3"]),
+                     "red_ratio": float(r["B4"]),
+                     "no_signal_bands": int((g.native_ls_median <= 0).sum()),
                      "n_points": int(g.n_ls.iloc[0])})
     sm = pd.DataFrame(summ).sort_values("s2_green_median")
-    banner("(C) RESUMEN: EL FALLO CRECE CUANTO MAS CLARA ES EL AGUA")
+    banner("(C) RESUMEN EN EL VISIBLE: LANDSAT NATIVO / SENTINEL-2 CON HLS")
     print("  (ordenado por reflectancia verde de Sentinel-2, proxy de turbidez)\n")
     print(sm.to_string(index=False))
-    rho = sm.s2_green_median.corr(sm.worst_band_ratio, method="spearman")
-    print(f"\n  Spearman entre verde de S2 y peor razon: {rho:+.2f} "
-          f"(mas clara el agua, peor la armonizacion)")
+    below = int(((sm.blue_ratio < 0.8) & (sm.green_ratio < 0.8)).sum())
+    rho = sm.s2_green_median.corr((1 - sm.green_ratio).abs(), method="spearman")
+    print(f"\n  lagos con Landsat >20 % por debajo en azul y verde: {below} de {len(sm)}")
+    print(f"  Spearman entre verde de S2 y discrepancia en verde: {rho:+.2f} "
+          f"(la diferencia NO depende de la claridad)")
 
     band_df.to_csv(TIDY / "multilake_bands.csv", index=False)
     sm.to_csv(TIDY / "multilake_summary.csv", index=False)
     json.dump({"lakes": sm.to_dict("records"), "bands": band_df.to_dict("records"),
-               "spearman_green_vs_worst_ratio": round(float(rho), 3),
+               "spearman_green_vs_green_gap": round(float(rho), 3),
+               "lakes_below_both_visible": below,
                "n_points_requested": N_POINTS, "buffer_m": BUFFER,
                "years": list(YEARS), "shore_distance_km": SHORE_KM,
                "note": ("Seasonal medians per sensor at the same points; not "

@@ -4,51 +4,62 @@
     {
       "model": "Classical blue/green -- unbounded (as published)",
       "family": "artefact",
-      "R2": -2.458,
-      "RMSE": 5.294,
-      "MAE": 1.912,
-      "bias": -0.187,
+      "R2": -0.042,
+      "RMSE": 2.906,
+      "MAE": 2.33,
+      "bias": -0.46,
       "n": 812,
-      "max_prediction_m": 143.5,
-      "n_absurd_predictions": 1
+      "max_prediction_m": 8.8,
+      "n_absurd_predictions": 0
     },
     {
-      "model": "Classical blue/green ratio (Kloiber 2002, bounded)",
+      "model": "Two-band blue/green ratio (bounded)",
       "family": "classical",
-      "R2": 0.097,
-      "RMSE": 2.705,
-      "MAE": 2.13,
-      "bias": -0.459,
+      "R2": -0.012,
+      "RMSE": 2.863,
+      "MAE": 2.287,
+      "bias": -0.511,
       "n": 812,
-      "max_prediction_m": 13.3,
+      "max_prediction_m": 9.0,
+      "n_absurd_predictions": 0
+    },
+    {
+      "model": "Kloiber et al. (2002), blue/red + blue (bounded)",
+      "family": "kloiber",
+      "R2": 0.012,
+      "RMSE": 2.83,
+      "MAE": 2.234,
+      "bias": -0.491,
+      "n": 812,
+      "max_prediction_m": 13.9,
       "n_absurd_predictions": 0
     },
     {
       "model": "Multiband linear regression",
       "family": "linear",
-      "R2": 0.323,
-      "RMSE": 2.342,
-      "MAE": 1.797,
-      "bias": -0.008,
+      "R2": 0.466,
+      "RMSE": 2.08,
+      "MAE": 1.624,
+      "bias": -0.023,
       "n": 812,
-      "max_prediction_m": 18.1,
+      "max_prediction_m": 15.5,
       "n_absurd_predictions": 0
     },
     {
       "model": "Random Forest (this study)",
       "family": "rf",
-      "R2": 0.574,
-      "RMSE": 1.858,
-      "MAE": 1.44,
-      "bias": -0.016,
+      "R2": 0.548,
+      "RMSE": 1.914,
+      "MAE": 1.489,
+      "bias": 0.028,
       "n": 812,
-      "max_prediction_m": 14.7,
+      "max_prediction_m": 14.1,
       "n_absurd_predictions": 0
     }
   ],
   "rf_vs_correct_classical": {
-    "rf_R2": 0.574,
-    "classical_R2": 0.097
+    "rf_R2": 0.548,
+    "classical_R2": -0.012
   },
   "note": "The R2=-2.74 previously reported for the classical algorithm was an artefact of unbounded expm1 back-transformation, driven by a single prediction of ~143 m against an observed maximum of 16.5 m."
 }

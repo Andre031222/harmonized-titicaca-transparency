@@ -1,172 +1,274 @@
 {
-  "roy_bands": [
+  "harmonization": "HLS v2.0 bandpass adjustment, MSI -> OLI (mean of S2A/S2B)",
+  "bands": [
     {
       "band": "B2",
       "band_label": "Blue",
-      "roy_intercept": 0.0183,
-      "roy_slope": 0.885,
-      "native_oli_median": 0.007192,
-      "intercept_over_signal": 2.5,
-      "harmonized_ls_median": 0.024665,
-      "s2_median": 0.014195,
-      "ls_over_s2": 1.74
+      "msi_band": "B2",
+      "hls_slope": 0.9778,
+      "hls_intercept": -0.004,
+      "native_ls_median": 0.007192,
+      "s2_raw_median": 0.014195,
+      "s2_hls_median": 0.00988,
+      "hls_shift_pct": -30.4,
+      "intercept_over_s2_signal": 0.28,
+      "paired_ls_over_s2_raw": 0.53,
+      "paired_ls_over_s2_hls": 0.76,
+      "paired_r": 0.262,
+      "n_paired": 270
     },
     {
       "band": "B3",
       "band_label": "Green",
-      "roy_intercept": 0.0123,
-      "roy_slope": 0.9317,
-      "native_oli_median": 0.008903,
-      "intercept_over_signal": 1.4,
-      "harmonized_ls_median": 0.020595,
-      "s2_median": 0.01279,
-      "ls_over_s2": 1.61
+      "msi_band": "B3",
+      "hls_slope": 1.0064,
+      "hls_intercept": -0.00085,
+      "native_ls_median": 0.008903,
+      "s2_raw_median": 0.01279,
+      "s2_hls_median": 0.012022,
+      "hls_shift_pct": -6.0,
+      "intercept_over_s2_signal": 0.07,
+      "paired_ls_over_s2_raw": 0.71,
+      "paired_ls_over_s2_hls": 0.75,
+      "paired_r": 0.711,
+      "n_paired": 270
     },
     {
       "band": "B4",
       "band_label": "Red",
-      "roy_intercept": 0.0123,
-      "roy_slope": 0.9372,
-      "native_oli_median": 0.001163,
-      "intercept_over_signal": 10.6,
-      "harmonized_ls_median": 0.01339,
-      "s2_median": 0.00504,
-      "ls_over_s2": 2.66
+      "msi_band": "B4",
+      "hls_slope": 0.9763,
+      "hls_intercept": 0.00095,
+      "native_ls_median": 0.001163,
+      "s2_raw_median": 0.00504,
+      "s2_hls_median": 0.005871,
+      "hls_shift_pct": 16.5,
+      "intercept_over_s2_signal": 0.19,
+      "paired_ls_over_s2_raw": 0.24,
+      "paired_ls_over_s2_hls": 0.2,
+      "paired_r": 0.524,
+      "n_paired": 270
     },
     {
       "band": "B8",
       "band_label": "NIR",
-      "roy_intercept": 0.0448,
-      "roy_slope": 0.8339,
-      "native_oli_median": -0.000642,
-      "intercept_over_signal": 69.8,
-      "harmonized_ls_median": 0.044265,
-      "s2_median": 0.00287,
-      "ls_over_s2": 15.42
+      "msi_band": "B8A",
+      "hls_slope": 0.99745,
+      "hls_intercept": -5e-05,
+      "native_ls_median": -0.000642,
+      "s2_raw_median": 0.0026,
+      "s2_hls_median": 0.002543,
+      "hls_shift_pct": -2.2,
+      "intercept_over_s2_signal": 0.02,
+      "paired_ls_over_s2_raw": -0.25,
+      "paired_ls_over_s2_hls": -0.26,
+      "paired_r": 0.62,
+      "n_paired": 270
     },
     {
       "band": "B11",
       "band_label": "SWIR1",
-      "roy_intercept": 0.0306,
-      "roy_slope": 0.8639,
-      "native_oli_median": 0.00132,
-      "intercept_over_signal": 23.2,
-      "harmonized_ls_median": 0.03174,
-      "s2_median": 0.00238,
-      "ls_over_s2": 13.34
+      "msi_band": "B11",
+      "hls_slope": 0.99935,
+      "hls_intercept": -0.0007,
+      "native_ls_median": 0.00132,
+      "s2_raw_median": 0.00238,
+      "s2_hls_median": 0.001678,
+      "hls_shift_pct": -29.5,
+      "intercept_over_s2_signal": 0.29,
+      "paired_ls_over_s2_raw": 0.7,
+      "paired_ls_over_s2_hls": 0.99,
+      "paired_r": 0.64,
+      "n_paired": 270
     },
     {
       "band": "B12",
       "band_label": "SWIR2",
-      "roy_intercept": 0.0116,
-      "roy_slope": 0.9165,
-      "native_oli_median": 0.001408,
-      "intercept_over_signal": 8.2,
-      "harmonized_ls_median": 0.01289,
-      "s2_median": 0.00226,
-      "ls_over_s2": 5.7
+      "msi_band": "B12",
+      "hls_slope": 0.99485,
+      "hls_intercept": -0.0004,
+      "native_ls_median": 0.001408,
+      "s2_raw_median": 0.00226,
+      "s2_hls_median": 0.001848,
+      "hls_shift_pct": -18.2,
+      "intercept_over_s2_signal": 0.18,
+      "paired_ls_over_s2_raw": 0.76,
+      "paired_ls_over_s2_hls": 0.93,
+      "paired_r": 0.6,
+      "n_paired": 270
     }
   ],
   "sensor_separability": [
     {
-      "feature_set": "all_12_features",
-      "label": "las 12 features",
-      "accuracy": 0.9975,
+      "test": "all_hls",
+      "label": "Todos, HLS, 12 features",
+      "n": 812,
       "chance": 0.6626,
-      "excess_over_chance": 0.335
+      "accuracy": 0.9483,
+      "balanced_accuracy": 0.9395,
+      "auc": 0.9882
     },
     {
-      "feature_set": "visible_only",
-      "label": "solo visible",
-      "accuracy": 0.9791,
+      "test": "all_raw",
+      "label": "Todos, sin ajuste HLS, 12 features",
+      "n": 812,
       "chance": 0.6626,
-      "excess_over_chance": 0.3165
+      "accuracy": 0.9631,
+      "balanced_accuracy": 0.9569,
+      "auc": 0.9907
     },
     {
-      "feature_set": "ratios_only",
-      "label": "solo ratios (escala-invariantes)",
-      "accuracy": 0.9951,
+      "test": "visible_only",
+      "label": "Todos, HLS, solo visible",
+      "n": 812,
       "chance": 0.6626,
-      "excess_over_chance": 0.3325
+      "accuracy": 0.9015,
+      "balanced_accuracy": 0.8845,
+      "auc": 0.9634
     },
     {
-      "feature_set": "nir_swir_only",
-      "label": "solo NIR+SWIR",
-      "accuracy": 0.9975,
+      "test": "ratios_only",
+      "label": "Todos, HLS, solo ratios",
+      "n": 812,
       "chance": 0.6626,
-      "excess_over_chance": 0.335
+      "accuracy": 0.9261,
+      "balanced_accuracy": 0.9102,
+      "auc": 0.9786
     },
     {
-      "feature_set": "green_blue_only",
-      "label": "solo verde y azul",
-      "accuracy": 0.9322,
+      "test": "nir_swir_only",
+      "label": "Todos, HLS, solo NIR+SWIR",
+      "n": 812,
       "chance": 0.6626,
-      "excess_over_chance": 0.2697
+      "accuracy": 0.9236,
+      "balanced_accuracy": 0.9164,
+      "auc": 0.9777
+    },
+    {
+      "test": "paired_hls",
+      "label": "Solo eventos pareados, HLS",
+      "n": 542,
+      "chance": 0.5,
+      "accuracy": 0.928,
+      "balanced_accuracy": 0.928,
+      "auc": 0.9805
+    },
+    {
+      "test": "paired_recal",
+      "label": "Solo eventos pareados, recalibracion local*",
+      "n": 542,
+      "chance": 0.5,
+      "accuracy": 0.8838,
+      "balanced_accuracy": 0.8838,
+      "auc": 0.9575
+    },
+    {
+      "test": "all_recal",
+      "label": "Todos, recalibracion local*",
+      "n": 812,
+      "chance": 0.6626,
+      "accuracy": 0.915,
+      "balanced_accuracy": 0.9001,
+      "auc": 0.9776
+    },
+    {
+      "test": "pm3d_hls",
+      "label": "Pares con imagen a +-3 dias (p11), HLS",
+      "n": 292,
+      "chance": 0.5,
+      "accuracy": 0.887,
+      "balanced_accuracy": 0.887,
+      "auc": 0.9595
+    },
+    {
+      "test": "pm3d_recal",
+      "label": "Pares a +-3 dias (p11), recalibracion local*",
+      "n": 292,
+      "chance": 0.5,
+      "accuracy": 0.9521,
+      "balanced_accuracy": 0.9521,
+      "auc": 0.9929
+    },
+    {
+      "test": "negative_ls",
+      "label": "Control negativo: Landsat contra Landsat",
+      "n": 538,
+      "chance": 0.5019,
+      "accuracy": 0.5204,
+      "balanced_accuracy": 0.5205,
+      "auc": 0.5115
+    },
+    {
+      "test": "negative_s2",
+      "label": "Control negativo: Sentinel-2 contra Sentinel-2",
+      "n": 274,
+      "chance": 0.5219,
+      "accuracy": 0.5584,
+      "balanced_accuracy": 0.5571,
+      "auc": 0.5588
     }
   ],
-  "chance_level": 0.6626,
   "local_coefficients": [
     {
       "band": "B2",
       "band_label": "Blue",
-      "intercept": 0.008375,
-      "slope": 0.2581,
+      "intercept": 0.00527,
+      "slope": 0.3073,
       "pearson_r": 0.262,
       "r2": 0.069,
       "n_paired": 270,
-      "verdict": "INUTILIZABLE"
+      "verdict": "unusable"
     },
     {
       "band": "B3",
       "band_label": "Green",
-      "intercept": -0.000914,
-      "slope": 0.6651,
+      "intercept": 0.000814,
+      "slope": 0.8096,
       "pearson_r": 0.711,
       "r2": 0.505,
       "n_paired": 270,
-      "verdict": "buena"
+      "verdict": "good"
     },
     {
       "band": "B4",
       "band_label": "Red",
-      "intercept": -0.000509,
-      "slope": 0.4265,
+      "intercept": -0.001747,
+      "slope": 0.703,
       "pearson_r": 0.524,
       "r2": 0.274,
       "n_paired": 270,
-      "verdict": "debil"
+      "verdict": "weak"
     },
     {
       "band": "B8",
       "band_label": "NIR",
-      "intercept": -0.025009,
-      "slope": 0.6306,
-      "pearson_r": 0.616,
-      "r2": 0.379,
+      "intercept": -0.001493,
+      "slope": 0.6814,
+      "pearson_r": 0.62,
+      "r2": 0.385,
       "n_paired": 270,
-      "verdict": "aceptable"
+      "verdict": "acceptable"
     },
     {
       "band": "B11",
       "band_label": "SWIR1",
-      "intercept": -0.022301,
-      "slope": 0.7695,
+      "intercept": 0.001796,
+      "slope": 0.6158,
       "pearson_r": 0.64,
       "r2": 0.409,
       "n_paired": 270,
-      "verdict": "aceptable"
+      "verdict": "acceptable"
     },
     {
       "band": "B12",
       "band_label": "SWIR2",
-      "intercept": -0.005696,
-      "slope": 0.6149,
+      "intercept": 0.001431,
+      "slope": 0.6421,
       "pearson_r": 0.6,
       "r2": 0.36,
       "n_paired": 270,
-      "verdict": "aceptable"
+      "verdict": "acceptable"
     }
   ],
-  "n_paired_events": 270,
-  "conclusion": "Land-derived Roy (2016) coefficients are invalid over dark oligotrophic water: additive intercepts exceed the native over-water signal by 1.3x (green) to 71.8x (NIR), and sensors remain separable at 99.9% after the transform. Local water recalibration restores green (r=0.73) but not blue (r=0.26)."
+  "n_paired_events": 270
 }

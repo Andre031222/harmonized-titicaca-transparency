@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 
 from p00_config import (BANDS, FEATURES, MET, PROC, TIDY, ZONES, add_indices,
-                        banner)
+                        banner, harmonize)
 
 
 def load_matchups():
@@ -30,6 +30,9 @@ def load_matchups():
         d["source_file"] = fname
         frames.append(d)
     raw = pd.concat(frames, ignore_index=True)
+    # ambos sensores al espacio de OLI: Landsat nativo, Sentinel-2 con el
+    # ajuste de banda de HLS (ver p00.harmonize)
+    raw = harmonize(raw)
     raw["date"] = pd.to_datetime(raw["date"])
     raw["year"] = raw["date"].dt.year
     raw["month"] = raw["date"].dt.month
@@ -100,7 +103,7 @@ def main():
 
     keep = (["row_id", "station", "zona", "campaign_date", "date", "year",
              "month", "lat", "lon", "sensor", "event_id", "secchi", "chl",
-             "tss", "temp_insitu"] + FEATURES)
+             "tss", "temp_insitu", "n_img"] + FEATURES)
     keep = [c for c in keep if c in sec.columns]
     sec[keep].to_csv(PROC / "analysis_dataset.csv", index=False)
 

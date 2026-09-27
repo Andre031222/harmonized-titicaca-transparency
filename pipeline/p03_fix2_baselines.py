@@ -9,10 +9,14 @@ duplicar el RMSE.
 
 Un baseline que se auto-destruye por un artefacto numerico no demuestra que
 el Random Forest sea mejor: demuestra que el baseline se implemento mal. Aqui
-se implementa en su forma estandar (Kloiber et al. 2002),
-    ln(Zsd) = b0 + b1 * ln(rho_azul / rho_verde),
-con las predicciones acotadas al rango fisicamente observable, y se conserva
-la version defectuosa SOLO como demostracion del artefacto.
+se implementan dos baselines clasicos, ambos con las predicciones acotadas al
+rango fisicamente observable:
+  * Kloiber et al. (2002) en su forma original, azul/rojo mas azul:
+        ln(Zsd) = b0 + b1 * (rho_azul / rho_rojo) + b2 * rho_azul
+  * un modelo de razon de dos bandas azul/verde:
+        ln(Zsd) = b0 + b1 * ln(rho_azul / rho_verde)
+La version defectuosa (azul/verde sin acotar) se conserva SOLO como
+demostracion del artefacto.
 
 Salidas: results/tidy/benchmark_models.csv
          results/tidy/baseline_artefact.csv
@@ -52,8 +56,17 @@ def classical_broken(d, groups, gkf):
 
 
 def classical_kloiber(d, groups, gkf):
-    """Forma estandar: ln(Zsd) ~ ln(azul/verde), acotada al rango observable."""
-    X = np.log(np.clip(d[["B2_B3"]].values, 1e-6, None))
+    """Kloiber et al. (2002), forma original: ln(Zsd) ~ azul/rojo + azul."""
+    return _log_linear(np.column_stack([d.B2_B4.values, d.B2.values]), d, groups, gkf)
+
+
+def classical_blue_green(d, groups, gkf):
+    """Razon de dos bandas: ln(Zsd) ~ ln(azul/verde)."""
+    return _log_linear(np.log(np.clip(d[["B2_B3"]].values, 1e-6, None)), d, groups, gkf)
+
+
+def _log_linear(X, d, groups, gkf):
+    """ln(Zsd) lineal en X, acotada al rango observable."""
     y = d.secchi.values
     yt, yp = [], []
     for tr, te in gkf.split(X, y, groups):
@@ -71,6 +84,14 @@ def generic_cv(d, feats, groups, gkf, model_key):
     y = d.secchi.values
     yt, yp = [], []
     for tr, te in gkf.split(X, y, groups):
+        if model_key == "linear":
+            # un modelo lineal extrapola sin freno: se recorta cada variable a
+            # los percentiles 1-99 del fold de entrenamiento (los ratios con
+            # rojo casi nulo llegan a valores extremos)
+            lo, hi = np.percentile(X[tr], [1, 99], axis=0)
+            X = X.copy()
+            X[tr] = np.clip(X[tr], lo, hi)
+            X[te] = np.clip(X[te], lo, hi)
         sc = RobustScaler().fit(X[tr])
         m = make_model(model_key)
         m.fit(sc.transform(X[tr]), y[tr])
@@ -102,14 +123,22 @@ def main():
           f"({n_abs} prediccion(es) fisicamente imposible(s))")
     art = pd.DataFrame({"observed": yt, "predicted_unbounded": yp})
 
-    yt, yp = classical_kloiber(d, groups, gkf)
+    yt, yp = classical_blue_green(d, groups, gkf)
     m = metrics(yt, yp)
-    rows.append({"model": "Classical blue/green ratio (Kloiber 2002, bounded)",
+    rows.append({"model": "Two-band blue/green ratio (bounded)",
                  "family": "classical", **m,
                  "max_prediction_m": round(float(yp.max()), 1),
                  "n_absurd_predictions": 0})
-    print(f"  [OK]  clasico acotado       R2={m['R2']:+.3f} RMSE={m['RMSE']:.2f}")
+    print(f"  [OK]  azul/verde acotado    R2={m['R2']:+.3f} RMSE={m['RMSE']:.2f}")
     art["predicted_bounded"] = yp
+
+    yt, yp = classical_kloiber(d, groups, gkf)
+    m = metrics(yt, yp)
+    rows.append({"model": "Kloiber et al. (2002), blue/red + blue (bounded)",
+                 "family": "kloiber", **m,
+                 "max_prediction_m": round(float(yp.max()), 1),
+                 "n_absurd_predictions": 0})
+    print(f"  [OK]  Kloiber 2002 original R2={m['R2']:+.3f} RMSE={m['RMSE']:.2f}")
 
     for key, label, feats in [("linear", "Multiband linear regression", FEATURES),
                               ("rf", "Random Forest (this study)", FEATURES)]:

@@ -1,107 +1,125 @@
 {
   "n_stations": 143,
   "k_primary": 6,
-  "moran_I": 0.0414,
-  "moran_p": 0.2719,
+  "moran_I": 0.0137,
+  "moran_p": 0.6334,
   "moran_expected": -0.007,
   "sensitivity_k": [
     {
       "k": 4,
-      "moran_I": 0.0837,
-      "p": 0.0897,
+      "moran_I": 0.055,
+      "p": 0.2581,
       "expected_I": -0.007
     },
     {
       "k": 6,
-      "moran_I": 0.0414,
-      "p": 0.2719,
+      "moran_I": 0.0137,
+      "p": 0.6334,
       "expected_I": -0.007
     },
     {
       "k": 8,
-      "moran_I": 0.0524,
-      "p": 0.1161,
+      "moran_I": 0.0208,
+      "p": 0.4666,
       "expected_I": -0.007
     },
     {
       "k": 10,
-      "moran_I": 0.0432,
-      "p": 0.1374,
+      "moran_I": 0.0247,
+      "p": 0.3444,
       "expected_I": -0.007
     }
   ],
+  "shore_distance": {
+    "all": {
+      "n": 143,
+      "rho_residual": -0.175,
+      "p_residual": 0.0363,
+      "rho_abs_residual": 0.001,
+      "p_abs_residual": 0.9913,
+      "shore_km_median": 3.24
+    },
+    "Bahia de Puno": {
+      "n": 13,
+      "rho_residual": 0.33,
+      "p_residual": 0.2713,
+      "rho_abs_residual": 0.33,
+      "p_abs_residual": 0.2713,
+      "shore_km_median": 2.24
+    }
+  },
   "correlogram": [
     {
       "lo_km": 0,
       "hi_km": 5,
       "mid_km": 2.5,
-      "moran_I": 0.1238,
-      "p": 0.1682,
+      "moran_I": 0.109,
+      "p": 0.2176,
       "pairs": 105,
-      "env_lo": -0.1818,
-      "env_hi": 0.1886
+      "env_lo": -0.1841,
+      "env_hi": 0.1863
     },
     {
       "lo_km": 5,
       "hi_km": 10,
       "mid_km": 7.5,
-      "moran_I": 0.0751,
-      "p": 0.1868,
+      "moran_I": 0.0254,
+      "p": 0.6218,
       "pairs": 248,
-      "env_lo": -0.127,
-      "env_hi": 0.1186
+      "env_lo": -0.123,
+      "env_hi": 0.1163
     },
     {
       "lo_km": 10,
       "hi_km": 20,
       "mid_km": 15.0,
-      "moran_I": -0.0101,
-      "p": 0.9226,
+      "moran_I": -0.0098,
+      "p": 0.9276,
       "pairs": 759,
-      "env_lo": -0.0719,
-      "env_hi": 0.0643
+      "env_lo": -0.0733,
+      "env_hi": 0.0636
     },
     {
       "lo_km": 20,
       "hi_km": 40,
       "mid_km": 30.0,
-      "moran_I": 0.0098,
-      "p": 0.3322,
+      "moran_I": 0.0207,
+      "p": 0.1202,
       "pairs": 2217,
-      "env_lo": -0.0424,
-      "env_hi": 0.03
+      "env_lo": -0.0431,
+      "env_hi": 0.0311
     },
     {
       "lo_km": 40,
       "hi_km": 80,
       "mid_km": 60.0,
-      "moran_I": -0.0266,
-      "p": 0.0918,
+      "moran_I": -0.0234,
+      "p": 0.15,
       "pairs": 3690,
-      "env_lo": -0.0341,
-      "env_hi": 0.0139
+      "env_lo": -0.0344,
+      "env_hi": 0.0136
     },
     {
       "lo_km": 80,
       "hi_km": 160,
       "mid_km": 120.0,
-      "moran_I": -0.0029,
-      "p": 0.701,
+      "moran_I": -0.0103,
+      "p": 0.7668,
       "pairs": 3127,
-      "env_lo": -0.0405,
+      "env_lo": -0.0419,
       "env_hi": 0.0126
     }
   ],
   "n_perm": 9999,
   "alpha": 0.05,
   "lisa_counts": {
-    "HH": 12,
-    "LL": 8,
-    "HL": 3,
+    "HH": 9,
+    "LL": 7,
+    "HL": 5,
     "LH": 0,
-    "ns": 120
+    "ns": 122
   },
-  "lisa_significant": 23,
+  "lisa_significant": 21,
   "lisa_fdr_significant": 0,
   "lisa_fdr_counts": {
     "HH": 0,
@@ -109,5 +127,5 @@
     "HL": 0,
     "LH": 0
   },
-  "lisa_puno_hh": 8
+  "lisa_puno_hh": 7
 }

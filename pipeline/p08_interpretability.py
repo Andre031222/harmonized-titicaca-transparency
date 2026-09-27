@@ -163,8 +163,8 @@ def main():
         t = t[t.matched == 1].copy()
         t["sensor"] = s
         raw.append(t)
-    from p00_config import add_indices
-    d_all = add_indices(pd.concat(raw, ignore_index=True))
+    from p00_config import add_indices, harmonize
+    d_all = add_indices(harmonize(pd.concat(raw, ignore_index=True)))
     d_all["campaign_date"] = pd.to_datetime(d_all.date).dt.strftime("%Y-%m-%d")
     retr = retrievability(d_all)
 

@@ -34,7 +34,8 @@ from sklearn.preprocessing import RobustScaler
 
 from p00_config import (FEATURES, FEATURES_RATIO_ONLY, FEATURES_VIS, MET,
                         N_SPLITS, PROC, SECCHI_CLIP_LO, SEED, TIDY, ZONE_LABELS,
-                        ZONES, banner, metrics)
+                        ZONES, apply_local_recal, banner, fit_local_recal,
+                        metrics)
 
 
 def make_model(key="rf", params=None):
@@ -57,17 +58,25 @@ def load(reharmonized=False):
     return d
 
 
-def cv_oof(d, feats, groups, splitter, model_key="rf", params=None):
-    """Predicciones out-of-fold; scaler ajustado SOLO en la particion train."""
+def cv_oof(d, feats, groups, splitter, model_key="rf", params=None, recal=False):
+    """Predicciones out-of-fold; scaler ajustado SOLO en la particion train.
+    Con recal=True la recalibracion local sobre agua tambien se ajusta solo con
+    los eventos pareados del fold de entrenamiento."""
+    d = d.reset_index(drop=True)
     X = d[feats].values
     y = d.secchi.values
     oof = np.full(len(y), np.nan)
     it = splitter.split(X, y, groups) if groups is not None else splitter.split(X, y)
     for tr, te in it:
-        sc = RobustScaler().fit(X[tr])
+        Xtr, Xte = X[tr], X[te]
+        if recal:
+            coefs, _ = fit_local_recal(d.iloc[tr])
+            Xtr = apply_local_recal(d.iloc[tr], coefs)[feats].values
+            Xte = apply_local_recal(d.iloc[te], coefs)[feats].values
+        sc = RobustScaler().fit(Xtr)
         m = make_model(model_key, params)
-        m.fit(sc.transform(X[tr]), y[tr])
-        oof[te] = np.clip(m.predict(sc.transform(X[te])), SECCHI_CLIP_LO, None)
+        m.fit(sc.transform(Xtr), y[tr])
+        oof[te] = np.clip(m.predict(sc.transform(Xte)), SECCHI_CLIP_LO, None)
     return y, oof
 
 
@@ -193,13 +202,13 @@ def main():
 
     # --- (4) variantes de armonizacion ------------------------------------
     banner("(4) EFECTO DE LA ARMONIZACION SOBRE EL RETRIEVAL", "-")
-    d_re = load(reharmonized=True)
-    for case, label, feats, frame in [
-            ("roy_all", "Roy + las 12 features", FEATURES, d),
-            ("visible_only", "Solo visible (sin NIR/SWIR rotos)", FEATURES_VIS, d),
-            ("ratios_only", "Solo ratios escala-invariantes", FEATURES_RATIO_ONLY, d),
-            ("local_reharm", "Recalibracion local sobre agua", FEATURES, d_re)]:
-        yt, yp = cv_oof(frame, feats, frame.campaign_date.values, gkf)
+    for case, label, feats, recal in [
+            ("hls_all", "HLS + las 12 features", FEATURES, False),
+            ("visible_only", "Solo visible", FEATURES_VIS, False),
+            ("ratios_only", "Solo ratios escala-invariantes", FEATURES_RATIO_ONLY, False),
+            ("local_reharm", "Recalibracion local sobre agua (en cada fold)",
+             FEATURES, True)]:
+        yt, yp = cv_oof(d, feats, d.campaign_date.values, gkf, recal=recal)
         add("harmonization", case, label, yt, yp)
     for s, lab in [("S2", "Solo Sentinel-2"), ("LS", "Solo Landsat 8/9")]:
         sub = d[d.sensor == s].reset_index(drop=True)

@@ -1,6 +1,13 @@
-feature_set,label,accuracy,chance,excess_over_chance
-all_12_features,las 12 features,0.9975,0.6626,0.335
-visible_only,solo visible,0.9791,0.6626,0.3165
-ratios_only,solo ratios (escala-invariantes),0.9951,0.6626,0.3325
-nir_swir_only,solo NIR+SWIR,0.9975,0.6626,0.335
-green_blue_only,solo verde y azul,0.9322,0.6626,0.2697
+test,label,n,chance,accuracy,balanced_accuracy,auc
+all_hls,"Todos, HLS, 12 features",812,0.6626,0.9483,0.9395,0.9882
+all_raw,"Todos, sin ajuste HLS, 12 features",812,0.6626,0.9631,0.9569,0.9907
+visible_only,"Todos, HLS, solo visible",812,0.6626,0.9015,0.8845,0.9634
+ratios_only,"Todos, HLS, solo ratios",812,0.6626,0.9261,0.9102,0.9786
+nir_swir_only,"Todos, HLS, solo NIR+SWIR",812,0.6626,0.9236,0.9164,0.9777
+paired_hls,"Solo eventos pareados, HLS",542,0.5,0.928,0.928,0.9805
+paired_recal,"Solo eventos pareados, recalibracion local*",542,0.5,0.8838,0.8838,0.9575
+all_recal,"Todos, recalibracion local*",812,0.6626,0.915,0.9001,0.9776
+pm3d_hls,"Pares con imagen a +-3 dias (p11), HLS",292,0.5,0.887,0.887,0.9595
+pm3d_recal,"Pares a +-3 dias (p11), recalibracion local*",292,0.5,0.9521,0.9521,0.9929
+negative_ls,Control negativo: Landsat contra Landsat,538,0.5019,0.5204,0.5205,0.5115
+negative_s2,Control negativo: Sentinel-2 contra Sentinel-2,274,0.5219,0.5584,0.5571,0.5588

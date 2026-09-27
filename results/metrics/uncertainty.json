@@ -1,63 +1,176 @@
 {
-  "design": "GroupKFold(5) blocked by campaign date; split-conformal",
+  "design": "GroupKFold(5) by sampling date; calibration on whole sampling dates (20 %); finite-sample quantile",
   "levels": [
     {
+      "method": "split",
       "nominal": 0.5,
-      "empirical_coverage": 0.5086,
-      "mean_width_m": 2.496,
-      "mean_quantile_m": 1.248,
-      "calibration_error": 0.0086
+      "empirical_coverage": 0.5222,
+      "mean_width_m": 2.514,
+      "calibration_error": 0.0222
     },
     {
+      "method": "split",
       "nominal": 0.8,
-      "empirical_coverage": 0.7906,
-      "mean_width_m": 4.613,
-      "mean_quantile_m": 2.306,
-      "calibration_error": -0.0094
+      "empirical_coverage": 0.8227,
+      "mean_width_m": 5.37,
+      "calibration_error": 0.0227
     },
     {
+      "method": "split",
       "nominal": 0.9,
-      "empirical_coverage": 0.8941,
-      "mean_width_m": 6.117,
-      "mean_quantile_m": 3.058,
-      "calibration_error": -0.0059
+      "empirical_coverage": 0.9126,
+      "mean_width_m": 7.096,
+      "calibration_error": 0.0126
     },
     {
+      "method": "split",
       "nominal": 0.95,
-      "empirical_coverage": 0.9433,
-      "mean_width_m": 7.366,
-      "mean_quantile_m": 3.684,
-      "calibration_error": -0.0067
+      "empirical_coverage": 0.9532,
+      "mean_width_m": 8.216,
+      "calibration_error": 0.0032
+    },
+    {
+      "method": "mondrian",
+      "nominal": 0.5,
+      "empirical_coverage": 0.5148,
+      "mean_width_m": 2.564,
+      "calibration_error": 0.0148
+    },
+    {
+      "method": "mondrian",
+      "nominal": 0.8,
+      "empirical_coverage": 0.7943,
+      "mean_width_m": 5.401,
+      "calibration_error": -0.0057
+    },
+    {
+      "method": "mondrian",
+      "nominal": 0.9,
+      "empirical_coverage": 0.9126,
+      "mean_width_m": 7.023,
+      "calibration_error": 0.0126
+    },
+    {
+      "method": "mondrian",
+      "nominal": 0.95,
+      "empirical_coverage": 0.9557,
+      "mean_width_m": 8.812,
+      "calibration_error": 0.0057
+    },
+    {
+      "method": "cqr",
+      "nominal": 0.5,
+      "empirical_coverage": 0.5074,
+      "mean_width_m": 2.6,
+      "calibration_error": 0.0074
+    },
+    {
+      "method": "cqr",
+      "nominal": 0.8,
+      "empirical_coverage": 0.8325,
+      "mean_width_m": 6.037,
+      "calibration_error": 0.0325
+    },
+    {
+      "method": "cqr",
+      "nominal": 0.9,
+      "empirical_coverage": 0.9224,
+      "mean_width_m": 8.021,
+      "calibration_error": 0.0224
+    },
+    {
+      "method": "cqr",
+      "nominal": 0.95,
+      "empirical_coverage": 0.9667,
+      "mean_width_m": 10.067,
+      "calibration_error": 0.0167
     }
   ],
-  "max_calibration_error": 0.0094,
+  "max_calibration_error": {
+    "cqr": 0.0325,
+    "mondrian": 0.0148,
+    "split": 0.0227
+  },
+  "coverage_spread_measured_90": {
+    "cqr": 0.3793,
+    "mondrian": 0.2828,
+    "split": 0.2929
+  },
   "model_with_cal_split": {
-    "R2": 0.576,
-    "RMSE": 1.853,
-    "MAE": 1.442,
-    "bias": 0.043,
+    "R2": 0.54,
+    "RMSE": 1.931,
+    "MAE": 1.491,
+    "bias": 0.044,
     "n": 812
   },
-  "mean_width_90_m": 6.117,
+  "mean_width_90_m": {
+    "cqr": 8.021,
+    "mondrian": 7.023,
+    "split": 7.096
+  },
   "by_zone": [
     {
+      "method": "cqr",
       "zone_label": "Bahia de Puno",
       "n": 88,
-      "mean_width": 6.0509,
-      "coverage": 0.8864
+      "mean_width": 8.5678,
+      "coverage": 0.9318
     },
     {
+      "method": "cqr",
       "zone_label": "Lago Mayor",
       "n": 591,
-      "mean_width": 6.0796,
-      "coverage": 0.9019
+      "mean_width": 7.9513,
+      "coverage": 0.9205
     },
     {
+      "method": "cqr",
       "zone_label": "Lago Menor",
       "n": 133,
-      "mean_width": 6.3254,
-      "coverage": 0.8647
+      "mean_width": 7.9714,
+      "coverage": 0.9248
+    },
+    {
+      "method": "mondrian",
+      "zone_label": "Bahia de Puno",
+      "n": 88,
+      "mean_width": 6.9733,
+      "coverage": 0.9432
+    },
+    {
+      "method": "mondrian",
+      "zone_label": "Lago Mayor",
+      "n": 591,
+      "mean_width": 6.9198,
+      "coverage": 0.9052
+    },
+    {
+      "method": "mondrian",
+      "zone_label": "Lago Menor",
+      "n": 133,
+      "mean_width": 7.5162,
+      "coverage": 0.9248
+    },
+    {
+      "method": "split",
+      "zone_label": "Bahia de Puno",
+      "n": 88,
+      "mean_width": 7.2844,
+      "coverage": 0.9318
+    },
+    {
+      "method": "split",
+      "zone_label": "Lago Mayor",
+      "n": 591,
+      "mean_width": 7.0363,
+      "coverage": 0.912
+    },
+    {
+      "method": "split",
+      "zone_label": "Lago Menor",
+      "n": 133,
+      "mean_width": 7.2367,
+      "coverage": 0.9023
     }
-  ],
-  "conclusion": "Conformal intervals remain calibrated under campaign-blocked validation across the 50-95% range; this component of the original analysis survived the audit unchanged."
+  ]
 }

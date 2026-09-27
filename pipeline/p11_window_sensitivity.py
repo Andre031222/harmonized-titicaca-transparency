@@ -18,14 +18,16 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import GroupKFold
 
-from p00_config import (BANDS, DATA, FEATURES, MET, N_SPLITS, PROC, ROY, TIDY,
-                        add_indices, banner, metrics)
+from p00_config import (BANDS, DATA, FEATURES, MET, N_SPLITS, PROC, TIDY,
+                        add_indices, banner, harmonize, metrics)
 from p04_fix3_validation import cv_oof
 
 WINDOWS = [1, 3, 5, 10]
 BUFFER = 30
 CLDPRB = 30
 CACHE = PROC / "window_sensitivity_raw.csv"
+# Sentinel-2 guarda tambien B8A: es el NIR que HLS empareja con el B5 de OLI
+S2_BANDS = BANDS + ["B8A"]
 
 S2_START, LS_START = 2016, 2013
 ROY_SR = {"B2": "SR_B2", "B3": "SR_B3", "B4": "SR_B4",
@@ -82,7 +84,7 @@ def s2_windows(ee, lat, lon, date):
     for w in WINDOWS:
         col = base.filterDate(d0.advance(-w, "day"), d0.advance(w, "day"))
         out[f"w{w}_n"] = col.size()
-        out[f"w{w}"] = (_composite(ee, col, BANDS, mask).divide(10000)
+        out[f"w{w}"] = (_composite(ee, col, S2_BANDS, mask).divide(10000)
                         .reduceRegion(ee.Reducer.mean(), pt.buffer(BUFFER), 20))
     return ee.Dictionary(out).getInfo()
 
@@ -109,18 +111,16 @@ def ls_windows(ee, lat, lon, date):
 
 
 def bands_at(v, w, sensor):
-    """Reflectancia equivalente Sentinel-2 para una ventana, o None si falta."""
+    """Reflectancia nativa de cada sensor para una ventana, o None si falta.
+    La armonizacion (HLS) se aplica al evaluar, no al extraer: asi la cache
+    guarda el dato tal como sale del producto."""
     red = v.get(f"w{w}") or {}
     out = {}
-    for b in BANDS:
+    for b in (S2_BANDS if sensor == "S2" else BANDS):
         raw = red.get(b if sensor == "S2" else ROY_SR[b])
         if raw is None:
             return None
-        if sensor == "S2":
-            out[b] = raw
-        else:
-            a, slope = ROY[b]
-            out[b] = a + slope * (raw * 0.0000275 - 0.2)
+        out[b] = raw if sensor == "S2" else raw * 0.0000275 - 0.2
     return out
 
 
@@ -154,8 +154,8 @@ def extract():
             for w in WINDOWS:
                 vals = bands_at(v, w, sensor)
                 rec[f"w{w}_n"] = v.get(f"w{w}_n")
-                for b in BANDS:
-                    rec[f"w{w}_{b}"] = None if vals is None else vals[b]
+                for b in S2_BANDS:
+                    rec[f"w{w}_{b}"] = None if vals is None else vals.get(b)
             rows.append(rec)
             if len(rows) % 25 == 0:
                 flush(rows)
@@ -187,6 +187,8 @@ def agreement_with_primary(raw):
     # merge devolveria mas coincidencias que match-ups
     o = o.drop_duplicates("key")
     n = raw[raw.w10_n.fillna(0) > 0].drop_duplicates(["sensor", "station", "date"]).copy()
+    n = harmonize(n.rename(columns={f"w10_{b}": b for b in S2_BANDS}),
+                  ls_native=True).rename(columns={b: f"w10_{b}" for b in BANDS})
     n["key"] = n.sensor + "|" + n.station.astype(str) + "|" + n.date.astype(str)
     m = o.merge(n[["key"] + [f"w10_{b}" for b in BANDS]], on="key")
     rs = {b: float(np.corrcoef(m[f"w10_{b}"], m[b])[0, 1]) for b in BANDS}
@@ -208,9 +210,10 @@ def evaluate():
     raw["campaign_date"] = raw["date"]
     rows = []
     for w in WINDOWS:
-        d = raw.rename(columns={f"w{w}_{b}": b for b in BANDS}).copy()
+        d = raw.rename(columns={f"w{w}_{b}": b for b in S2_BANDS}).copy()
         d = d[d[f"w{w}_n"].fillna(0) > 0]
-        d = add_indices(d).dropna(subset=FEATURES + ["secchi"])
+        d = add_indices(harmonize(d, ls_native=True)).dropna(
+            subset=FEATURES + ["secchi"])
         if len(d) < 50:
             print(f"    +-{w:2d} dias: solo {len(d)} match-ups, se omite")
             continue
