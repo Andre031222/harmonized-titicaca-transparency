@@ -196,10 +196,27 @@ def agreement_with_primary(raw):
            "recovered_pct": round(100 * len(m) / len(o), 1),
            "reflectance_r_min": round(min(rs.values()), 4),
            "reflectance_r_by_band": {b: round(v, 4) for b, v in rs.items()}}
+    # Las tablas de match-ups guardan Landsat con la transformacion OLI->ETM+ de
+    # Roy et al. (2016) y p00 la invierte; aqui se compara ese Landsat invertido
+    # con el leido directamente de Collection 2 Level-2.
+    ls = m[m.key.str.startswith("LS|")]
+    diff = np.abs(np.concatenate([(ls[f"w10_{b}"] - ls[b]).values for b in BANDS]))
+    out.update({"inversion_n": int(len(ls)),
+                "inversion_r_min": round(min(float(np.corrcoef(ls[f"w10_{b}"], ls[b])[0, 1])
+                                             for b in BANDS), 6),
+                "inversion_median_abs_diff": float(f"{np.median(diff):.1e}"),
+                "inversion_p95_abs_diff": float(f"{np.quantile(diff, 0.95):.1e}")})
+    # pares de ambos sensores a +-1 dia del evento de campo
+    t = raw[raw.w1_n.fillna(0) > 0].dropna(subset=[f"w1_{b}" for b in BANDS])
+    both = t.groupby(["station", "date"]).sensor.nunique()
+    out["pairs_pm1d"] = int((both == 2).sum())
     print(f"\n  Contraste con el dataset principal: {out['recovered_n']} de "
           f"{out['primary_n']} match-ups unicos recuperados "
           f"({out['recovered_pct']}%), reflectancia r>="
           f"{out['reflectance_r_min']:.3f} en las seis bandas.")
+    print(f"  Landsat invertido vs leido directo: n={out['inversion_n']}, "
+          f"r>={out['inversion_r_min']}, |dif| mediana {out['inversion_median_abs_diff']}"
+          f" (p95 {out['inversion_p95_abs_diff']}); pares a +-1 dia: {out['pairs_pm1d']}")
     return out
 
 

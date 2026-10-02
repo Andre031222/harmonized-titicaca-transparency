@@ -43,3 +43,4 @@ results/models/*.pt
 *.DS_Store
 Thumbs.db
 logs/
+logs_local/

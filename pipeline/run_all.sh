@@ -32,7 +32,7 @@ step() { printf '\n\033[1m>>> %s\033[0m\n' "$1"; }
 step "p01  dataset de analisis e inventario"
 "$PY" p01_build_dataset.py
 
-step "p02  ERROR 1 -- armonizacion Roy sobre agua"
+step "p02  ERROR 1 -- armonizacion HLS sobre agua y prueba de dos muestras"
 "$PY" p02_fix1_harmonization.py
 
 step "p04  ERROR 3 -- unidad de bloqueo y modelos nulos"
@@ -68,7 +68,7 @@ step "p10  verificacion: el manuscrito coincide con los datos"
 
 step "figuras (R / ggplot2)"
 cd "$ROOT/figures/R"
-for f in fig0*.R; do
+for f in fig[0-9]*.R; do
   echo "  -> $f"
   Rscript "$f" 2>&1 | grep -E "guardado|Error" || true
 done

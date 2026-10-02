@@ -18,7 +18,7 @@ import re
 
 import pandas as pd
 
-from p00_config import MET, ROOT, TIDY, banner
+from p00_config import MET, PROC, ROOT, TIDY, banner
 
 OUT_TEX = ROOT / "manuscript/jglr/numbers.tex"
 
@@ -56,6 +56,12 @@ ROUNDING = [
     (lambda k: k.endswith("_r2") or k.endswith("_rtwo"), 3),
     (lambda k: k.startswith("local_r_"), 2),
     (lambda k: k.endswith("_spearman"), 2),
+    (lambda k: k.endswith("_bal"), 1),
+    (lambda k: k.endswith("_auc"), 2),
+    (lambda k: k.startswith("shore_rho"), 2),
+    (lambda k: k.startswith("shore_p"), 3),
+    (lambda k: k.startswith("hls_shift") or k.startswith("ls_red_nonpos_pct"), 0),
+    (lambda k: k.startswith("paired_ratio") or k.startswith("multilake_vis"), 2),
     (lambda k: k.endswith("_p"), 3),
     (lambda k: "_maxpred" in k, 1),
     (lambda k: any(t in k for t in ("_rmse", "_mae", "_bias", "_width",
@@ -105,46 +111,56 @@ def main():
             "secchi_half_metre_pct": 100 * ds["secchi_frac_half_metre_multiples"],
         })
 
-    # --- armonizacion -------------------------------------------------------
+    # --- armonizacion (HLS, p02) ---------------------------------------------
     hb = load_tidy("harmonization_bands.csv")
     if not hb.empty:
         for _, r in hb.iterrows():
-            N[f"roy_ratio_{r.band_label.lower()}"] = r.intercept_over_signal
-            N[f"ls_over_s2_{r.band_label.lower()}"] = r.ls_over_s2
-        N["roy_ratio_max"] = float(hb.intercept_over_signal.max())
-        N["roy_intercept_min"] = float(hb.roy_intercept.min())
-        N["roy_intercept_max"] = float(hb.roy_intercept.max())
+            k = r.band_label.lower()
+            N[f"hls_shift_{k}"] = float(r.hls_shift_pct)
+            N[f"paired_ratio_{k}"] = float(r.paired_ls_over_s2_hls)
+            N[f"ls_native_{k}"] = float(r.native_ls_median)
+            N[f"s2_hls_{k}"] = float(r.s2_hls_median)
+        N["hls_shift_absmax"] = float(hb.hls_shift_pct.abs().max())
+        N["hls_intercept_absmax"] = float(hb.hls_intercept.abs().max())
+        N["paired_events"] = int(hb.n_paired.iloc[0])
 
     sep = load_tidy("sensor_separability.csv")
     if not sep.empty:
-        N["sensor_acc_all"] = float(sep.loc[sep.feature_set == "all_12_features",
-                                            "accuracy"].iloc[0] * 100)
-        N["sensor_acc_visible"] = float(sep.loc[sep.feature_set == "visible_only",
-                                                "accuracy"].iloc[0] * 100)
-        N["sensor_acc_ratios"] = float(sep.loc[sep.feature_set == "ratios_only",
-                                               "accuracy"].iloc[0] * 100)
-        N["sensor_acc_chance"] = float(sep.chance.iloc[0] * 100)
+        for _, r in sep.iterrows():
+            N[f"sep_{r.test}_bal"] = float(r.balanced_accuracy * 100)
+            N[f"sep_{r.test}_acc"] = float(r.accuracy * 100)
+            N[f"sep_{r.test}_auc"] = float(r.auc)
+            N[f"sep_{r.test}_n"] = int(r.n)
+        N["sensor_acc_chance"] = float(sep.loc[sep.test == "all_hls", "chance"].iloc[0] * 100)
 
     lc = load_tidy("harmonization_local_coefficients.csv")
     if not lc.empty:
         for _, r in lc.iterrows():
             N[f"local_r_{r.band_label.lower()}"] = r.pearson_r
-        N["paired_events"] = int(lc.n_paired.iloc[0])
+
+    # rojo nativo de Landsat <= 0 sobre agua clara (motiva el piso de los ratios)
+    ad = pd.read_csv(PROC / "analysis_dataset.csv") if (PROC / "analysis_dataset.csv").exists() else pd.DataFrame()
+    if not ad.empty:
+        ls = ad[ad.sensor == "LS"]
+        N["ls_red_nonpos_n"] = int((ls.B4 <= 0).sum())
+        N["secchi_matchups_ls"] = int(len(ls))
+        N["secchi_matchups_s2"] = int((ad.sensor == "S2").sum())
+        N["sampling_dates"] = int(ad.campaign_date.nunique())
+        N["matchup_years"] = int(ad.year.nunique())
+        N["ls_red_nonpos_pct"] = float((ls.B4 <= 0).mean() * 100)
 
     # --- benchmark ----------------------------------------------------------
     bm = load_tidy("benchmark_models.csv")
     if not bm.empty:
         m = {"artefact": "classical_broken", "classical": "classical_bounded",
-             "linear": "linear", "rf": "rf"}
+             "kloiber": "kloiber", "linear": "linear", "rf": "rf"}
         for fam, key in m.items():
             sub = bm[bm.family == fam]
             if sub.empty:
                 continue
             N[f"{key}_r2"] = float(sub.R2.iloc[0])
             N[f"{key}_rmse"] = float(sub.RMSE.iloc[0])
-        art = bm[bm.family == "artefact"]
-        if not art.empty:
-            N["classical_broken_maxpred"] = float(art.max_prediction_m.iloc[0])
+            N[f"{key}_mae"] = float(sub.MAE.iloc[0])
 
     # --- validacion ---------------------------------------------------------
     nm = load_tidy("null_models.csv")
@@ -244,18 +260,22 @@ def main():
     cc = load_tidy("conformal_coverage.csv")
     for _, r in cc.iterrows():
         lvl = int(round(r.nominal * 100))
-        N[f"conformal_cov_{lvl}"] = float(r.empirical_coverage * 100)
-        N[f"conformal_width_{lvl}"] = float(r.mean_width_m)
-    if not cc.empty:
-        N["conformal_max_error"] = float(cc.calibration_error.abs().max() * 100)
+        N[f"conformal_{r.method}_cov_{lvl}"] = float(r.empirical_coverage * 100)
+        N[f"conformal_{r.method}_width_{lvl}"] = float(r.mean_width_m)
+    for meth, g in cc.groupby("method"):
+        N[f"conformal_{meth}_max_error"] = float(g.calibration_error.abs().max() * 100)
 
     iv = load_tidy("conformal_intervals.csv")
-    if not iv.empty:
-        N["conformal_outside"] = int((~iv.covered.astype(bool)).sum())
+    for meth, g in iv.groupby("method"):
+        N[f"conformal_{meth}_outside"] = int((~g.covered.astype(bool)).sum())
     wb = load_tidy("interval_width_by_secchi.csv")
-    if not wb.empty:
-        N["conformal_cov_clearest"] = float(wb.coverage.iloc[-1] * 100)
-        N["conformal_cov_turbidest"] = float(wb.coverage.iloc[0] * 100)
+    for (meth, by), g in wb.groupby(["method", "conditioned_on"]):
+        k = f"conformal_{meth}_{by}"
+        N[f"{k}_cov_min"] = float(g.coverage.min() * 100)
+        N[f"{k}_cov_max"] = float(g.coverage.max() * 100)
+        N[f"{k}_cov_clearest"] = float(g.coverage.iloc[-1] * 100)
+        N[f"{k}_cov_turbidest"] = float(g.coverage.iloc[0] * 100)
+    N["conformal_n"] = int(iv[iv.method == "split"].shape[0]) if not iv.empty else 0
 
     # --- interpretabilidad --------------------------------------------------
     ip = load_json("interpretability.json")
@@ -263,7 +283,12 @@ def main():
         for k, v in ip["share_by_band_group"].items():
             key = k.lower().replace("/", "_").replace(" ", "_")
             N[f"shap_share_{key}"] = float(v * 100)
+    imp = load_tidy("shap_importance.csv")
+    if not imp.empty:
+        N["shap_top_label"] = str(imp.label.iloc[0])
+        N["shap_top_share"] = float(imp.share.iloc[0] * 100)
     rt = load_tidy("retrievability.csv")
+
     for _, r in rt.iterrows():
         N[f"retr_{r.variable}_r2"] = float(r.R2)
         N[f"retr_{r.variable}_n"] = int(r.n)
@@ -277,6 +302,9 @@ def main():
         if ms.get("best"):
             N["best_model_r2"] = ms["best"].get("R2")
             N["best_model_label"] = ms["best"].get("label")
+            sel = load_tidy("model_selection.csv").set_index("label")
+            N["tuning_gain_rmse"] = round(float(sel.loc["RF por defecto", "RMSE"]
+                                                - ms["best"].get("RMSE")), 2)
 
     # --- sensibilidad a la ventana del match-up (p11, requiere GEE) ---------
     ws = load_json("window_sensitivity.json")
@@ -290,12 +318,36 @@ def main():
         for k in ("primary_n", "recovered_n", "recovered_pct", "reflectance_r_min"):
             if k in ws:
                 N[f"window_{k}"] = ws[k]
+        # Landsat invertido frente a Landsat leido directamente de Collection 2
+        if "inversion_n" in ws:
+            def sci(x):
+                m, e = f"{x:.1e}".split("e")
+                return f"{m}\\times10^{{{int(e)}}}"
+            N["inversion_n"] = int(ws["inversion_n"])
+            N["inversion_median_abs_diff"] = sci(ws["inversion_median_abs_diff"])
+            N["inversion_p95_abs_diff"] = sci(ws["inversion_p95_abs_diff"])
+            N["inversion_r_floor"] = ("0.9999" if ws["inversion_r_min"] >= 0.9999
+                                      else f"{ws['inversion_r_min']:.4f}")
+            N["pairs_pm1d"] = int(ws["pairs_pm1d"])
 
     # --- autocorrelacion espacial de los residuos (p12) ---------------------
     sa = load_json("spatial_autocorrelation.json")
     if sa:
         ks = sa["sensitivity_k"]
         N["spatial_n"] = int(sa["n_stations"])
+        sd = sa.get("shore_distance", {})
+        if "all" in sd:
+            N["shore_rho"] = float(sd["all"]["rho_residual"])
+            N["shore_p"] = float(sd["all"]["p_residual"])
+            N["shore_rho_abs"] = float(sd["all"]["rho_abs_residual"])
+            N["shore_p_abs"] = float(sd["all"]["p_abs_residual"])
+            N["shore_km_median"] = float(sd["all"]["shore_km_median"])
+        if "Bahia de Puno" in sd:
+            pu = sd["Bahia de Puno"]
+            N["shore_rho_puno"] = float(pu["rho_residual"])
+            N["shore_p_puno"] = float(pu["p_residual"])
+            N["shore_n_puno"] = int(pu["n"])
+            N["shore_km_median_puno"] = float(pu["shore_km_median"])
         N["spatial_k"] = int(sa["k_primary"])
         N["spatial_nperm"] = int(sa["n_perm"])
         N["spatial_moran_i"] = float(sa["moran_I"])
@@ -317,12 +369,11 @@ def main():
         lakes = pd.DataFrame(ml["lakes"])
         N["multilake_n"] = int(len(lakes))
         N["multilake_points"] = int(lakes.n_points.iloc[0])
-        N["multilake_spearman"] = float(ml["spearman_green_vs_worst_ratio"])
-        N["multilake_clearest_ratio"] = float(lakes.worst_band_ratio.iloc[0])
-        N["multilake_clearest_lake"] = str(lakes.lake.iloc[0])
-        N["multilake_turbid_ratio_max"] = float(
-            lakes[lakes.clarity == "turbid"].worst_band_ratio.max())
-        N["multilake_negative_nir"] = int((lakes.negative_native_bands > 0).sum())
+        N["multilake_below"] = int(ml["lakes_below_both_visible"])
+        N["multilake_spearman"] = float(ml["spearman_green_vs_green_gap"])
+        vis = lakes[["blue_ratio", "green_ratio"]]
+        N["multilake_vis_ratio_min"] = float(vis.min().min())
+        N["multilake_vis_ratio_max"] = float(vis.max().max())
 
     # --- escritura ----------------------------------------------------------
     json.dump(N, open(MET / "manuscript_numbers.json", "w"), indent=2,
@@ -349,8 +400,8 @@ def main():
     print(f"    RMSE = {N.get('headline_rmse')} m")
     print(f"    MAE  = {N.get('headline_mae')} m")
     print(f"    n    = {N.get('headline_n')}")
-    missing = [k for k in ("headline_r2", "conformal_cov_90", "sensor_acc_all",
-                           "paired_events") if k not in N]
+    missing = [k for k in ("headline_r2", "conformal_split_cov_90",
+                           "sep_all_hls_bal", "paired_events") if k not in N]
     if missing:
         print(f"\n  AVISO: faltan claves ({', '.join(missing)}); "
               f"ejecuta antes los scripts p01-p08 que las producen.")

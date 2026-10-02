@@ -38,8 +38,8 @@ turbid Bahía de Puno to clear Lago Mayor, is visible in the field data alone. (
 Puno enlarged. (e) Most stations were visited in very few campaigns.*
 
 We assemble **1,002 real satellite–field match-ups** (812 carrying a Secchi reading)
-from Sentinel-2 MSI and Landsat 8/9 OLI against twelve years of IMARPE limnological
-monitoring, and ask what a defensible retrieval looks like. The study is as much about
+from Sentinel-2 MSI and Landsat 8/9 OLI, 2013–2024, against the IMARPE limnological
+monitoring record (2011–2024), and ask what a defensible retrieval looks like. The study is as much about
 **how to evaluate** such a product as about the product itself: for each of the two
 failures below we give a diagnostic that costs one model fit and that any study can run.
 
@@ -196,10 +196,10 @@ re-evaluated under the primary design:
 
 | Window | Match-ups | Campaigns | R² | RMSE (m) |
 |---|:--:|:--:|:--:|:--:|
-| ±1 day | 185 | 41 | 0.459 | 2.37 |
-| ±3 days | 494 | 79 | 0.520 | 2.12 |
-| ±5 days | 660 | 94 | 0.552 | 2.00 |
-| **±10 days** | **810** | **120** | **0.545** | **1.92** |
+| ±1 day | 185 | 41 | 0.473 | 2.33 |
+| ±3 days | 494 | 79 | 0.524 | 2.12 |
+| ±5 days | 660 | 94 | 0.553 | 2.00 |
+| **±10 days** | **810** | **120** | **0.553** | **1.91** |
 
 Accuracy is flat from ±3 to ±10 days. Had the wide window been admitting stale
 observations, tightening it should have raised accuracy; it does not. What narrowing
@@ -209,7 +209,11 @@ because each window defines a different sample.
 
 The re-extraction doubles as a reproducibility check: at ±10 days it recovers **810 of
 810** unique match-ups from the published analysis, with per-band reflectance
-correlating at **r ≥ 0.988** and a median difference of zero.
+correlating at **r ≥ 0.988** and a median difference of zero. For Landsat it also checks
+the stored values: the match-up tables keep Landsat after the OLI→ETM+ transform of Roy
+et al. (2016), which the pipeline inverts, and the inverted reflectance matches the
+directly read Collection 2 values for all 537 Landsat match-ups (r > 0.9999, median
+absolute difference 2.8 × 10⁻⁶).
 
 The extraction it rests on is versioned
 (`data/processed/window_sensitivity_raw.csv`, 184 KB), so the analysis re-runs from this
@@ -327,7 +331,7 @@ held to the same standard as the positive one.
 │   ├── harmonization_check.py           the sensor two-sample test as a reusable function
 │   └── run_all.sh                       reproduces everything, end to end
 ├── figures/
-│   ├── R/                    fig01–fig09 (ggplot2) + shared theme and palette
+│   ├── R/                    fig01–fig10 (ggplot2) + shared theme and palette
 │   └── basemap/              fetch_basemap.py: borders, rivers and relief for the maps
 ├── data/
 │   ├── processed/            match-up tables (matchups_s2.csv, matchups_ls.csv),
@@ -426,7 +430,7 @@ Extraction is resumable and network-bound rather than CPU-bound.
 Figures are rebuilt separately:
 
 ```bash
-cd figures/R && for f in fig0*.R; do Rscript "$f"; done
+cd figures/R && for f in fig[0-9]*.R; do Rscript "$f"; done
 ```
 
 Outputs land in `results/metrics/` (JSON), `results/tidy/` (CSV) and

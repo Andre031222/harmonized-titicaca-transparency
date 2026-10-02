@@ -6,10 +6,10 @@
       "n_matchups":185,
       "n_campaigns":41,
       "median_images":1.0,
-      "R2":0.459,
-      "RMSE":2.367,
-      "MAE":1.883,
-      "bias":-0.026,
+      "R2":0.473,
+      "RMSE":2.335,
+      "MAE":1.87,
+      "bias":-0.021,
       "n":185
     },
     {
@@ -17,10 +17,10 @@
       "n_matchups":494,
       "n_campaigns":79,
       "median_images":1.0,
-      "R2":0.52,
-      "RMSE":2.124,
-      "MAE":1.658,
-      "bias":-0.031,
+      "R2":0.524,
+      "RMSE":2.115,
+      "MAE":1.647,
+      "bias":-0.05,
       "n":494
     },
     {
@@ -28,10 +28,10 @@
       "n_matchups":660,
       "n_campaigns":94,
       "median_images":1.0,
-      "R2":0.552,
-      "RMSE":1.998,
-      "MAE":1.556,
-      "bias":0.015,
+      "R2":0.553,
+      "RMSE":1.996,
+      "MAE":1.553,
+      "bias":0.005,
       "n":660
     },
     {
@@ -39,10 +39,10 @@
       "n_matchups":810,
       "n_campaigns":120,
       "median_images":2.0,
-      "R2":0.545,
-      "RMSE":1.922,
-      "MAE":1.482,
-      "bias":0.013,
+      "R2":0.553,
+      "RMSE":1.905,
+      "MAE":1.473,
+      "bias":0.006,
       "n":810
     }
   ],
@@ -58,7 +58,12 @@
     "B11":0.9947,
     "B12":0.9966
   },
-  "r2_gain_vs_10d":0.007,
+  "inversion_n":537,
+  "inversion_r_min":1.0,
+  "inversion_median_abs_diff":0.0000028,
+  "inversion_p95_abs_diff":0.0000054,
+  "pairs_pm1d":14,
+  "r2_gain_vs_10d":0.0,
   "n_lost_vs_10d":150,
   "best_window_days":5
 }
