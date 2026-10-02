@@ -5,7 +5,7 @@ transparency product looks like in a clear, high-altitude great lake — and of 
 practices, imported from the turbid-water literature, that fail there.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-15803d?style=flat-square)](LICENSE)
-[![Python 3.11](https://img.shields.io/badge/Python-3.11-3776ab?style=flat-square)](https://www.python.org/)
+[![Python 3.14](https://img.shields.io/badge/Python-3.14-3776ab?style=flat-square)](https://www.python.org/)
 [![Figures: R / ggplot2](https://img.shields.io/badge/Figures-R_%2F_ggplot2-276dc3?style=flat-square)](https://www.r-project.org/)
 [![Target journal](https://img.shields.io/badge/Target-Journal_of_Great_Lakes_Research-1a7f8e?style=flat-square)](https://www.sciencedirect.com/journal/journal-of-great-lakes-research)
 [![Status](https://img.shields.io/badge/Status-preparing_submission-b45309?style=flat-square)](#citation)
@@ -357,13 +357,14 @@ repository (see above); `p09` and `p10` detect its absence and skip.
 
 ## Installation
 
-Python 3.11. The pinned versions are those the reported results were produced with.
+Python 3.14 (the results were produced with 3.14.7). The pinned versions are those the
+reported results were produced with.
 
 ```bash
 git clone https://github.com/Andre031222/harmonized-titicaca-transparency.git
 cd harmonized-titicaca-transparency
 
-python3.11 -m venv .venv          # or: uv venv --python 3.11
+python3.14 -m venv .venv          # or: uv venv --python 3.14
 .venv/bin/pip install -r requirements.txt
 ```
 

@@ -2,7 +2,7 @@
 # Water transparency retrieval in Lake Titicaca
 # Python dependencies for pipeline/ (p00-p12) and figures/
 #
-#   python3.11 -m venv .venv
+#   python3.14 -m venv .venv
 #   .venv/bin/pip install -r requirements.txt
 #   bash pipeline/run_all.sh
 #
