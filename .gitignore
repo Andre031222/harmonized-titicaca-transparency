@@ -60,3 +60,6 @@ data/processed/lake_composites/*.tif
 
 # Figuras TIFF a 600 dpi (pesadas; se regeneran con figures/R)
 results/figures_r/*.tiff
+
+# Paquetes para depositar (Mendeley Data); se generan, no se versionan
+dist/

@@ -18,7 +18,11 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 if [ -x "$ROOT/.venv/bin/python" ]; then PY="$ROOT/.venv/bin/python"; else PY="python3"; fi
-RUN=(taskset -c 8-15 nice -n 10 "$PY")
+if command -v taskset >/dev/null && [ "$(nproc)" -ge 16 ]; then
+  RUN=(taskset -c 8-15 nice -n 10 "$PY")
+else
+  RUN=(nice -n 10 "$PY")
+fi
 cd "$ROOT/pipeline"
 
 FAST=0; NO_TEX=0
@@ -67,9 +71,12 @@ step "p17  brillo solar (reevalua la cache)"
 step "p18  separabilidad en reflectancia TOA (reevalua la cache)"
 "${RUN[@]}" p18_toa_separability.py --eval
 step "p13  exporta las cifras del manuscrito"
+mkdir -p "$ROOT/manuscript/rsase"
 "${RUN[@]}" p13_export_numbers.py
-step "p14  verifica el manuscrito contra results/"
-"${RUN[@]}" p14_verify_manuscript.py
+if [ -f "$ROOT/manuscript/rsase/titicaca_secchi_rsase.tex" ]; then
+  step "p14  verifica el manuscrito contra results/"
+  "${RUN[@]}" p14_verify_manuscript.py
+fi
 
 step "figuras (R / ggplot2)"
 (cd "$ROOT/figures/R" && for f in fig[0-9S]*.R; do Rscript "$f"; done)
