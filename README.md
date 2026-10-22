@@ -2,6 +2,7 @@
 
 **Campaign-level validation of satellite Secchi depth in Lake Titicaca**
 
+[![Data: Mendeley](https://img.shields.io/badge/Data-10.17632%2F4zc7f9mv58.1-1565C0?style=flat-square)](https://doi.org/10.17632/4zc7f9mv58.1)
 [![Status: submitted](https://img.shields.io/badge/Status-Submitted_to_RSASE-E67E22?style=flat-square)](#citation)
 [![License: MIT](https://img.shields.io/badge/License-MIT-337AB7?style=flat-square)](LICENSE)
 [![Python 3.14](https://img.shields.io/badge/Python-3.14-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
@@ -143,6 +144,8 @@ Figure files map to the submitted manuscript as follows: `fig1`–`fig5` → Fig
 | `data/processed/hls_matchups_raw.csv` | HLS reflectance at each field measurement (station code and date as key, **no field values**) | This repository |
 | `data/processed/multilake_*.csv.gz` | Same-day HLSL30/HLSS30 pairs over 27 lakes: surface reflectance, TOA and view/sun angles | This repository |
 
+The satellite reflectance, the 2024 composites and Secchi maps of Lake Titicaca (GeoTIFF, 90 m), the aggregate results and a code snapshot are archived on **Mendeley Data**: [doi:10.17632/4zc7f9mv58.1](https://doi.org/10.17632/4zc7f9mv58.1) (CC BY 4.0).
+
 No file containing measured field values is versioned. Without the IMARPE record, `p02` cannot rebuild the match-up table, but every aggregate result in `results/metrics/` and every figure is included.
 
 ---
@@ -190,7 +193,7 @@ print(res[["test", "balanced_accuracy", "ba_lo", "ba_hi"]])
 
 ## Citation
 
-The article is under review. Until it is published, please cite the code:
+The article is under review. Until it is published, please cite the code and the dataset:
 
 ```bibtex
 @software{YanaYucra2026TiticacaHLS,
@@ -202,6 +205,19 @@ The article is under review. Until it is published, please cite the code:
             {Lake Titicaca}: analysis code},
   year   = {2026},
   url    = {https://github.com/Andre031222/harmonized-titicaca-transparency}
+}
+
+@dataset{YanaYucra2026TiticacaData,
+  author    = {Yana-Yucra, Dina Maribel and Iba{\~n}ez-Quispe, Vladimiro and
+               Yzarra-Tito, Wilfredo Juli{\'a}n and Vilca-Solorzano, Richar Andre and
+               Torres-Cruz, Fred},
+  title     = {Harmonized {Landsat}--{Sentinel-2} separability over lakes and
+               campaign-level validation of satellite {Secchi} depth in
+               {Lake Titicaca}: satellite data, lake maps and code},
+  year      = {2026},
+  publisher = {Mendeley Data},
+  version   = {1},
+  doi       = {10.17632/4zc7f9mv58.1}
 }
 ```
 
