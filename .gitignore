@@ -63,3 +63,6 @@ results/figures_r/*.tiff
 
 # Paquetes para depositar (Mendeley Data); se generan, no se versionan
 dist/
+
+# Sin PDFs en el repositorio: las figuras van en PNG (los PDF vectoriales quedan en local)
+results/figures_r/*.pdf
