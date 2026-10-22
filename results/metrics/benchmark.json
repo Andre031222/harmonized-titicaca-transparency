@@ -1,0 +1,401 @@
+{
+  "design": "leave-one-campaign-out (9 folds), analysis_dataset (HLS, +-10 d)",
+  "n": 815,
+  "secchi_max_m": 16.5,
+  "bound": "[0.05, 1.5 x training-fold max]",
+  "absurd_threshold_m": 24.75,
+  "log_ratio_floor": 0.001,
+  "n_rows_at_log_ratio_floor": 2,
+  "pooled": {
+    "kloiber": {
+      "R2": -0.013,
+      "R2_lo": -0.125,
+      "R2_hi": 0.064,
+      "RMSE": 2.861,
+      "MAE": 2.279,
+      "bias": -0.483,
+      "n": 815,
+      "max_prediction_m": 11.56,
+      "n_absurd": 0
+    },
+    "kloiber_unbounded": {
+      "R2": -0.013,
+      "R2_lo": -0.125,
+      "R2_hi": 0.064,
+      "RMSE": 2.861,
+      "MAE": 2.279,
+      "bias": -0.483,
+      "n": 815,
+      "max_prediction_m": 11.56,
+      "n_absurd": 0
+    },
+    "two_band": {
+      "R2": 0.196,
+      "R2_lo": 0.096,
+      "R2_hi": 0.268,
+      "RMSE": 2.549,
+      "MAE": 1.991,
+      "bias": -0.462,
+      "n": 815,
+      "max_prediction_m": 10.37,
+      "n_absurd": 0
+    },
+    "two_band_unbounded": {
+      "R2": 0.196,
+      "R2_lo": 0.096,
+      "R2_hi": 0.268,
+      "RMSE": 2.549,
+      "MAE": 1.991,
+      "bias": -0.462,
+      "n": 815,
+      "max_prediction_m": 10.37,
+      "n_absurd": 0
+    },
+    "linear": {
+      "R2": 0.486,
+      "R2_lo": 0.288,
+      "R2_hi": 0.593,
+      "RMSE": 2.039,
+      "MAE": 1.595,
+      "bias": -0.06,
+      "n": 815,
+      "max_prediction_m": 12.94,
+      "n_absurd": 0
+    },
+    "rf": {
+      "R2": 0.486,
+      "R2_lo": 0.327,
+      "R2_hi": 0.567,
+      "RMSE": 2.038,
+      "MAE": 1.593,
+      "bias": -0.04,
+      "n": 815,
+      "max_prediction_m": 14.34,
+      "n_absurd": 0
+    }
+  },
+  "per_sensor_fit": {
+    "S2": {
+      "kloiber": {
+        "R2": -0.024,
+        "R2_lo": -0.163,
+        "R2_hi": 0.068,
+        "RMSE": 3.07,
+        "MAE": 2.446,
+        "bias": -0.504,
+        "n": 322,
+        "max_prediction_m": 11.54,
+        "n_absurd": 0
+      },
+      "kloiber_unbounded": {
+        "R2": -0.024,
+        "R2_lo": -0.163,
+        "R2_hi": 0.068,
+        "RMSE": 3.07,
+        "MAE": 2.446,
+        "bias": -0.504,
+        "n": 322,
+        "max_prediction_m": 11.54,
+        "n_absurd": 0
+      },
+      "two_band": {
+        "R2": 0.315,
+        "R2_lo": 0.004,
+        "R2_hi": 0.462,
+        "RMSE": 2.512,
+        "MAE": 1.983,
+        "bias": -0.445,
+        "n": 322,
+        "max_prediction_m": 12.73,
+        "n_absurd": 0
+      },
+      "two_band_unbounded": {
+        "R2": 0.315,
+        "R2_lo": 0.004,
+        "R2_hi": 0.462,
+        "RMSE": 2.512,
+        "MAE": 1.983,
+        "bias": -0.445,
+        "n": 322,
+        "max_prediction_m": 12.73,
+        "n_absurd": 0
+      },
+      "linear": {
+        "R2": 0.508,
+        "R2_lo": 0.264,
+        "R2_hi": 0.637,
+        "RMSE": 2.128,
+        "MAE": 1.661,
+        "bias": -0.083,
+        "n": 322,
+        "max_prediction_m": 14.37,
+        "n_absurd": 0
+      },
+      "rf": {
+        "R2": 0.486,
+        "R2_lo": 0.328,
+        "R2_hi": 0.569,
+        "RMSE": 2.175,
+        "MAE": 1.692,
+        "bias": -0.139,
+        "n": 322,
+        "max_prediction_m": 14.23,
+        "n_absurd": 0
+      }
+    },
+    "LS": {
+      "kloiber": {
+        "R2": -0.033,
+        "R2_lo": -0.166,
+        "R2_hi": 0.044,
+        "RMSE": 2.751,
+        "MAE": 2.178,
+        "bias": -0.463,
+        "n": 493,
+        "max_prediction_m": 11.81,
+        "n_absurd": 0
+      },
+      "kloiber_unbounded": {
+        "R2": -0.033,
+        "R2_lo": -0.166,
+        "R2_hi": 0.044,
+        "RMSE": 2.752,
+        "MAE": 2.178,
+        "bias": -0.463,
+        "n": 493,
+        "max_prediction_m": 11.81,
+        "n_absurd": 0
+      },
+      "two_band": {
+        "R2": 0.131,
+        "R2_lo": -0.0,
+        "R2_hi": 0.219,
+        "RMSE": 2.524,
+        "MAE": 1.955,
+        "bias": -0.432,
+        "n": 493,
+        "max_prediction_m": 9.75,
+        "n_absurd": 0
+      },
+      "two_band_unbounded": {
+        "R2": 0.131,
+        "R2_lo": -0.0,
+        "R2_hi": 0.219,
+        "RMSE": 2.524,
+        "MAE": 1.955,
+        "bias": -0.432,
+        "n": 493,
+        "max_prediction_m": 9.75,
+        "n_absurd": 0
+      },
+      "linear": {
+        "R2": 0.491,
+        "R2_lo": 0.259,
+        "R2_hi": 0.607,
+        "RMSE": 1.932,
+        "MAE": 1.508,
+        "bias": -0.024,
+        "n": 493,
+        "max_prediction_m": 13.57,
+        "n_absurd": 0
+      },
+      "rf": {
+        "R2": 0.493,
+        "R2_lo": 0.356,
+        "R2_hi": 0.558,
+        "RMSE": 1.929,
+        "MAE": 1.493,
+        "bias": -0.027,
+        "n": 493,
+        "max_prediction_m": 13.71,
+        "n_absurd": 0
+      }
+    }
+  },
+  "joint_fit_scored_by_sensor": [
+    {
+      "sensor": "S2",
+      "model": "kloiber",
+      "fit_on": "both sensors",
+      "R2": 0.008,
+      "RMSE": 3.022,
+      "MAE": 2.419,
+      "bias": -0.462,
+      "n": 322,
+      "R2_lo": -0.123,
+      "R2_hi": 0.095
+    },
+    {
+      "sensor": "S2",
+      "model": "two_band",
+      "fit_on": "both sensors",
+      "R2": 0.213,
+      "RMSE": 2.692,
+      "MAE": 2.147,
+      "bias": -0.532,
+      "n": 322,
+      "R2_lo": 0.126,
+      "R2_hi": 0.287
+    },
+    {
+      "sensor": "S2",
+      "model": "linear",
+      "fit_on": "both sensors",
+      "R2": 0.507,
+      "RMSE": 2.132,
+      "MAE": 1.674,
+      "bias": -0.185,
+      "n": 322,
+      "R2_lo": 0.3,
+      "R2_hi": 0.641
+    },
+    {
+      "sensor": "S2",
+      "model": "rf",
+      "fit_on": "both sensors",
+      "R2": 0.478,
+      "RMSE": 2.193,
+      "MAE": 1.74,
+      "bias": 0.098,
+      "n": 322,
+      "R2_lo": 0.308,
+      "R2_hi": 0.571
+    },
+    {
+      "sensor": "LS",
+      "model": "kloiber",
+      "fit_on": "both sensors",
+      "R2": -0.032,
+      "RMSE": 2.751,
+      "MAE": 2.187,
+      "bias": -0.497,
+      "n": 493,
+      "R2_lo": -0.156,
+      "R2_hi": 0.045
+    },
+    {
+      "sensor": "LS",
+      "model": "two_band",
+      "fit_on": "both sensors",
+      "R2": 0.181,
+      "RMSE": 2.451,
+      "MAE": 1.89,
+      "bias": -0.416,
+      "n": 493,
+      "R2_lo": 0.04,
+      "R2_hi": 0.278
+    },
+    {
+      "sensor": "LS",
+      "model": "linear",
+      "fit_on": "both sensors",
+      "R2": 0.468,
+      "RMSE": 1.975,
+      "MAE": 1.543,
+      "bias": 0.022,
+      "n": 493,
+      "R2_lo": 0.274,
+      "R2_hi": 0.57
+    },
+    {
+      "sensor": "LS",
+      "model": "rf",
+      "fit_on": "both sensors",
+      "R2": 0.492,
+      "RMSE": 1.931,
+      "MAE": 1.497,
+      "bias": -0.13,
+      "n": 493,
+      "R2_lo": 0.338,
+      "R2_hi": 0.562
+    }
+  ],
+  "paired_dR2": [
+    {
+      "subset": "pooled",
+      "comparison": "rf - linear",
+      "dR2": 0.0,
+      "dR2_lo": -0.06,
+      "dR2_hi": 0.094,
+      "excludes_0": false
+    },
+    {
+      "subset": "pooled",
+      "comparison": "rf - kloiber",
+      "dR2": 0.499,
+      "dR2_lo": 0.374,
+      "dR2_hi": 0.607,
+      "excludes_0": true
+    },
+    {
+      "subset": "pooled",
+      "comparison": "rf - two_band",
+      "dR2": 0.29,
+      "dR2_lo": 0.132,
+      "dR2_hi": 0.399,
+      "excludes_0": true
+    },
+    {
+      "subset": "S2",
+      "comparison": "rf - linear",
+      "dR2": -0.022,
+      "dR2_lo": -0.096,
+      "dR2_hi": 0.11,
+      "excludes_0": false
+    },
+    {
+      "subset": "S2",
+      "comparison": "rf - kloiber",
+      "dR2": 0.51,
+      "dR2_lo": 0.366,
+      "dR2_hi": 0.643,
+      "excludes_0": true
+    },
+    {
+      "subset": "S2",
+      "comparison": "rf - two_band",
+      "dR2": 0.171,
+      "dR2_lo": 0.006,
+      "dR2_hi": 0.444,
+      "excludes_0": true
+    },
+    {
+      "subset": "LS",
+      "comparison": "rf - linear",
+      "dR2": 0.002,
+      "dR2_lo": -0.067,
+      "dR2_hi": 0.129,
+      "excludes_0": false
+    },
+    {
+      "subset": "LS",
+      "comparison": "rf - kloiber",
+      "dR2": 0.526,
+      "dR2_lo": 0.422,
+      "dR2_hi": 0.629,
+      "excludes_0": true
+    },
+    {
+      "subset": "LS",
+      "comparison": "rf - two_band",
+      "dR2": 0.362,
+      "dR2_lo": 0.218,
+      "dR2_hi": 0.482,
+      "excludes_0": true
+    }
+  ],
+  "bounding_matters": {
+    "kloiber": {
+      "R2_bounded": -0.013,
+      "R2_unbounded": -0.013,
+      "n_absurd_unbounded": 0,
+      "max_unbounded_m": 11.56
+    },
+    "two_band": {
+      "R2_bounded": 0.196,
+      "R2_unbounded": 0.196,
+      "n_absurd_unbounded": 0,
+      "max_unbounded_m": 10.37
+    }
+  }
+}

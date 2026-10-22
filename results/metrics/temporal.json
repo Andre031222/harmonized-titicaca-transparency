@@ -1,0 +1,488 @@
+{
+  "source": "IMARPE in-situ record (not the match-ups); annual median Secchi by zone",
+  "n_readings_with_secchi": 732,
+  "years_with_data": [
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2022,
+    2024
+  ],
+  "wet_season_campaign": {
+    "years": [
+      2012
+    ],
+    "months": "December"
+  },
+  "dry_season_first_year": {
+    "Bahia de Puno": 2011,
+    "Lago Menor": 2011,
+    "Lago Mayor": 2011
+  },
+  "n_per_zone_year": {
+    "Bahia de Puno": {
+      "2011": 10,
+      "2012": 3,
+      "2013": 9,
+      "2014": 4,
+      "2015": 8,
+      "2016": 12,
+      "2017": 7,
+      "2018": 8,
+      "2019": 8,
+      "2022": 4,
+      "2024": 5
+    },
+    "Lago Menor": {
+      "2011": 6,
+      "2012": 9,
+      "2013": 10,
+      "2014": 6,
+      "2015": 13,
+      "2017": 11,
+      "2018": 10,
+      "2019": 11,
+      "2022": 12,
+      "2024": 13
+    },
+    "Lago Mayor": {
+      "2011": 63,
+      "2012": 60,
+      "2013": 62,
+      "2014": 59,
+      "2015": 86,
+      "2016": 41,
+      "2017": 35,
+      "2018": 33,
+      "2019": 35,
+      "2022": 37,
+      "2024": 42
+    }
+  },
+  "location_adjustment": {
+    "min_years_per_location": 3,
+    "climatology": "mean of per-year location medians over the same series",
+    "n_locations_used_dry": {
+      "Bahia de Puno": 7,
+      "Lago Menor": 11,
+      "Lago Mayor": 38
+    }
+  },
+  "methods": {
+    "mk_p": "two-sided exact permutation distribution of S (Mahonian numbers; full enumeration or Monte Carlo when ties); normal approximation with continuity correction for reference",
+    "sen_ci": "Gilbert (1987) rank-based 95% CI, ranks M1=(N-C)/2 and M2+1, interpolated; slopes on calendar years",
+    "alpha": 0.05
+  },
+  "trends": {
+    "dry|raw": {
+      "Bahia de Puno": {
+        "n_years": 10,
+        "years": "2011 2013 2014 2015 2016 2017 2018 2019 2022 2024",
+        "S": 25,
+        "tau": 0.556,
+        "p_exact": 0.0286,
+        "p_method": "exact",
+        "p_normal": 0.0318,
+        "sen_slope_m_per_yr": 0.156,
+        "sen_ci95_gilbert": [
+          0.062,
+          0.322
+        ],
+        "verdict": "increasing"
+      },
+      "Lago Menor": {
+        "n_years": 9,
+        "years": "2011 2013 2014 2015 2017 2018 2019 2022 2024",
+        "S": -7,
+        "tau": -0.194,
+        "p_exact": 0.5405,
+        "p_method": "exact_enumeration_ties",
+        "p_normal": 0.5294,
+        "sen_slope_m_per_yr": -0.162,
+        "sen_ci95_gilbert": [
+          -0.529,
+          0.5
+        ],
+        "verdict": "ns"
+      },
+      "Lago Mayor": {
+        "n_years": 10,
+        "years": "2011 2013 2014 2015 2016 2017 2018 2019 2022 2024",
+        "S": 25,
+        "tau": 0.556,
+        "p_exact": 0.0168,
+        "p_method": "monte_carlo_ties",
+        "p_normal": 0.0211,
+        "sen_slope_m_per_yr": 0.15,
+        "sen_ci95_gilbert": [
+          0.0,
+          0.617
+        ],
+        "verdict": "increasing"
+      }
+    },
+    "dry|location": {
+      "Bahia de Puno": {
+        "n_years": 10,
+        "years": "2011 2013 2014 2015 2016 2017 2018 2019 2022 2024",
+        "S": 18,
+        "tau": 0.4,
+        "p_exact": 0.1302,
+        "p_method": "monte_carlo_ties",
+        "p_normal": 0.1268,
+        "sen_slope_m_per_yr": 0.107,
+        "sen_ci95_gilbert": [
+          -0.054,
+          0.296
+        ],
+        "verdict": "ns"
+      },
+      "Lago Menor": {
+        "n_years": 8,
+        "years": "2011 2013 2015 2017 2018 2019 2022 2024",
+        "S": -6,
+        "tau": -0.214,
+        "p_exact": 0.5484,
+        "p_method": "exact",
+        "p_normal": 0.5362,
+        "sen_slope_m_per_yr": -0.149,
+        "sen_ci95_gilbert": [
+          -0.398,
+          0.49
+        ],
+        "verdict": "ns"
+      },
+      "Lago Mayor": {
+        "n_years": 10,
+        "years": "2011 2013 2014 2015 2016 2017 2018 2019 2022 2024",
+        "S": 13,
+        "tau": 0.289,
+        "p_exact": 0.2912,
+        "p_method": "exact",
+        "p_normal": 0.2831,
+        "sen_slope_m_per_yr": 0.157,
+        "sen_ci95_gilbert": [
+          -0.157,
+          0.517
+        ],
+        "verdict": "ns"
+      }
+    },
+    "dry_wet|raw": {
+      "Bahia de Puno": {
+        "n_years": 11,
+        "years": "2011 2012 2013 2014 2015 2016 2017 2018 2019 2022 2024",
+        "S": 26,
+        "tau": 0.473,
+        "p_exact": 0.0489,
+        "p_method": "monte_carlo_ties",
+        "p_normal": 0.0509,
+        "sen_slope_m_per_yr": 0.135,
+        "sen_ci95_gilbert": [
+          -0.002,
+          0.25
+        ],
+        "verdict": "increasing"
+      },
+      "Lago Menor": {
+        "n_years": 10,
+        "years": "2011 2012 2013 2014 2015 2017 2018 2019 2022 2024",
+        "S": -9,
+        "tau": -0.2,
+        "p_exact": 0.4817,
+        "p_method": "monte_carlo_ties",
+        "p_normal": 0.4707,
+        "sen_slope_m_per_yr": -0.136,
+        "sen_ci95_gilbert": [
+          -0.476,
+          0.268
+        ],
+        "verdict": "ns"
+      },
+      "Lago Mayor": {
+        "n_years": 11,
+        "years": "2011 2012 2013 2014 2015 2016 2017 2018 2019 2022 2024",
+        "S": 19,
+        "tau": 0.345,
+        "p_exact": 0.1414,
+        "p_method": "monte_carlo_ties",
+        "p_normal": 0.1394,
+        "sen_slope_m_per_yr": 0.094,
+        "sen_ci95_gilbert": [
+          0.0,
+          0.5
+        ],
+        "verdict": "ns"
+      }
+    },
+    "dry_wet|location": {
+      "Bahia de Puno": {
+        "n_years": 11,
+        "years": "2011 2012 2013 2014 2015 2016 2017 2018 2019 2022 2024",
+        "S": 15,
+        "tau": 0.273,
+        "p_exact": 0.283,
+        "p_method": "exact",
+        "p_normal": 0.2758,
+        "sen_slope_m_per_yr": 0.079,
+        "sen_ci95_gilbert": [
+          -0.099,
+          0.217
+        ],
+        "verdict": "ns"
+      },
+      "Lago Menor": {
+        "n_years": 10,
+        "years": "2011 2012 2013 2014 2015 2017 2018 2019 2022 2024",
+        "S": -5,
+        "tau": -0.111,
+        "p_exact": 0.7275,
+        "p_method": "exact",
+        "p_normal": 0.7205,
+        "sen_slope_m_per_yr": -0.064,
+        "sen_ci95_gilbert": [
+          -0.236,
+          0.199
+        ],
+        "verdict": "ns"
+      },
+      "Lago Mayor": {
+        "n_years": 11,
+        "years": "2011 2012 2013 2014 2015 2016 2017 2018 2019 2022 2024",
+        "S": 7,
+        "tau": 0.127,
+        "p_exact": 0.6481,
+        "p_method": "exact",
+        "p_normal": 0.6404,
+        "sen_slope_m_per_yr": 0.109,
+        "sen_ci95_gilbert": [
+          -0.26,
+          0.449
+        ],
+        "verdict": "ns"
+      }
+    }
+  },
+  "start_year_sensitivity": [
+    {
+      "series": "dry",
+      "adjust": "location",
+      "zone_label": "Bahia de Puno",
+      "n_distinct_series": 3,
+      "start_years_distinct": "2011 2013 2014",
+      "verdicts": "ns -> ns -> ns",
+      "n_verdict_changes": 0,
+      "stable": true
+    },
+    {
+      "series": "dry",
+      "adjust": "location",
+      "zone_label": "Lago Mayor",
+      "n_distinct_series": 3,
+      "start_years_distinct": "2011 2013 2014",
+      "verdicts": "ns -> increasing -> ns",
+      "n_verdict_changes": 2,
+      "stable": false
+    },
+    {
+      "series": "dry",
+      "adjust": "location",
+      "zone_label": "Lago Menor",
+      "n_distinct_series": 3,
+      "start_years_distinct": "2011 2013 2015",
+      "verdicts": "ns -> ns -> ns",
+      "n_verdict_changes": 0,
+      "stable": true
+    },
+    {
+      "series": "dry",
+      "adjust": "raw",
+      "zone_label": "Bahia de Puno",
+      "n_distinct_series": 3,
+      "start_years_distinct": "2011 2013 2014",
+      "verdicts": "increasing -> increasing -> increasing",
+      "n_verdict_changes": 0,
+      "stable": true
+    },
+    {
+      "series": "dry",
+      "adjust": "raw",
+      "zone_label": "Lago Mayor",
+      "n_distinct_series": 3,
+      "start_years_distinct": "2011 2013 2014",
+      "verdicts": "increasing -> increasing -> increasing",
+      "n_verdict_changes": 0,
+      "stable": true
+    },
+    {
+      "series": "dry",
+      "adjust": "raw",
+      "zone_label": "Lago Menor",
+      "n_distinct_series": 3,
+      "start_years_distinct": "2011 2013 2014",
+      "verdicts": "ns -> ns -> ns",
+      "n_verdict_changes": 0,
+      "stable": true
+    },
+    {
+      "series": "dry_wet",
+      "adjust": "location",
+      "zone_label": "Bahia de Puno",
+      "n_distinct_series": 4,
+      "start_years_distinct": "2011 2012 2013 2014",
+      "verdicts": "ns -> ns -> ns -> ns",
+      "n_verdict_changes": 0,
+      "stable": true
+    },
+    {
+      "series": "dry_wet",
+      "adjust": "location",
+      "zone_label": "Lago Mayor",
+      "n_distinct_series": 4,
+      "start_years_distinct": "2011 2012 2013 2014",
+      "verdicts": "ns -> ns -> increasing -> ns",
+      "n_verdict_changes": 2,
+      "stable": false
+    },
+    {
+      "series": "dry_wet",
+      "adjust": "location",
+      "zone_label": "Lago Menor",
+      "n_distinct_series": 4,
+      "start_years_distinct": "2011 2012 2013 2014",
+      "verdicts": "ns -> ns -> ns -> ns",
+      "n_verdict_changes": 0,
+      "stable": true
+    },
+    {
+      "series": "dry_wet",
+      "adjust": "raw",
+      "zone_label": "Bahia de Puno",
+      "n_distinct_series": 4,
+      "start_years_distinct": "2011 2012 2013 2014",
+      "verdicts": "increasing -> increasing -> increasing -> increasing",
+      "n_verdict_changes": 0,
+      "stable": true
+    },
+    {
+      "series": "dry_wet",
+      "adjust": "raw",
+      "zone_label": "Lago Mayor",
+      "n_distinct_series": 4,
+      "start_years_distinct": "2011 2012 2013 2014",
+      "verdicts": "ns -> ns -> increasing -> increasing",
+      "n_verdict_changes": 1,
+      "stable": false
+    },
+    {
+      "series": "dry_wet",
+      "adjust": "raw",
+      "zone_label": "Lago Menor",
+      "n_distinct_series": 4,
+      "start_years_distinct": "2011 2012 2013 2014",
+      "verdicts": "ns -> ns -> ns -> ns",
+      "n_verdict_changes": 0,
+      "stable": true
+    }
+  ],
+  "survival": {
+    "Bahia de Puno": {
+      "primary": {
+        "verdict": "increasing",
+        "sen_slope": 0.156,
+        "sen_ci95": [
+          0.062,
+          0.322
+        ],
+        "p_exact": 0.0286,
+        "p_normal": 0.0318,
+        "n_years": 10,
+        "years": "2011 2013 2014 2015 2016 2017 2018 2019 2022 2024"
+      },
+      "with_wet_campaign": "increasing",
+      "location_adjusted": "ns",
+      "location_adjusted_with_wet": "ns",
+      "location_adjusted_slope": 0.107,
+      "location_adjusted_ci95": [
+        -0.054,
+        0.296
+      ],
+      "location_adjusted_p_exact": 0.1302,
+      "start_year_verdict_changes_primary": 0,
+      "n_distinct_start_series_primary": 3,
+      "n_tests_total": 14,
+      "n_tests_significant_same_sign_as_primary": 7,
+      "survives_all": false
+    },
+    "Lago Menor": {
+      "primary": {
+        "verdict": "ns",
+        "sen_slope": -0.162,
+        "sen_ci95": [
+          -0.529,
+          0.5
+        ],
+        "p_exact": 0.5405,
+        "p_normal": 0.5294,
+        "n_years": 9,
+        "years": "2011 2013 2014 2015 2017 2018 2019 2022 2024"
+      },
+      "with_wet_campaign": "ns",
+      "location_adjusted": "ns",
+      "location_adjusted_with_wet": "ns",
+      "location_adjusted_slope": -0.149,
+      "location_adjusted_ci95": [
+        -0.398,
+        0.49
+      ],
+      "location_adjusted_p_exact": 0.5484,
+      "start_year_verdict_changes_primary": 0,
+      "n_distinct_start_series_primary": 3,
+      "n_tests_total": 14,
+      "n_tests_significant_same_sign_as_primary": null,
+      "survives_all": false
+    },
+    "Lago Mayor": {
+      "primary": {
+        "verdict": "increasing",
+        "sen_slope": 0.15,
+        "sen_ci95": [
+          0.0,
+          0.617
+        ],
+        "p_exact": 0.0168,
+        "p_normal": 0.0211,
+        "n_years": 10,
+        "years": "2011 2013 2014 2015 2016 2017 2018 2019 2022 2024"
+      },
+      "with_wet_campaign": "ns",
+      "location_adjusted": "ns",
+      "location_adjusted_with_wet": "ns",
+      "location_adjusted_slope": 0.157,
+      "location_adjusted_ci95": [
+        -0.157,
+        0.517
+      ],
+      "location_adjusted_p_exact": 0.2912,
+      "start_year_verdict_changes_primary": 0,
+      "n_distinct_start_series_primary": 3,
+      "n_tests_total": 14,
+      "n_tests_significant_same_sign_as_primary": 7,
+      "survives_all": false
+    }
+  },
+  "summary": {
+    "significant_primary": [
+      "Bahia de Puno",
+      "Lago Mayor"
+    ],
+    "robust_to_all_sensitivities": [],
+    "text": "Primary dry-season trends significant (exact MK, P<0.05): Bahia de Puno (+0.156 m/yr, 95% CI +0.062 to +0.322, P=0.029), Lago Mayor (+0.150 m/yr, 95% CI +0.000 to +0.617, P=0.017). Robust to season inclusion, start year and location adjustment: none."
+  }
+}

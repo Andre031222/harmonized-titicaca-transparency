@@ -1,0 +1,280 @@
+{
+  "residual_definition": "predicted - observed Secchi (m), out-of-fold, leave-one-campaign-out RF, FEATURES",
+  "oof_metrics": {
+    "R2": 0.486,
+    "RMSE": 2.038,
+    "MAE": 1.593,
+    "bias": -0.04,
+    "n": 815
+  },
+  "n_locations": 207,
+  "k_primary": 6,
+  "n_perm": 9999,
+  "alpha": 0.05,
+  "nearest_neighbour_km_median": 2.83,
+  "zone_mean_residual": {
+    "Bahia de Puno": {
+      "mean": 1.158,
+      "n_locations": 19
+    },
+    "Lago Menor": {
+      "mean": 0.563,
+      "n_locations": 38
+    },
+    "Lago Mayor": {
+      "mean": 0.068,
+      "n_locations": 150
+    }
+  },
+  "zone_only_r2_of_location_residual": 0.063,
+  "moran_global": {
+    "residual": {
+      "I": 0.1533,
+      "E_I": -0.0049,
+      "z_perm": 4.24,
+      "p_two_sided": 0.0002,
+      "p_one_sided": 0.0002
+    },
+    "zone_demeaned": {
+      "I": 0.0942,
+      "z_perm": 2.65,
+      "p_two_sided": 0.0103,
+      "p_one_sided": 0.0087
+    },
+    "clarity_adjusted": {
+      "I": 0.1853,
+      "p_two_sided": 0.0001,
+      "note": "residual minus its linear fit on location-mean observed Secchi"
+    },
+    "k_sensitivity_residual": {
+      "4": {
+        "I": 0.1499,
+        "p": 0.001
+      },
+      "5": {
+        "I": 0.1626,
+        "p": 0.0002
+      },
+      "6": {
+        "I": 0.1533,
+        "p": 0.0002
+      },
+      "7": {
+        "I": 0.1517,
+        "p": 0.0002
+      },
+      "8": {
+        "I": 0.1359,
+        "p": 0.0004
+      },
+      "10": {
+        "I": 0.1285,
+        "p": 0.0001
+      }
+    },
+    "k_sensitivity_zone_demeaned": {
+      "4": {
+        "I": 0.0883,
+        "p": 0.0391
+      },
+      "5": {
+        "I": 0.1018,
+        "p": 0.009
+      },
+      "6": {
+        "I": 0.0942,
+        "p": 0.0103
+      },
+      "7": {
+        "I": 0.0871,
+        "p": 0.0092
+      },
+      "8": {
+        "I": 0.077,
+        "p": 0.0105
+      },
+      "10": {
+        "I": 0.0684,
+        "p": 0.0144
+      }
+    },
+    "I_range_over_k": [
+      0.1285,
+      0.1626
+    ],
+    "station_id_obsolete": {
+      "n_stations": 143,
+      "I": 0.0953,
+      "p_two_sided": 0.0225
+    }
+  },
+  "correlogram_significant_bands_km": [
+    "0-5",
+    "5-10",
+    "10-20",
+    "40-80"
+  ],
+  "correlogram_significant_bands_km_zone_demeaned": [
+    "5-10",
+    "20-40"
+  ],
+  "variogram": {
+    "residual": {
+      "model": "spherical",
+      "nugget": 1.2539,
+      "sill": 1.8534,
+      "range_km": 36.2,
+      "nugget_sill_ratio": 0.68,
+      "sample_variance": 1.8515
+    },
+    "zone_demeaned": {
+      "model": "spherical",
+      "nugget": 1.3204,
+      "sill": 1.7278,
+      "range_km": 31.5,
+      "nugget_sill_ratio": 0.76,
+      "sample_variance": 1.7341
+    }
+  },
+  "lisa": {
+    "fdr_counts": {
+      "HH": 0,
+      "LL": 0,
+      "HL": 0,
+      "LH": 0
+    },
+    "n_fdr_significant": 0,
+    "n_unadjusted_significant": 40,
+    "expected_by_chance_unadjusted": 10.4,
+    "fdr_by_zone": {
+      "Bahia de Puno": {
+        "HH": 0,
+        "LL": 0,
+        "HL": 0,
+        "LH": 0
+      },
+      "Lago Menor": {
+        "HH": 0,
+        "LL": 0,
+        "HL": 0,
+        "LH": 0
+      },
+      "Lago Mayor": {
+        "HH": 0,
+        "LL": 0,
+        "HL": 0,
+        "LH": 0
+      }
+    },
+    "n_fdr_significant_zone_demeaned": 0
+  },
+  "gi_star": {
+    "n_hot": 0,
+    "n_cold": 0,
+    "by_zone": {
+      "Bahia de Puno": {
+        "hot": 0,
+        "cold": 0
+      },
+      "Lago Menor": {
+        "hot": 0,
+        "cold": 0
+      },
+      "Lago Mayor": {
+        "hot": 0,
+        "cold": 0
+      }
+    }
+  },
+  "shore_distance": {
+    "n_outside_polygon": 0,
+    "polygon_source": "HydroLAKES v1.0, Hylak_id 78 (data/lake_boundary/titicaca.gpkg)",
+    "spearman": {
+      "Lake-wide": {
+        "n": 207,
+        "shore_km_median": 1.75,
+        "rho_signed": -0.252,
+        "p_signed": 0.0002,
+        "rho_abs": -0.085,
+        "p_abs": 0.2226,
+        "rho_zone_demeaned": -0.221,
+        "p_zone_demeaned": 0.0014
+      },
+      "Lake-wide, inside polygon": {
+        "n": 207,
+        "shore_km_median": 1.75,
+        "rho_signed": -0.252,
+        "p_signed": 0.0002,
+        "rho_abs": -0.085,
+        "p_abs": 0.2226,
+        "rho_zone_demeaned": -0.221,
+        "p_zone_demeaned": 0.0014
+      },
+      "Bahia de Puno": {
+        "n": 19,
+        "shore_km_median": 1.85,
+        "rho_signed": 0.342,
+        "p_signed": 0.1517,
+        "rho_abs": 0.151,
+        "p_abs": 0.5375,
+        "rho_zone_demeaned": 0.342,
+        "p_zone_demeaned": 0.1517
+      },
+      "Lago Menor": {
+        "n": 38,
+        "shore_km_median": 1.55,
+        "rho_signed": -0.304,
+        "p_signed": 0.0632,
+        "rho_abs": -0.262,
+        "p_abs": 0.1123,
+        "rho_zone_demeaned": -0.304,
+        "p_zone_demeaned": 0.0632
+      },
+      "Lago Mayor": {
+        "n": 150,
+        "shore_km_median": 2.03,
+        "rho_signed": -0.274,
+        "p_signed": 0.0007,
+        "rho_abs": -0.053,
+        "p_abs": 0.5185,
+        "rho_zone_demeaned": -0.274,
+        "p_zone_demeaned": 0.0007
+      }
+    },
+    "ols_residual_on_zone_and_log_shore": {
+      "signed": {
+        "coef": -0.2634,
+        "se": 0.0756,
+        "p": 0.0006
+      },
+      "abs": {
+        "coef": -0.104,
+        "se": 0.0521,
+        "p": 0.0472
+      },
+      "signed_plus_secchi_mean": {
+        "coef": -0.0456,
+        "se": 0.0604,
+        "p": 0.4508
+      },
+      "abs_plus_secchi_mean": {
+        "coef": -0.0277,
+        "se": 0.0516,
+        "p": 0.5926
+      }
+    },
+    "outside_polygon_rule": "locations falling outside the HydroLAKES outline get shore_km = 0"
+  },
+  "interpretation": {
+    "residual_spatial_structure": true,
+    "explained_by_zone": false,
+    "within_zone_structure": true,
+    "range_km": 36.2,
+    "shore_effect_lake_wide": true,
+    "shore_effect_after_zone": true,
+    "shore_effect_after_zone_and_clarity": false,
+    "clarity_adjusted_moran_significant": true,
+    "text": "Location-mean residuals are positively autocorrelated (Moran I = 0.153, k=6, permutation P = 0.0002; I = 0.129-0.163 over k = 4-10). After removing each zone's mean residual, I = 0.094 (P = 0.0103): structure persists within zones. Best-fit spherical variogram: range 36.2 km, nugget/sill 0.68. Removing the regression-to-the-mean component (linear in location-mean Secchi) leaves I = 0.185 (P = 0.0001). Using IMARPE station IDs as the unit (obsolete) gives I = 0.095 (P = 0.022), because IDs average readings from distant sites.",
+    "design_implication": "Residual error is spatially structured at the scale of zones/clusters of sites, so random or location-blocked CV can leak spatial information; spatial-block and campaign x spatial-block designs (p04) are needed to bound the effect."
+  }
+}

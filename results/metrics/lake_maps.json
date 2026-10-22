@@ -1,0 +1,337 @@
+{
+  "design": "Per-pixel median composites of HLS v2.0 over Lake Titicaca, dry season 2024-07-01 to 2024-10-31; Fmask bits 1-4 masked, water bit 5 required; median at 30 m then mean-aggregated to 90 m (UTM 19S); lake polygon (HydroLAKES) shrunk 300 m inward. QC as match-ups (SWIR1 <= 0.02, NDWI > 0). RF make_rf() on RobustScaler features, trained on all 815 match-ups (pooled) or on one sensor; predictions clipped at the Secchi floor.",
+  "period": [
+    "2024-07-01",
+    "2024-10-31"
+  ],
+  "scale_m": 90,
+  "shrink_m": 300,
+  "granules": {
+    "LS": {
+      "collection": "NASA/HLS/HLSL30/v002",
+      "n_granules": 161
+    },
+    "S2": {
+      "collection": "NASA/HLS/HLSS30/v002",
+      "n_granules": 168
+    }
+  },
+  "training_n": {
+    "pooled": 815,
+    "LS_only": 493,
+    "S2_only": 322
+  },
+  "training_secchi_range_m": [
+    1.5,
+    16.5
+  ],
+  "lake_pixels": 909140,
+  "lake_area_km2": 7364.0,
+  "coverage": {
+    "LS": {
+      "lake_pixels_with_data": 903678,
+      "pixels_pass_qc": 883323,
+      "pct_of_lake_pixels_pass_qc": 97.2,
+      "area_pass_qc_km2": 7155.0,
+      "qc_fail_pixels": 20355,
+      "n_clear_obs_median": 13.0,
+      "n_clear_obs_iqr": [
+        12.0,
+        21.0
+      ],
+      "pct_pixels_outside_training_range": 1.3
+    },
+    "S2": {
+      "lake_pixels_with_data": 905702,
+      "pixels_pass_qc": 883772,
+      "pct_of_lake_pixels_pass_qc": 97.2,
+      "area_pass_qc_km2": 7159.0,
+      "qc_fail_pixels": 21930,
+      "n_clear_obs_median": 21.0,
+      "n_clear_obs_iqr": [
+        20.0,
+        23.0
+      ],
+      "pct_pixels_outside_training_range": 1.5
+    }
+  },
+  "maps": {
+    "LS_pooled": {
+      "n_pixels": 883323,
+      "mean": 9.742,
+      "median": 10.483,
+      "p05": 4.793,
+      "p95": 12.319,
+      "pct_above_training_max": 0.0
+    },
+    "S2_pooled": {
+      "n_pixels": 883772,
+      "mean": 10.022,
+      "median": 10.931,
+      "p05": 4.614,
+      "p95": 12.368,
+      "pct_above_training_max": 0.0
+    },
+    "LS_single": {
+      "n_pixels": 883323,
+      "mean": 9.81,
+      "median": 10.526,
+      "p05": 4.963,
+      "p95": 12.452,
+      "pct_above_training_max": 0.0
+    },
+    "S2_single": {
+      "n_pixels": 883772,
+      "mean": 9.961,
+      "median": 10.783,
+      "p05": 4.444,
+      "p95": 12.733,
+      "pct_above_training_max": 0.0
+    }
+  },
+  "difference_S2_minus_LS": {
+    "pooled": {
+      "n_pixels_both": 882837,
+      "mean": 0.283,
+      "sd": 1.021,
+      "median": 0.24,
+      "iqr": [
+        -0.377,
+        0.24,
+        0.922
+      ],
+      "p05_p95": [
+        -1.337,
+        2.026
+      ],
+      "mean_abs": 0.82,
+      "pct_abs_gt_marginal_halfwidth90": 0.25,
+      "pct_abs_gt_mondrian_bin_halfwidth90": 0.19,
+      "pct_abs_gt_1m": 31.7,
+      "pct_abs_gt_2m": 6.6,
+      "pct_positive": 59.9
+    },
+    "single": {
+      "n_pixels_both": 882837,
+      "mean": 0.155,
+      "sd": 1.161,
+      "median": 0.075,
+      "iqr": [
+        -0.623,
+        0.075,
+        0.889
+      ],
+      "p05_p95": [
+        -1.657,
+        2.223
+      ],
+      "mean_abs": 0.918,
+      "pct_abs_gt_marginal_halfwidth90": 0.33,
+      "pct_abs_gt_mondrian_bin_halfwidth90": 0.18,
+      "pct_abs_gt_1m": 36.8,
+      "pct_abs_gt_2m": 9.5,
+      "pct_positive": 52.7
+    }
+  },
+  "pearson_r_LS_vs_S2_pooled_maps": 0.908,
+  "halfwidth90_m": {
+    "marginal_split": 3.494,
+    "marginal_mondrian": 3.457,
+    "mondrian_by_predicted_bin": {
+      "<5": 3.364,
+      "5-7.5": 3.414,
+      "7.5-10": 3.228,
+      "10-12.5": 3.677,
+      ">12.5": 3.754
+    },
+    "note": "Half-width = mean 90 % interval width / 2 from p07 (leave-one-campaign-out conformal); per-pixel interval = prediction +/- half-width of its predicted-Secchi bin."
+  },
+  "zones": {
+    "BAHIA PUNO": {
+      "LS_pooled": {
+        "mean": 8.349,
+        "median": 8.827,
+        "n": 28915
+      },
+      "S2_pooled": {
+        "mean": 8.698,
+        "median": 9.534,
+        "n": 28805
+      },
+      "LS_single": {
+        "mean": 8.434,
+        "median": 9.195,
+        "n": 28915
+      },
+      "S2_single": {
+        "mean": 8.482,
+        "median": 9.419,
+        "n": 28805
+      },
+      "diff_pooled": {
+        "mean": 0.344,
+        "median": 0.177,
+        "n": 28671
+      },
+      "diff_single": {
+        "mean": 0.046,
+        "median": -0.108,
+        "n": 28671
+      },
+      "field_2024": {
+        "mean": 8.4,
+        "median": 9.0,
+        "n": 5
+      }
+    },
+    "LAGO MENOR": {
+      "LS_pooled": {
+        "mean": 5.171,
+        "median": 5.297,
+        "n": 126814
+      },
+      "S2_pooled": {
+        "mean": 5.097,
+        "median": 5.049,
+        "n": 127068
+      },
+      "LS_single": {
+        "mean": 5.257,
+        "median": 5.369,
+        "n": 126814
+      },
+      "S2_single": {
+        "mean": 5.122,
+        "median": 5.008,
+        "n": 127068
+      },
+      "diff_pooled": {
+        "mean": -0.074,
+        "median": -0.137,
+        "n": 126716
+      },
+      "diff_single": {
+        "mean": -0.133,
+        "median": -0.263,
+        "n": 126716
+      },
+      "field_2024": {
+        "mean": 4.423,
+        "median": 4.0,
+        "n": 13
+      }
+    },
+    "LAGO MAYOR": {
+      "LS_pooled": {
+        "mean": 10.594,
+        "median": 10.676,
+        "n": 727594
+      },
+      "S2_pooled": {
+        "mean": 10.934,
+        "median": 11.1,
+        "n": 727899
+      },
+      "LS_single": {
+        "mean": 10.658,
+        "median": 10.75,
+        "n": 727594
+      },
+      "S2_single": {
+        "mean": 10.864,
+        "median": 10.973,
+        "n": 727899
+      },
+      "diff_pooled": {
+        "mean": 0.343,
+        "median": 0.352,
+        "n": 727450
+      },
+      "diff_single": {
+        "mean": 0.21,
+        "median": 0.185,
+        "n": 727450
+      },
+      "field_2024": {
+        "mean": 10.512,
+        "median": 10.75,
+        "n": 42
+      }
+    }
+  },
+  "nearest_location_distance_km": {
+    "median": 3.2,
+    "max": 15.3
+  },
+  "field_2024": {
+    "n_readings": 60,
+    "dates": [
+      "2024-08-21",
+      "2024-09-02"
+    ],
+    "sample": "mean of valid 90 m pixels in a 3 x 3 window (270 m) around each reading",
+    "metrics": {
+      "all_campaigns": {
+        "LS_pooled": {
+          "R2": 0.721,
+          "RMSE": 1.761,
+          "MAE": 1.412,
+          "bias": -0.409,
+          "n": 57
+        },
+        "S2_pooled": {
+          "R2": 0.76,
+          "RMSE": 1.633,
+          "MAE": 1.343,
+          "bias": 0.025,
+          "n": 57
+        },
+        "LS_single": {
+          "R2": 0.715,
+          "RMSE": 1.779,
+          "MAE": 1.435,
+          "bias": -0.326,
+          "n": 57
+        },
+        "S2_single": {
+          "R2": 0.759,
+          "RMSE": 1.635,
+          "MAE": 1.368,
+          "bias": -0.063,
+          "n": 57
+        }
+      },
+      "without_2024": {
+        "LS_pooled": {
+          "R2": 0.59,
+          "RMSE": 2.135,
+          "MAE": 1.743,
+          "bias": -0.681,
+          "n": 57
+        },
+        "S2_pooled": {
+          "R2": 0.676,
+          "RMSE": 1.898,
+          "MAE": 1.548,
+          "bias": 0.109,
+          "n": 57
+        },
+        "LS_single": {
+          "R2": 0.593,
+          "RMSE": 2.126,
+          "MAE": 1.722,
+          "bias": -0.569,
+          "n": 57
+        },
+        "S2_single": {
+          "R2": 0.605,
+          "RMSE": 2.095,
+          "MAE": 1.725,
+          "bias": -0.304,
+          "n": 57
+        }
+      }
+    },
+    "note": "'all_campaigns' models include the 2024 match-ups in training (not independent); 'without_2024' models exclude the 2024 campaign (out-of-campaign check)."
+  }
+}

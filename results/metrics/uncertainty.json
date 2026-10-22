@@ -1,0 +1,1019 @@
+{
+  "design": "Leave-one-campaign-out (9 folds). Point prediction: RF fitted on the 8 training campaigns. Calibration: CV+/cross-conformal-style inner leave-one-campaign-out on the training campaigns, so every calibration residual comes from a model that did not see its campaign. Finite-sample quantile ceil((n+1)(1-a))/n.",
+  "point_model": "make_rf() (500 trees) for the outer fit; inner fits use n_estimators=300 for speed; no feature scaling (tree models are invariant to the per-feature affine RobustScaler).",
+  "cqr_model": "GradientBoostingRegressor(loss=quantile, 300 trees, depth 3, lr 0.05)",
+  "n": 815,
+  "n_campaigns": 9,
+  "calibration_n_per_fold": {
+    "min": 695,
+    "max": 803
+  },
+  "point_prediction_metrics": {
+    "R2": 0.486,
+    "RMSE": 2.038,
+    "MAE": 1.593,
+    "bias": -0.04,
+    "n": 815
+  },
+  "point_prediction_R2_ci": [
+    0.326,
+    0.567
+  ],
+  "marginal": {
+    "split": {
+      "50": {
+        "coverage": 0.4994,
+        "ci": [
+          0.4315,
+          0.584
+        ],
+        "calibration_error": -0.0006,
+        "mean_width_m": 2.551,
+        "median_width_m": 2.584
+      },
+      "80": {
+        "coverage": 0.8061,
+        "ci": [
+          0.7101,
+          0.898
+        ],
+        "calibration_error": 0.0061,
+        "mean_width_m": 5.364,
+        "median_width_m": 5.391
+      },
+      "90": {
+        "coverage": 0.8957,
+        "ci": [
+          0.8204,
+          0.9572
+        ],
+        "calibration_error": -0.0043,
+        "mean_width_m": 6.989,
+        "median_width_m": 7.057
+      },
+      "95": {
+        "coverage": 0.9448,
+        "ci": [
+          0.8989,
+          0.9812
+        ],
+        "calibration_error": -0.0052,
+        "mean_width_m": 8.427,
+        "median_width_m": 8.518
+      }
+    },
+    "mondrian": {
+      "50": {
+        "coverage": 0.508,
+        "ci": [
+          0.4358,
+          0.5906
+        ],
+        "calibration_error": 0.008,
+        "mean_width_m": 2.55,
+        "median_width_m": 2.442
+      },
+      "80": {
+        "coverage": 0.7877,
+        "ci": [
+          0.686,
+          0.8863
+        ],
+        "calibration_error": -0.0123,
+        "mean_width_m": 5.308,
+        "median_width_m": 5.21
+      },
+      "90": {
+        "coverage": 0.8859,
+        "ci": [
+          0.8021,
+          0.9522
+        ],
+        "calibration_error": -0.0141,
+        "mean_width_m": 6.913,
+        "median_width_m": 6.746
+      },
+      "95": {
+        "coverage": 0.9374,
+        "ci": [
+          0.8776,
+          0.9805
+        ],
+        "calibration_error": -0.0126,
+        "mean_width_m": 8.41,
+        "median_width_m": 8.464
+      }
+    },
+    "cqr": {
+      "50": {
+        "coverage": 0.5117,
+        "ci": [
+          0.455,
+          0.5806
+        ],
+        "calibration_error": 0.0117,
+        "mean_width_m": 2.579,
+        "median_width_m": 2.418
+      },
+      "80": {
+        "coverage": 0.7963,
+        "ci": [
+          0.7059,
+          0.8864
+        ],
+        "calibration_error": -0.0037,
+        "mean_width_m": 5.536,
+        "median_width_m": 5.523
+      },
+      "90": {
+        "coverage": 0.8933,
+        "ci": [
+          0.8054,
+          0.9635
+        ],
+        "calibration_error": -0.0067,
+        "mean_width_m": 7.473,
+        "median_width_m": 7.442
+      },
+      "95": {
+        "coverage": 0.9534,
+        "ci": [
+          0.8801,
+          0.9965
+        ],
+        "calibration_error": 0.0034,
+        "mean_width_m": 10.204,
+        "median_width_m": 10.259
+      }
+    }
+  },
+  "coverage90_by_measured_bin": {
+    "split": {
+      "<5": {
+        "n": 48,
+        "coverage": 0.75,
+        "ci": [
+          0.4332,
+          0.8636
+        ],
+        "mean_width": 7.076
+      },
+      "5-7.5": {
+        "n": 170,
+        "coverage": 0.9235,
+        "ci": [
+          0.8421,
+          0.9912
+        ],
+        "mean_width": 6.966
+      },
+      "7.5-10": {
+        "n": 238,
+        "coverage": 0.9664,
+        "ci": [
+          0.921,
+          0.9951
+        ],
+        "mean_width": 7.063
+      },
+      "10-12.5": {
+        "n": 260,
+        "coverage": 0.9654,
+        "ci": [
+          0.9314,
+          0.9928
+        ],
+        "mean_width": 6.996
+      },
+      ">12.5": {
+        "n": 99,
+        "coverage": 0.5657,
+        "ci": [
+          0.4015,
+          0.8393
+        ],
+        "mean_width": 6.793
+      }
+    },
+    "mondrian": {
+      "<5": {
+        "n": 48,
+        "coverage": 0.75,
+        "ci": [
+          0.4332,
+          0.8636
+        ],
+        "mean_width": 6.785
+      },
+      "5-7.5": {
+        "n": 170,
+        "coverage": 0.9176,
+        "ci": [
+          0.8466,
+          0.9762
+        ],
+        "mean_width": 6.757
+      },
+      "7.5-10": {
+        "n": 238,
+        "coverage": 0.9706,
+        "ci": [
+          0.9337,
+          0.9951
+        ],
+        "mean_width": 6.93
+      },
+      "10-12.5": {
+        "n": 260,
+        "coverage": 0.9577,
+        "ci": [
+          0.913,
+          0.9928
+        ],
+        "mean_width": 7.095
+      },
+      ">12.5": {
+        "n": 99,
+        "coverage": 0.5051,
+        "ci": [
+          0.3312,
+          0.7581
+        ],
+        "mean_width": 6.719
+      }
+    },
+    "cqr": {
+      "<5": {
+        "n": 48,
+        "coverage": 0.5833,
+        "ci": [
+          0.2917,
+          0.75
+        ],
+        "mean_width": 6.58
+      },
+      "5-7.5": {
+        "n": 170,
+        "coverage": 0.9412,
+        "ci": [
+          0.8811,
+          1.0
+        ],
+        "mean_width": 7.247
+      },
+      "7.5-10": {
+        "n": 238,
+        "coverage": 0.979,
+        "ci": [
+          0.9437,
+          1.0
+        ],
+        "mean_width": 7.563
+      },
+      "10-12.5": {
+        "n": 260,
+        "coverage": 0.9846,
+        "ci": [
+          0.9638,
+          1.0
+        ],
+        "mean_width": 7.787
+      },
+      ">12.5": {
+        "n": 99,
+        "coverage": 0.5152,
+        "ci": [
+          0.2614,
+          0.9032
+        ],
+        "mean_width": 7.256
+      }
+    }
+  },
+  "coverage90_by_predicted_bin": {
+    "split": {
+      "<5": {
+        "n": 28,
+        "coverage": 0.8929,
+        "ci": [
+          0.7857,
+          1.0
+        ],
+        "mean_width": 6.774
+      },
+      "5-7.5": {
+        "n": 162,
+        "coverage": 0.9074,
+        "ci": [
+          0.8564,
+          0.9697
+        ],
+        "mean_width": 7.011
+      },
+      "7.5-10": {
+        "n": 290,
+        "coverage": 0.931,
+        "ci": [
+          0.8938,
+          0.9642
+        ],
+        "mean_width": 7.049
+      },
+      "10-12.5": {
+        "n": 314,
+        "coverage": 0.8662,
+        "ci": [
+          0.7287,
+          0.9739
+        ],
+        "mean_width": 6.95
+      },
+      ">12.5": {
+        "n": 21,
+        "coverage": 0.7619,
+        "ci": [
+          0.7333,
+          0.8571
+        ],
+        "mean_width": 6.874
+      }
+    },
+    "mondrian": {
+      "<5": {
+        "n": 28,
+        "coverage": 0.8929,
+        "ci": [
+          0.7857,
+          1.0
+        ],
+        "mean_width": 6.727
+      },
+      "5-7.5": {
+        "n": 162,
+        "coverage": 0.9074,
+        "ci": [
+          0.8564,
+          0.9697
+        ],
+        "mean_width": 6.828
+      },
+      "7.5-10": {
+        "n": 290,
+        "coverage": 0.9034,
+        "ci": [
+          0.8489,
+          0.9506
+        ],
+        "mean_width": 6.457
+      },
+      "10-12.5": {
+        "n": 314,
+        "coverage": 0.8631,
+        "ci": [
+          0.6988,
+          0.9796
+        ],
+        "mean_width": 7.354
+      },
+      ">12.5": {
+        "n": 21,
+        "coverage": 0.8095,
+        "ci": [
+          0.7692,
+          0.8571
+        ],
+        "mean_width": 7.508
+      }
+    },
+    "cqr": {
+      "<5": {
+        "n": 28,
+        "coverage": 0.9643,
+        "ci": [
+          0.8261,
+          1.0
+        ],
+        "mean_width": 7.462
+      },
+      "5-7.5": {
+        "n": 162,
+        "coverage": 0.8642,
+        "ci": [
+          0.7853,
+          0.958
+        ],
+        "mean_width": 6.958
+      },
+      "7.5-10": {
+        "n": 290,
+        "coverage": 0.9483,
+        "ci": [
+          0.902,
+          0.9823
+        ],
+        "mean_width": 7.435
+      },
+      "10-12.5": {
+        "n": 314,
+        "coverage": 0.8439,
+        "ci": [
+          0.6607,
+          0.9759
+        ],
+        "mean_width": 7.693
+      },
+      ">12.5": {
+        "n": 21,
+        "coverage": 1.0,
+        "ci": [
+          1.0,
+          1.0
+        ],
+        "mean_width": 8.726
+      }
+    }
+  },
+  "coverage90_by_zone": {
+    "split": {
+      "Bahia de Puno": {
+        "n": 91,
+        "coverage": 0.9341,
+        "ci": [
+          0.8605,
+          0.9912
+        ],
+        "mean_width": 6.985
+      },
+      "Lago Mayor": {
+        "n": 586,
+        "coverage": 0.884,
+        "ci": [
+          0.7871,
+          0.9571
+        ],
+        "mean_width": 7.002
+      },
+      "Lago Menor": {
+        "n": 138,
+        "coverage": 0.9203,
+        "ci": [
+          0.869,
+          1.0
+        ],
+        "mean_width": 6.938
+      }
+    },
+    "mondrian": {
+      "Bahia de Puno": {
+        "n": 91,
+        "coverage": 0.9231,
+        "ci": [
+          0.837,
+          0.9912
+        ],
+        "mean_width": 6.673
+      },
+      "Lago Mayor": {
+        "n": 586,
+        "coverage": 0.872,
+        "ci": [
+          0.7621,
+          0.9502
+        ],
+        "mean_width": 6.998
+      },
+      "Lago Menor": {
+        "n": 138,
+        "coverage": 0.9203,
+        "ci": [
+          0.869,
+          1.0
+        ],
+        "mean_width": 6.707
+      }
+    },
+    "cqr": {
+      "Bahia de Puno": {
+        "n": 91,
+        "coverage": 0.9011,
+        "ci": [
+          0.7894,
+          0.9898
+        ],
+        "mean_width": 7.12
+      },
+      "Lago Mayor": {
+        "n": 586,
+        "coverage": 0.8908,
+        "ci": [
+          0.7616,
+          0.9747
+        ],
+        "mean_width": 7.609
+      },
+      "Lago Menor": {
+        "n": 138,
+        "coverage": 0.8986,
+        "ci": [
+          0.7806,
+          1.0
+        ],
+        "mean_width": 7.13
+      }
+    }
+  },
+  "coverage90_by_campaign": {
+    "split": {
+      "2013": {
+        "n": 12,
+        "coverage": 0.9167,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 6.998
+      },
+      "2014": {
+        "n": 64,
+        "coverage": 0.9844,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.129
+      },
+      "2015": {
+        "n": 107,
+        "coverage": 0.9813,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.334
+      },
+      "2016": {
+        "n": 106,
+        "coverage": 0.9057,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.057
+      },
+      "2017": {
+        "n": 106,
+        "coverage": 0.9717,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.004
+      },
+      "2018": {
+        "n": 97,
+        "coverage": 0.9381,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.118
+      },
+      "2019": {
+        "n": 97,
+        "coverage": 0.8144,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 6.651
+      },
+      "2022": {
+        "n": 106,
+        "coverage": 0.6792,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 6.484
+      },
+      "2024": {
+        "n": 120,
+        "coverage": 0.9167,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.152
+      }
+    },
+    "mondrian": {
+      "2013": {
+        "n": 12,
+        "coverage": 0.9167,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.162
+      },
+      "2014": {
+        "n": 64,
+        "coverage": 0.9688,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 6.949
+      },
+      "2015": {
+        "n": 107,
+        "coverage": 0.9813,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.26
+      },
+      "2016": {
+        "n": 106,
+        "coverage": 0.9245,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.03
+      },
+      "2017": {
+        "n": 106,
+        "coverage": 0.9717,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 6.953
+      },
+      "2018": {
+        "n": 97,
+        "coverage": 0.9072,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.006
+      },
+      "2019": {
+        "n": 97,
+        "coverage": 0.8041,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 6.654
+      },
+      "2022": {
+        "n": 106,
+        "coverage": 0.6415,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 6.285
+      },
+      "2024": {
+        "n": 120,
+        "coverage": 0.9083,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.107
+      }
+    },
+    "cqr": {
+      "2013": {
+        "n": 12,
+        "coverage": 1.0,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 8.025
+      },
+      "2014": {
+        "n": 64,
+        "coverage": 0.9844,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.664
+      },
+      "2015": {
+        "n": 107,
+        "coverage": 0.9907,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.451
+      },
+      "2016": {
+        "n": 106,
+        "coverage": 0.8774,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.106
+      },
+      "2017": {
+        "n": 106,
+        "coverage": 0.9906,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 8.217
+      },
+      "2018": {
+        "n": 97,
+        "coverage": 0.9278,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.641
+      },
+      "2019": {
+        "n": 97,
+        "coverage": 0.8969,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.537
+      },
+      "2022": {
+        "n": 106,
+        "coverage": 0.6226,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 6.986
+      },
+      "2024": {
+        "n": 120,
+        "coverage": 0.8833,
+        "ci": [
+          null,
+          null
+        ],
+        "mean_width": 7.246
+      }
+    }
+  },
+  "coverage90_campaign_range": {
+    "split": [
+      0.6792,
+      0.9844
+    ],
+    "mondrian": [
+      0.6415,
+      0.9813
+    ],
+    "cqr": [
+      0.6226,
+      1.0
+    ]
+  },
+  "mondrian_bins": {
+    "bins_m": [
+      "<5",
+      "5-7.5",
+      "7.5-10",
+      "10-12.5",
+      ">12.5"
+    ],
+    "min_residuals_per_bin": 30,
+    "per_fold": [
+      {
+        "held_out": "2013",
+        "n_cal": 803,
+        "cal_counts": {
+          "<5": 28,
+          "5-7.5": 156,
+          "7.5-10": 285,
+          "10-12.5": 313,
+          ">12.5": 21
+        },
+        "groups": [
+          "<5+5-7.5",
+          "7.5-10",
+          "10-12.5+>12.5"
+        ],
+        "merges": [
+          ">12.5 (n=21) -> 10-12.5",
+          "<5 (n=28) -> 5-7.5"
+        ]
+      },
+      {
+        "held_out": "2014",
+        "n_cal": 751,
+        "cal_counts": {
+          "<5": 27,
+          "5-7.5": 163,
+          "7.5-10": 252,
+          "10-12.5": 289,
+          ">12.5": 20
+        },
+        "groups": [
+          "<5+5-7.5",
+          "7.5-10",
+          "10-12.5+>12.5"
+        ],
+        "merges": [
+          ">12.5 (n=20) -> 10-12.5",
+          "<5 (n=27) -> 5-7.5"
+        ]
+      },
+      {
+        "held_out": "2015",
+        "n_cal": 708,
+        "cal_counts": {
+          "<5": 23,
+          "5-7.5": 149,
+          "7.5-10": 206,
+          "10-12.5": 311,
+          ">12.5": 19
+        },
+        "groups": [
+          "<5+5-7.5",
+          "7.5-10",
+          "10-12.5+>12.5"
+        ],
+        "merges": [
+          ">12.5 (n=19) -> 10-12.5",
+          "<5 (n=23) -> 5-7.5"
+        ]
+      },
+      {
+        "held_out": "2016",
+        "n_cal": 709,
+        "cal_counts": {
+          "<5": 25,
+          "5-7.5": 150,
+          "7.5-10": 238,
+          "10-12.5": 271,
+          ">12.5": 25
+        },
+        "groups": [
+          "<5+5-7.5",
+          "7.5-10",
+          "10-12.5+>12.5"
+        ],
+        "merges": [
+          "<5 (n=25) -> 5-7.5",
+          ">12.5 (n=25) -> 10-12.5"
+        ]
+      },
+      {
+        "held_out": "2017",
+        "n_cal": 709,
+        "cal_counts": {
+          "<5": 26,
+          "5-7.5": 130,
+          "7.5-10": 273,
+          "10-12.5": 260,
+          ">12.5": 20
+        },
+        "groups": [
+          "<5+5-7.5",
+          "7.5-10",
+          "10-12.5+>12.5"
+        ],
+        "merges": [
+          ">12.5 (n=20) -> 10-12.5",
+          "<5 (n=26) -> 5-7.5"
+        ]
+      },
+      {
+        "held_out": "2018",
+        "n_cal": 718,
+        "cal_counts": {
+          "<5": 25,
+          "5-7.5": 140,
+          "7.5-10": 274,
+          "10-12.5": 266,
+          ">12.5": 13
+        },
+        "groups": [
+          "<5+5-7.5",
+          "7.5-10",
+          "10-12.5+>12.5"
+        ],
+        "merges": [
+          ">12.5 (n=13) -> 10-12.5",
+          "<5 (n=25) -> 5-7.5"
+        ]
+      },
+      {
+        "held_out": "2019",
+        "n_cal": 718,
+        "cal_counts": {
+          "<5": 24,
+          "5-7.5": 162,
+          "7.5-10": 230,
+          "10-12.5": 289,
+          ">12.5": 13
+        },
+        "groups": [
+          "<5+5-7.5",
+          "7.5-10",
+          "10-12.5+>12.5"
+        ],
+        "merges": [
+          ">12.5 (n=13) -> 10-12.5",
+          "<5 (n=24) -> 5-7.5"
+        ]
+      },
+      {
+        "held_out": "2022",
+        "n_cal": 709,
+        "cal_counts": {
+          "<5": 17,
+          "5-7.5": 154,
+          "7.5-10": 311,
+          "10-12.5": 227,
+          ">12.5": 0
+        },
+        "groups": [
+          "<5+5-7.5",
+          "7.5-10",
+          "10-12.5+>12.5"
+        ],
+        "merges": [
+          ">12.5 (n=0) -> 10-12.5",
+          "<5 (n=17) -> 5-7.5"
+        ]
+      },
+      {
+        "held_out": "2024",
+        "n_cal": 695,
+        "cal_counts": {
+          "<5": 8,
+          "5-7.5": 160,
+          "7.5-10": 261,
+          "10-12.5": 250,
+          ">12.5": 16
+        },
+        "groups": [
+          "<5+5-7.5",
+          "7.5-10",
+          "10-12.5+>12.5"
+        ],
+        "merges": [
+          "<5 (n=8) -> 5-7.5",
+          ">12.5 (n=16) -> 10-12.5"
+        ]
+      }
+    ]
+  },
+  "measured_extremes": {
+    "<5": {
+      "n": 48,
+      "mean_measured": 3.517,
+      "mean_predicted": 5.803,
+      "mean_bias_pred_minus_obs": 2.286,
+      "coverage_90": {
+        "split": 0.75,
+        "mondrian": 0.75,
+        "cqr": 0.5833
+      }
+    },
+    ">12.5": {
+      "n": 99,
+      "mean_measured": 13.949,
+      "mean_predicted": 10.8,
+      "mean_bias_pred_minus_obs": -3.15,
+      "coverage_90": {
+        "split": 0.5657,
+        "mondrian": 0.5051,
+        "cqr": 0.5152
+      }
+    }
+  },
+  "conditional_on_measured_fails": {
+    "worst_bin_coverage_90": {
+      "split": 0.5657,
+      "mondrian": 0.5051,
+      "cqr": 0.5152
+    },
+    "fails_by_more_than_10pts": {
+      "split": true,
+      "mondrian": true,
+      "cqr": true
+    },
+    "why": "Conformal guarantees are marginal (and, for Mondrian, conditional on the PREDICTED value). The point prediction is biased in the measured extremes (mean pred-obs +2.29 m in <5 m, -3.15 m in >12.5 m), i.e. it compresses them toward the mean, so residuals there exceed the calibration quantile and coverage conditional on the MEASURED value drops."
+  }
+}

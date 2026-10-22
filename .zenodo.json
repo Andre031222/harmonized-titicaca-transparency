@@ -1,0 +1,14 @@
+{
+  "title": "Harmonized Landsat–Sentinel-2 separability over lakes and campaign-level validation of satellite Secchi depth in Lake Titicaca: analysis code",
+  "upload_type": "software",
+  "license": "MIT",
+  "description": "Analysis code, satellite reflectance extracted at each match-up and aggregate results for a study of Landsat 8/9 and Sentinel-2 interchangeability over lake water (NASA HLS v2.0) and of campaign-level validation of Secchi depth retrieval in Lake Titicaca. In-situ data belong to IMARPE and are not included.",
+  "creators": [
+    {"name": "Yana-Yucra, Dina Maribel", "affiliation": "Universidad Nacional del Altiplano", "orcid": "0009-0003-6218-2735"},
+    {"name": "Ibañez-Quispe, Vladimiro", "affiliation": "Universidad Nacional del Altiplano", "orcid": "0000-0002-0277-4945"},
+    {"name": "Yzarra-Tito, Wilfredo Julián", "affiliation": "SENAMHI", "orcid": "0000-0002-7357-5943"},
+    {"name": "Vilca-Solorzano, Richar Andre", "affiliation": "Universidad Nacional del Altiplano", "orcid": "0009-0003-2385-5263"},
+    {"name": "Torres-Cruz, Fred", "affiliation": "Universidad Nacional del Altiplano", "orcid": "0000-0003-0834-6834"}
+  ],
+  "keywords": ["Harmonized Landsat Sentinel-2", "Secchi disk depth", "classifier two-sample test", "blocked cross-validation", "conformal prediction", "Lake Titicaca"]
+}

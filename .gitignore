@@ -1,0 +1,62 @@
+# ---------------------------------------------------------------------------
+# Este repositorio es el CODIGO y los DATOS que acompanan al articulo.
+# El articulo, la correspondencia con la revista y el material de trabajo se
+# quedan en disco pero fuera del control de versiones.
+# ---------------------------------------------------------------------------
+
+# El manuscrito y todo lo que lo rodea: fuente LaTeX, PDF compilado, cover
+# letter, envios anteriores (IJACSA, EMA/Springer, Remote Sensing/MDPI) con sus
+# respuestas a revisores, y las figuras y metricas previas a la auditoria.
+#
+# Un PDF del articulo aqui solo crea confusion sobre cual es la version
+# vigente, y la cover letter es correspondencia con el editor. Compartir el
+# preprint no infringe la politica de Elsevier: es una decision nuestra.
+manuscript/
+
+# Notas internas de trabajo y herramientas de asistencia a la escritura.
+memory/
+.agents/
+skills-lock.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.env
+.env.*
+.venv/
+
+# Datos de campo de IMARPE: pertenecen a IMARPE y NO se redistribuyen.
+# Ningun archivo con valores medidos en campo (Secchi, clorofila, solidos,
+# temperatura, pH, oxigeno), ni medicion por medicion ni como series por zona
+# y anio, entra al repositorio. Se versionan el codigo, la reflectancia
+# satelital (publica) y las metricas del analisis (R2, coberturas, pendientes),
+# que son las cifras que publica el articulo.
+data/insitu/raw/
+data/external_validation/
+data/processed/matchups.csv
+data/processed/analysis_dataset.csv
+data/processed/sr_matchups_raw.csv
+data/processed/insitu_*.csv
+data/processed/*.npy
+data/processed/*.pkl
+# tablas por observacion que llevan el valor medido (las lee R para las figuras)
+results/tidy/
+
+# Modelos entrenados (los regenera el pipeline)
+results/models/*.joblib
+results/models/*.pkl
+results/models/*.pt
+
+# IDE / SO
+*.DS_Store
+Thumbs.db
+logs/
+logs_local/
+
+# Compuestos y mapas de 2024 (se regeneran con p16 desde Earth Engine)
+data/processed/lake_composites/*.tif
+
+# Figuras TIFF a 600 dpi (pesadas; se regeneran con figures/R)
+results/figures_r/*.tiff

@@ -1,0 +1,151 @@
+# ============================================================================
+# figS1_inventory.R -- Inventario de los 828 match-ups HLS (material suplementario)
+#
+# (a) matriz campana x mes de match-ups, con marginales por mes (arriba) y por
+#     campana y sensor (derecha); la epoca de lluvias va sombreada
+# (b) Secchi medido por zona sobre LECTURAS DE CAMPO UNICAS (una por
+#     localizacion y fecha): desde 2016 cada lectura aparece dos veces en los
+#     match-ups (Sentinel-2 y Landsat), y contarla dos veces infla las P de
+#     Kruskal-Wallis y de los Wilcoxon por pares (BH)
+# ============================================================================
+
+source(file.path(local({a <- grep("^--file=", commandArgs(FALSE), value = TRUE)
+  if (length(a)) dirname(normalizePath(sub("^--file=", "", a[1]))) else getwd()}),
+  "theme_titicaca.R"))
+
+dist <- read_tidy("insitu_distribution.csv")
+inv  <- read_tidy("dataset_inventory.csv")
+stopifnot(nrow(dist) == sum(inv$n), sum(dist$sensor == "S2") == sum(inv$n_s2))
+
+MES <- c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+
+# ---------------------------------------------------------------- panel (a) --
+# Matriz anio x mes con sus marginales: totales por mes arriba y por anio y
+# sensor a la derecha. La temporada de lluvias (dic-mar) va sombreada en ambas.
+grid_full <- expand.grid(year = seq(min(dist$year), max(dist$year)),
+                         month = 1:12)
+cov <- dist |>
+  count(year, month, name = "n") |>
+  right_join(grid_full, by = c("year", "month")) |>
+  mutate(n = replace_na(n, 0),
+         mes = factor(MES[month], levels = MES))
+years <- sort(unique(cov$year))
+year_gaps <- cov |> group_by(year) |> summarise(tot = sum(n), .groups = "drop") |>
+  filter(tot == 0)
+WET <- c(1, 2, 3, 12)
+wet_cols <- tibble(x0 = c(0.5, 11.5), x1 = c(3.5, 12.5))
+BLUE_WET <- "#7BA8C4"
+
+heat <- ggplot(cov, aes(mes, factor(year, levels = years))) +
+  geom_tile(aes(fill = ifelse(n > 0, n, NA)), colour = "white", linewidth = 0.7) +
+  geom_rect(data = wet_cols, aes(xmin = x0, xmax = x1, ymin = -Inf, ymax = Inf),
+            inherit.aes = FALSE, fill = BLUE_WET, alpha = 0.16) +
+  annotate("rect", xmin = 0.5, xmax = 12.5,
+           ymin = match(year_gaps$year, years) - 0.5,
+           ymax = match(year_gaps$year, years) + 0.5,
+           fill = ACCENT, alpha = 0.10) +
+  # texto oscuro en las celdas claras para mantener el contraste
+  geom_text(data = filter(cov, n > 0), aes(label = n, colour = n < 0.35 * max(n)),
+            size = 2.2, fontface = "bold") +
+  scale_colour_manual(values = c(`TRUE` = INK, `FALSE` = "white"), guide = "none") +
+  geom_text(data = year_gaps, aes(x = 6.5, y = factor(year, levels = years),
+                                  label = "no campaign"),
+            inherit.aes = FALSE, size = 2.2, colour = ACCENT, fontface = "italic") +
+  scale_fill_gradient(low = "#A8A8A8", high = "#2B2B2B", na.value = "grey96",
+                      guide = "none") +
+  scale_x_discrete(drop = FALSE, labels = function(x) substr(x, 1, 1)) +
+  labs(x = NULL, y = NULL) +
+  theme(panel.grid = element_blank(), axis.line = element_blank(),
+        axis.ticks = element_blank(), plot.margin = margin(0, 0, 2, 2))
+
+# marginal superior: match-ups por mes
+seas2 <- dist |> count(month, name = "n") |>
+  right_join(tibble(month = 1:12), by = "month") |>
+  mutate(n = replace_na(n, 0), mes = factor(MES[month], levels = MES))
+N_TOP <- max(seas2$n)
+top <- ggplot(seas2, aes(mes, n)) +
+  geom_rect(data = wet_cols, aes(xmin = x0, xmax = x1, ymin = -Inf, ymax = Inf),
+            inherit.aes = FALSE, fill = BLUE_WET, alpha = 0.16) +
+  geom_col(fill = INK_2, width = 0.72) +
+  geom_text(data = filter(seas2, n > 0), aes(label = n), vjust = -0.35,
+            size = 2.1, colour = INK) +
+  annotate("text", x = 2, y = 0.62 * N_TOP, label = "wet season:\nno match-ups",
+           size = 2.1, colour = "#3F6F8C", lineheight = 0.95, fontface = "italic") +
+  scale_x_discrete(drop = FALSE) +
+  scale_y_continuous(limits = c(0, 1.18 * N_TOP), breaks = pretty_breaks(3),
+                     expand = expansion(mult = c(0, 0))) +
+  labs(x = NULL, y = "Match-ups", tag = "a") +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.line.x = element_blank(), panel.grid.major.y = element_blank(),
+        axis.title.y = element_text(size = 7), plot.margin = margin(2, 0, 0, 2))
+
+# marginal derecho: match-ups por anio y sensor
+SENS <- c(LS = "Landsat 8/9", S2 = "Sentinel-2")
+ys <- dist |> count(year, sensor) |>
+  mutate(sensor = factor(map_strict(sensor, SENS, "sensor"), levels = rev(SENS))) |>
+  right_join(tibble(year = years), by = "year") |>
+  mutate(n = replace_na(n, 0))
+right <- ggplot(filter(ys, n > 0),
+                aes(n, factor(year, levels = years), fill = sensor)) +
+  geom_col(width = 0.72) +
+  scale_fill_manual(values = PAL_SENSOR, name = NULL,
+                    breaks = unname(SENS)) +
+  scale_y_discrete(drop = FALSE, limits = as.character(years)) +
+  scale_x_continuous(breaks = c(0, 50, 100), expand = expansion(mult = c(0, 0.05))) +
+  labs(x = "Match-ups", y = NULL) +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        axis.line.y = element_blank(), panel.grid.major.y = element_blank(),
+        axis.title.x = element_text(size = 7),
+        legend.position = "inside", legend.position.inside = c(1, 1),
+        legend.justification = c(1, 0), legend.key.size = unit(6, "pt"),
+        legend.text = element_text(size = 6), legend.background = element_blank(),
+        plot.margin = margin(0, 2, 2, 0))
+
+# ---------------------------------------------------------------- panel (b) --
+dup <- dist |> group_by(location, sampling_date) |>
+  summarise(k = n_distinct(secchi), z = n_distinct(zona), .groups = "drop")
+stopifnot(all(dup$k == 1), all(dup$z == 1))
+pc_df <- dist |> distinct(location, sampling_date, .keep_all = TRUE) |>
+  mutate(zone_label = zone_factor(zona))
+cat(sprintf("  lecturas unicas: %d de %d match-ups\n", nrow(pc_df), nrow(dist)))
+kw    <- kruskal.test(secchi ~ zone_label, data = pc_df)$p.value
+means <- pc_df |> group_by(zone_label) |>
+  summarise(txt = sprintf("%.1f \u00b1 %.1f m", mean(secchi), sd(secchi)),
+            .groups = "drop")
+
+brk <- pairwise_bh(pc_df$secchi, pc_df$zone_label,
+                   max(pc_df$secchi) + c(0.8, 2.2, 3.6))
+
+pc <- ggplot(pc_df, aes(zone_label, secchi, colour = zone_label)) +
+  raincloud(point_size = 0.45) +
+  geom_segment(data = brk, aes(x = x1, xend = x2, y = y, yend = y),
+               inherit.aes = FALSE, linewidth = 0.3, colour = INK) +
+  geom_segment(data = brk, aes(x = x1, xend = x1, y = y, yend = y - 0.3),
+               inherit.aes = FALSE, linewidth = 0.3, colour = INK) +
+  geom_segment(data = brk, aes(x = x2, xend = x2, y = y, yend = y - 0.3),
+               inherit.aes = FALSE, linewidth = 0.3, colour = INK) +
+  geom_text(data = brk, aes(x = (x1 + x2) / 2, y = y + 0.1, label = lab),
+            inherit.aes = FALSE, parse = TRUE, vjust = 0, size = 2.1, colour = INK) +
+  geom_text(data = means, aes(zone_label, -0.7, label = txt), inherit.aes = FALSE,
+            size = 2.2, colour = INK, fontface = "bold") +
+  n_labels(pc_df, zone_label, -2) +
+  annotate("text", x = 0.5, y = max(pc_df$secchi) + 5.4, hjust = 0, size = 2.2, colour = INK_2,
+           parse = TRUE, label = paste0('"Kruskal\u2013Wallis, "*', p_fmt(kw))) +
+  scale_colour_manual(values = PAL_ZONE, guide = "none") +
+  scale_x_discrete(labels = function(x) sub(" de ", "\nde ", sub("Lago ", "Lago\n", x))) +
+  scale_y_continuous(limits = c(-2.6, max(pc_df$secchi) + 5.8),
+                     breaks = seq(0, 16, 4)) +
+  labs(x = NULL, y = "Secchi disk depth (m)")
+
+pc <- pc + labs(tag = "b")
+design <- "
+AA#D
+BCCD
+"
+fig <- wrap_plots(A = top, B = heat, C = right, D = pc, design = design) +
+  plot_layout(design = c(area(1, 1, 1, 2), area(2, 1, 2, 2), area(2, 3, 2, 3),
+                         area(1, 4, 2, 4)),
+              widths = c(1, 1.9, 0.62, 1.55), heights = c(0.32, 1)) &
+  theme(plot.tag = element_text(size = 10, face = "bold"))
+save_fig(fig, "figS1_data_inventory", W2, 105)
+cat("figS1 lista\n")

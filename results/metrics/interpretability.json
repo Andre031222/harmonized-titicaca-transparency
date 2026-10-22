@@ -1,0 +1,269 @@
+{
+  "shap_design": "Out-of-fold TreeExplainer SHAP under leave-one-campaign-out (9 folds): each row explained by the RF (make_rf) that did not see its campaign; raw (unscaled) features.",
+  "n": 815,
+  "importance": [
+    {
+      "feature": "B3",
+      "label": "Green",
+      "group": "Green/blue bands and ratios",
+      "mean_abs_shap": 1.1498,
+      "share": 0.3964,
+      "cumulative_share": 0.3964,
+      "rank": 1
+    },
+    {
+      "feature": "B2_B3",
+      "label": "Blue/Green",
+      "group": "Green/blue bands and ratios",
+      "mean_abs_shap": 0.6402,
+      "share": 0.2207,
+      "cumulative_share": 0.6171,
+      "rank": 2
+    },
+    {
+      "feature": "B3_B2",
+      "label": "Green/Blue",
+      "group": "Green/blue bands and ratios",
+      "mean_abs_shap": 0.3557,
+      "share": 0.1226,
+      "cumulative_share": 0.7397,
+      "rank": 3
+    },
+    {
+      "feature": "B11",
+      "label": "SWIR1",
+      "group": "NIR/SWIR",
+      "mean_abs_shap": 0.2333,
+      "share": 0.0804,
+      "cumulative_share": 0.8201,
+      "rank": 4
+    },
+    {
+      "feature": "B4_B3",
+      "label": "Red/Green",
+      "group": "Other (red, NDWI, NDTI, red ratios)",
+      "mean_abs_shap": 0.082,
+      "share": 0.0283,
+      "cumulative_share": 0.8484,
+      "rank": 5
+    },
+    {
+      "feature": "B4",
+      "label": "Red",
+      "group": "Other (red, NDWI, NDTI, red ratios)",
+      "mean_abs_shap": 0.0776,
+      "share": 0.0268,
+      "cumulative_share": 0.8752,
+      "rank": 6
+    },
+    {
+      "feature": "B12",
+      "label": "SWIR2",
+      "group": "NIR/SWIR",
+      "mean_abs_shap": 0.0763,
+      "share": 0.0263,
+      "cumulative_share": 0.9015,
+      "rank": 7
+    },
+    {
+      "feature": "NDTI",
+      "label": "NDTI",
+      "group": "Other (red, NDWI, NDTI, red ratios)",
+      "mean_abs_shap": 0.0725,
+      "share": 0.025,
+      "cumulative_share": 0.9265,
+      "rank": 8
+    },
+    {
+      "feature": "B2_B4",
+      "label": "Blue/Red",
+      "group": "Other (red, NDWI, NDTI, red ratios)",
+      "mean_abs_shap": 0.0647,
+      "share": 0.0223,
+      "cumulative_share": 0.9488,
+      "rank": 9
+    },
+    {
+      "feature": "NDWI",
+      "label": "NDWI",
+      "group": "Other (red, NDWI, NDTI, red ratios)",
+      "mean_abs_shap": 0.0599,
+      "share": 0.0206,
+      "cumulative_share": 0.9694,
+      "rank": 10
+    },
+    {
+      "feature": "B8",
+      "label": "NIR",
+      "group": "NIR/SWIR",
+      "mean_abs_shap": 0.0544,
+      "share": 0.0187,
+      "cumulative_share": 0.9882,
+      "rank": 11
+    },
+    {
+      "feature": "B2",
+      "label": "Blue",
+      "group": "Green/blue bands and ratios",
+      "mean_abs_shap": 0.0344,
+      "share": 0.0118,
+      "cumulative_share": 1.0,
+      "rank": 12
+    }
+  ],
+  "share_by_group": {
+    "Green/blue bands and ratios": 0.7515,
+    "NIR/SWIR": 0.1255,
+    "Other (red, NDWI, NDTI, red ratios)": 0.1229
+  },
+  "leading_feature": {
+    "feature": "B3",
+    "label": "Green",
+    "share": 0.3964
+  },
+  "top3_cumulative_share": 0.7397,
+  "retrievability_design": "matchups.csv product=hls window=10 rows with each variable; RF (make_rf) on the 12 features; leave-one-campaign-out; R2 95% CI by cluster bootstrap over campaigns. No R2 threshold applied.",
+  "retrievability": [
+    {
+      "variable": "secchi",
+      "label": "Water transparency (Secchi)",
+      "unit": "m",
+      "predictors": "12 features (HLS)",
+      "n": 815,
+      "n_campaigns": 9,
+      "R2": 0.486,
+      "R2_lo": 0.326,
+      "R2_hi": 0.567,
+      "RMSE": 2.038,
+      "MAE": 1.593,
+      "bias": -0.04,
+      "insitu_min": 1.5,
+      "insitu_q25": 7.0,
+      "insitu_median": 9.4,
+      "insitu_q75": 11.0,
+      "insitu_max": 16.5,
+      "insitu_sd": 2.845,
+      "pearson_r": null,
+      "pearson_r_lo": null,
+      "pearson_r_hi": null
+    },
+    {
+      "variable": "chl",
+      "label": "Chlorophyll-a",
+      "unit": "mg m-3",
+      "predictors": "12 features (HLS)",
+      "n": 1020,
+      "n_campaigns": 9,
+      "R2": -0.139,
+      "R2_lo": -0.433,
+      "R2_hi": -0.043,
+      "RMSE": 0.829,
+      "MAE": 0.657,
+      "bias": 0.023,
+      "insitu_min": 0.0,
+      "insitu_q25": 0.59,
+      "insitu_median": 1.1,
+      "insitu_q75": 1.7,
+      "insitu_max": 4.58,
+      "insitu_sd": 0.777,
+      "pearson_r": null,
+      "pearson_r_lo": null,
+      "pearson_r_hi": null
+    },
+    {
+      "variable": "tss",
+      "label": "Total suspended solids",
+      "unit": "mg L-1",
+      "predictors": "12 features (HLS)",
+      "n": 944,
+      "n_campaigns": 8,
+      "R2": -0.303,
+      "R2_lo": -1.495,
+      "R2_hi": -0.15,
+      "RMSE": 11.067,
+      "MAE": 8.842,
+      "bias": 0.413,
+      "insitu_min": 0.0,
+      "insitu_q25": 1.75,
+      "insitu_median": 6.33,
+      "insitu_q75": 14.75,
+      "insitu_max": 47.0,
+      "insitu_sd": 9.7,
+      "pearson_r": null,
+      "pearson_r_lo": null,
+      "pearson_r_hi": null
+    },
+    {
+      "variable": "temp_insitu",
+      "label": "Water temperature",
+      "unit": "degC",
+      "predictors": "12 features (HLS)",
+      "n": 1020,
+      "n_campaigns": 9,
+      "R2": 0.011,
+      "R2_lo": -0.276,
+      "R2_hi": 0.11,
+      "RMSE": 0.806,
+      "MAE": 0.63,
+      "bias": -0.014,
+      "insitu_min": 9.9,
+      "insitu_q25": 12.4,
+      "insitu_median": 12.9,
+      "insitu_q75": 13.3,
+      "insitu_max": 14.8,
+      "insitu_sd": 0.811,
+      "pearson_r": null,
+      "pearson_r_lo": null,
+      "pearson_r_hi": null
+    },
+    {
+      "variable": "temp_insitu_B10",
+      "label": "Water temperature (B10 only)",
+      "unit": "degC",
+      "predictors": "HLSL30 B10 TOA brightness temperature",
+      "n": 611,
+      "n_campaigns": 9,
+      "R2": 0.222,
+      "R2_lo": -0.107,
+      "R2_hi": 0.361,
+      "RMSE": 0.691,
+      "MAE": 0.545,
+      "bias": -0.017,
+      "insitu_min": 9.9,
+      "insitu_q25": 12.4,
+      "insitu_median": 12.82,
+      "insitu_q75": 13.3,
+      "insitu_max": 14.8,
+      "insitu_sd": 0.784,
+      "pearson_r": 0.524,
+      "pearson_r_lo": 0.291,
+      "pearson_r_hi": 0.653
+    }
+  ],
+  "thermal": {
+    "n": 611,
+    "n_campaigns": 9,
+    "pearson_r": 0.524,
+    "pearson_r_ci": [
+      0.291,
+      0.653
+    ],
+    "pearson_r_within_campaign": 0.489,
+    "B10_mean_C": 11.13,
+    "B10_sd_C": 0.98,
+    "insitu_mean_C": 12.74,
+    "insitu_sd_C": 0.78,
+    "mean_B10_minus_insitu_C": -1.61,
+    "rf_B10_only": {
+      "R2": 0.222,
+      "RMSE": 0.691,
+      "MAE": 0.545,
+      "bias": -0.017,
+      "n": 611,
+      "R2_ci": [
+        -0.107,
+        0.361
+      ]
+    }
+  }
+}

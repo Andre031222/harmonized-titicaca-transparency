@@ -1,0 +1,64 @@
+{
+  "product": "NASA HLS v2.0 (HLSS30, HLSL30), +-10 d",
+  "n_field_measurements_2013_2024": 713,
+  "n_analysis": 815,
+  "n_qc_excluded": 13,
+  "qc_excluded_by_campaign": {
+    "2013": 12,
+    "2019": 1
+  },
+  "n_s2": 322,
+  "n_ls": 493,
+  "n_events": 506,
+  "n_paired_events": 309,
+  "n_station_ids": 143,
+  "n_locations": 207,
+  "n_sampling_dates": 120,
+  "n_campaigns": 9,
+  "campaigns": [
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2022,
+    2024
+  ],
+  "campaign_span_days_min": 7,
+  "campaign_span_days_max": 27,
+  "campaign_dates_median": 13.0,
+  "station_ids_moving_gt10km": 84,
+  "station_id_max_spread_km": 76.2,
+  "station_ids_in_two_zones": 25,
+  "images_per_matchup_s2": 4.0,
+  "images_per_matchup_ls": 2.0,
+  "months_present": [
+    7,
+    8,
+    9,
+    10
+  ],
+  "secchi_min": 1.5,
+  "secchi_max": 16.5,
+  "secchi_n_unique_values": 69,
+  "secchi_frac_half_metre_multiples": 0.875,
+  "by_zone": {
+    "BAHIA PUNO": {
+      "n": 91,
+      "secchi_mean": 7.14,
+      "secchi_sd": 2.14
+    },
+    "LAGO MENOR": {
+      "n": 138,
+      "secchi_mean": 6.29,
+      "secchi_sd": 2.18
+    },
+    "LAGO MAYOR": {
+      "n": 586,
+      "secchi_mean": 10.16,
+      "secchi_sd": 2.42
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "LS": {
+    "collection": "NASA/HLS/HLSL30/v002",
+    "n_granules": 161
+  },
+  "S2": {
+    "collection": "NASA/HLS/HLSS30/v002",
+    "n_granules": 168
+  }
+}

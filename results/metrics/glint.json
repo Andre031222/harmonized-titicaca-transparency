@@ -1,0 +1,323 @@
+{
+  "definition": "theta_g = arccos(cos SZA cos VZA - sin SZA sin VZA cos(SAA - VAA)); 0 deg = specular",
+  "thresholds_deg": [
+    30,
+    40
+  ],
+  "min_pairs_per_date": 5,
+  "min_dates_test": 8,
+  "pool_cap_per_date": 60,
+  "n_splits": 5,
+  "coverage": {
+    "n_pairs": 93624,
+    "n_pairs_with_glint": 93624,
+    "frac_b3_reproduced": 1.0,
+    "LS_angle_source": {
+      "pixel": 72959,
+      "modeled": 20665
+    },
+    "LS_lakes_modeled": [
+      "Malawi",
+      "Tanganyika",
+      "Taupo",
+      "Titicaca Mayor",
+      "Titicaca Menor",
+      "Victoria"
+    ],
+    "S2_angle_source": {
+      "pixel": 93530,
+      "modeled": 94
+    },
+    "S2_lakes_modeled": [
+      "Malawi",
+      "Tanganyika",
+      "Titicaca Menor",
+      "Victoria"
+    ]
+  },
+  "angle_model_validation": {
+    "LS": {
+      "n_pairs": 72959,
+      "sza_err_median_abs": 0.018,
+      "sza_err_p95_abs": 0.056,
+      "saa_err_median_abs": 0.066,
+      "glint_err_median": 0.159,
+      "glint_err_median_abs": 1.021,
+      "glint_err_p95_abs": 3.456,
+      "glint_err_max_abs": 5.9,
+      "agree_gt30": 0.9681,
+      "agree_gt40": 0.9741
+    },
+    "S2": {
+      "n_pairs": 93530,
+      "sza_err_median_abs": 0.913,
+      "sza_err_p95_abs": 4.563,
+      "saa_err_median_abs": 3.007,
+      "glint_err_median": 0.488,
+      "glint_err_median_abs": 1.647,
+      "glint_err_p95_abs": 5.818,
+      "glint_err_max_abs": 10.457,
+      "agree_gt30": 0.9278,
+      "agree_gt40": 0.9404
+    }
+  },
+  "glint_distribution": {
+    "LS_glint_pct": {
+      "5": 23.0,
+      "25": 31.5,
+      "50": 41.3,
+      "75": 51.4,
+      "95": 68.0
+    },
+    "S2_glint_pct": {
+      "5": 19.2,
+      "25": 29.8,
+      "50": 40.0,
+      "75": 51.4,
+      "95": 67.1
+    },
+    "frac_pairs_both_gt30": 0.688,
+    "frac_pairs_both_gt40": 0.4607
+  },
+  "p12_replication": {
+    "n_lakes": 28,
+    "max_abs_diff_bacc": 0.0
+  },
+  "pooled": {
+    "all": {
+      "n_lakes": 28,
+      "n_lake_dates": 1095,
+      "n": 97100,
+      "chance": 0.5,
+      "accuracy": 0.9025,
+      "balanced_accuracy": 0.9025,
+      "auc": 0.967
+    },
+    "glint_gt_30": {
+      "n_lakes": 28,
+      "n_lake_dates": 788,
+      "n": 67998,
+      "chance": 0.5,
+      "accuracy": 0.9201,
+      "balanced_accuracy": 0.9201,
+      "auc": 0.9758,
+      "size_matched_random": {
+        "n": 85428,
+        "chance": 0.5,
+        "accuracy": 0.9101,
+        "balanced_accuracy": 0.9101,
+        "auc": 0.9703
+      }
+    },
+    "glint_gt_40": {
+      "n_lakes": 28,
+      "n_lake_dates": 509,
+      "n": 44232,
+      "chance": 0.5,
+      "accuracy": 0.9264,
+      "balanced_accuracy": 0.9264,
+      "auc": 0.9787,
+      "size_matched_random": {
+        "n": 66562,
+        "chance": 0.5,
+        "accuracy": 0.9089,
+        "balanced_accuracy": 0.9089,
+        "auc": 0.9704
+      }
+    }
+  },
+  "per_lake_change": {
+    "glint_gt_30": {
+      "n_lakes_tested": 28,
+      "bacc_median_all": 0.91,
+      "bacc_median_low_glint": 0.929,
+      "delta_median": 0.004,
+      "delta_min": -0.062,
+      "delta_max": 0.068,
+      "n_lakes_bacc_ge_0p8": 26,
+      "n_lakes_bacc_lt_0p65": 0
+    },
+    "glint_gt_40": {
+      "n_lakes_tested": 25,
+      "bacc_median_all": 0.91,
+      "bacc_median_low_glint": 0.931,
+      "delta_median": 0.012,
+      "delta_min": -0.127,
+      "delta_max": 0.152,
+      "n_lakes_bacc_ge_0p8": 22,
+      "n_lakes_bacc_lt_0p65": 1
+    }
+  },
+  "spearman_per_lake": {
+    "bacc_vs_glint_LS_median": {
+      "rho": 0.196,
+      "p": 0.318,
+      "n_lakes": 28
+    },
+    "bacc_vs_glint_S2_median": {
+      "rho": 0.123,
+      "p": 0.534,
+      "n_lakes": 28
+    },
+    "bacc_vs_glint_diff_median": {
+      "rho": -0.105,
+      "p": 0.596,
+      "n_lakes": 28
+    },
+    "bacc_vs_abs_glint_diff_median": {
+      "rho": -0.234,
+      "p": 0.231,
+      "n_lakes": 28
+    },
+    "bacc_vs_glint_min_median": {
+      "rho": 0.181,
+      "p": 0.356,
+      "n_lakes": 28
+    }
+  },
+  "green_difference_by_subset": {
+    "all": {
+      "n_pairs": 93624,
+      "green_diff_median": 0.0034,
+      "green_logratio_median": 0.1967
+    },
+    "glint_gt_30": {
+      "n_pairs": 64387,
+      "green_diff_median": 0.0031,
+      "green_logratio_median": 0.1849
+    },
+    "glint_gt_40": {
+      "n_pairs": 43094,
+      "green_diff_median": 0.0029,
+      "green_logratio_median": 0.1772
+    }
+  },
+  "regression": {
+    "green_diff": {
+      "glint_linear": {
+        "n_pairs": 93624,
+        "n_clusters": 1095,
+        "r2": 0.1138,
+        "lake_fixed_effects": true,
+        "LS_glint": {
+          "coef": -0.0007233,
+          "se": 0.000119,
+          "t": -6.07
+        },
+        "S2_glint": {
+          "coef": 0.000759,
+          "se": 0.000136,
+          "t": 5.59
+        }
+      },
+      "glint_lt30_dummies": {
+        "n_pairs": 93624,
+        "n_clusters": 1095,
+        "r2": 0.068,
+        "lake_fixed_effects": true,
+        "LS_lowglint": {
+          "coef": 0.005299,
+          "se": 0.00147,
+          "t": 3.59
+        },
+        "S2_lowglint": {
+          "coef": -0.00529,
+          "se": 0.00136,
+          "t": -3.89
+        }
+      },
+      "glint_plus_vza": {
+        "n_pairs": 93624,
+        "n_clusters": 1095,
+        "r2": 0.1164,
+        "lake_fixed_effects": true,
+        "LS_glint": {
+          "coef": -0.0007349,
+          "se": 0.000121,
+          "t": -6.06
+        },
+        "S2_glint": {
+          "coef": 0.0007698,
+          "se": 0.000138,
+          "t": 5.59
+        },
+        "LS_VZA": {
+          "coef": 0.0003753,
+          "se": 0.000125,
+          "t": 3.0
+        },
+        "S2_VZA": {
+          "coef": -0.0002225,
+          "se": 0.000115,
+          "t": -1.93
+        }
+      }
+    },
+    "green_logratio": {
+      "glint_linear": {
+        "n_pairs": 89750,
+        "n_clusters": 1095,
+        "r2": 0.1402,
+        "lake_fixed_effects": true,
+        "LS_glint": {
+          "coef": -0.009249,
+          "se": 0.00284,
+          "t": -3.26
+        },
+        "S2_glint": {
+          "coef": 0.008836,
+          "se": 0.00321,
+          "t": 2.75
+        }
+      },
+      "glint_lt30_dummies": {
+        "n_pairs": 89750,
+        "n_clusters": 1095,
+        "r2": 0.1379,
+        "lake_fixed_effects": true,
+        "LS_lowglint": {
+          "coef": 0.1264,
+          "se": 0.0472,
+          "t": 2.68
+        },
+        "S2_lowglint": {
+          "coef": -0.0618,
+          "se": 0.0447,
+          "t": -1.38
+        }
+      },
+      "glint_plus_vza": {
+        "n_pairs": 89750,
+        "n_clusters": 1095,
+        "r2": 0.1429,
+        "lake_fixed_effects": true,
+        "LS_glint": {
+          "coef": -0.0099,
+          "se": 0.0029,
+          "t": -3.42
+        },
+        "S2_glint": {
+          "coef": 0.009435,
+          "se": 0.00326,
+          "t": 2.9
+        },
+        "LS_VZA": {
+          "coef": 0.005621,
+          "se": 0.00554,
+          "t": 1.01
+        },
+        "S2_VZA": {
+          "coef": -0.01325,
+          "se": 0.00383,
+          "t": -3.46
+        }
+      }
+    }
+  },
+  "interpretation": "Pooled balanced accuracy 0.902 with all pairs, 0.920 when both sensors have glint angle > 30 deg and 0.926 when > 40 deg (size-matched random subsets: 0.910, 0.909). Separability persists in low-glint-risk pairs: sun glint does not explain it.",
+  "separability_persists": true,
+  "runtime_s": {
+    "extraction": 0,
+    "total": 582
+  }
+}
