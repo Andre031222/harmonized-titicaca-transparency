@@ -126,7 +126,7 @@ harmonized-titicaca-transparency/
 ├── results/
 │   ├── metrics/*.json              # Aggregate results behind every reported number
 │   ├── models/best_params.json
-│   └── figures_r/                  # Paper figures (PNG 600 dpi + PDF)
+│   └── figures_r/                  # Paper figures (PNG, 600 dpi)
 └── docs/img/                       # Web versions of the figures for this page
 ```
 
