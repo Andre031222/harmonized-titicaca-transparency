@@ -24,7 +24,7 @@ IMARPE field values).
 | `p16_lake_maps.py` | Lake-wide transparency maps for the 2024 dry season with both sensors (Earth Engine if the composites are missing) |
 | `p17_glint.py` | Sun glint angle of each pair and the separability test without glint (`--eval` uses the cache) |
 | `p18_toa_separability.py` | The separability test on top-of-atmosphere reflectance, before atmospheric correction (`--eval` uses the cache) |
-| `p13_export_numbers.py` | Writes `manuscript/rsase/numbers.tex`: the manuscript does not type numbers by hand |
+| `p13_export_numbers.py` | Writes `manuscript/latex/numbers.tex`: the manuscript does not type numbers by hand |
 | `p14_verify_manuscript.py` | Checks that every number and figure in the manuscript comes from `results/` |
 | `harmonization_check.py` | The two-sample test as a reusable function (numpy, pandas, scikit-learn) |
 
@@ -44,5 +44,5 @@ bash pipeline/run_all.sh --fast     # without p06
 bash pipeline/run_all.sh --no-tex   # without compiling the manuscript
 ```
 
-`p13` and `p14` write to and read from `manuscript/rsase/`, which is not part of
+`p13` and `p14` write to and read from `manuscript/latex/`, which is not part of
 this repository; outside the authors' copy they can be skipped.

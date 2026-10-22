@@ -2,7 +2,7 @@
 p13_export_numbers.py -- exporta cada cifra que cita el manuscrito.
 
 Lee results/metrics/*.json y results/tidy/*.csv y escribe
-manuscript/rsase/numbers.tex (una macro por cifra) y
+manuscript/latex/numbers.tex (una macro por cifra) y
 results/metrics/manuscript_numbers.json. El texto no teclea numeros.
 
 Las cifras del registro de campo completo (881 mediciones) solo se pueden
@@ -17,8 +17,8 @@ import pandas as pd
 
 from p00_config import FIELD_RAW, MET, ROOT, TIDY, banner, write_json
 
-OUT_TEX = ROOT / "manuscript/rsase/numbers.tex"
-OUT_SUPP = ROOT / "manuscript/rsase/supp_tables.tex"
+OUT_TEX = ROOT / "manuscript/latex/numbers.tex"
+OUT_SUPP = ROOT / "manuscript/latex/supp_tables.tex"
 
 
 def tex_num(x, d=3):

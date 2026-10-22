@@ -15,8 +15,8 @@ import sys
 
 from p00_config import FIGR, ROOT, TIDY, banner
 
-TEX = ROOT / "manuscript/rsase/titicaca_secchi_rsase.tex"
-NUM = ROOT / "manuscript/rsase/numbers.tex"
+TEX = ROOT / "manuscript/latex/titicaca_secchi.tex"
+NUM = ROOT / "manuscript/latex/numbers.tex"
 
 
 def main():

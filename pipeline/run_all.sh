@@ -71,9 +71,9 @@ step "p17  brillo solar (reevalua la cache)"
 step "p18  separabilidad en reflectancia TOA (reevalua la cache)"
 "${RUN[@]}" p18_toa_separability.py --eval
 step "p13  exporta las cifras del manuscrito"
-mkdir -p "$ROOT/manuscript/rsase"
+mkdir -p "$ROOT/manuscript/latex"
 "${RUN[@]}" p13_export_numbers.py
-if [ -f "$ROOT/manuscript/rsase/titicaca_secchi_rsase.tex" ]; then
+if [ -f "$ROOT/manuscript/latex/titicaca_secchi.tex" ]; then
   step "p14  verifica el manuscrito contra results/"
   "${RUN[@]}" p14_verify_manuscript.py
 fi
@@ -82,7 +82,7 @@ step "figuras (R / ggplot2)"
 (cd "$ROOT/figures/R" && for f in fig[0-9S]*.R; do Rscript "$f"; done)
 "$PY" "$ROOT/figures/graphical_abstract/ga_3d.py"
 
-if [ "$NO_TEX" -eq 0 ] && [ -d "$ROOT/manuscript/rsase" ]; then
+if [ "$NO_TEX" -eq 0 ] && [ -d "$ROOT/manuscript/latex" ]; then
   step "manuscrito"
-  (cd "$ROOT/manuscript/rsase" && latexmk -pdf -interaction=nonstopmode -quiet titicaca_secchi_rsase.tex)
+  (cd "$ROOT/manuscript/latex" && latexmk -pdf -interaction=nonstopmode -quiet titicaca_secchi.tex)
 fi
