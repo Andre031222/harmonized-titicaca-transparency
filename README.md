@@ -3,14 +3,14 @@
 **Campaign-level validation of satellite Secchi depth in Lake Titicaca**
 
 [![Data: Mendeley](https://img.shields.io/badge/Data-10.17632%2F4zc7f9mv58.1-1565C0?style=flat-square)](https://doi.org/10.17632/4zc7f9mv58.1)
-[![Status: submitted](https://img.shields.io/badge/Status-Submitted_to_RSASE-E67E22?style=flat-square)](#citation)
+[![Status](https://img.shields.io/badge/Status-Manuscript_under_submission-E67E22?style=flat-square)](#citation)
 [![License: MIT](https://img.shields.io/badge/License-MIT-337AB7?style=flat-square)](LICENSE)
 [![Python 3.14](https://img.shields.io/badge/Python-3.14-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![R 4.6](https://img.shields.io/badge/Figures-R_4.6_%2F_ggplot2-276DC3?style=flat-square&logo=r&logoColor=white)](https://www.r-project.org/)
 [![NASA HLS v2.0](https://img.shields.io/badge/Data-NASA_HLS_v2.0-0B3D91?style=flat-square)](https://doi.org/10.5067/HLS/HLSS30.002)
 [![Balanced accuracy](https://img.shields.io/badge/Sensor_separability-0.92-C0392B?style=flat-square)](#key-results)
 
-Submitted to *Remote Sensing Applications: Society and Environment* (Elsevier), October 2026. Under review.
+Manuscript under submission to a peer-reviewed journal (2026).
 
 <p align="center">
   <img src="docs/img/graphical_abstract.jpg" width="95%" alt="Graphical abstract">
@@ -193,7 +193,7 @@ print(res[["test", "balanced_accuracy", "ba_lo", "ba_hi"]])
 
 ## Citation
 
-The article is under review. Until it is published, please cite the code and the dataset:
+The article is not yet published. Until it is, please cite the code and the dataset:
 
 ```bibtex
 @software{YanaYucra2026TiticacaHLS,
